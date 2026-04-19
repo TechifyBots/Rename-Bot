@@ -65,14 +65,16 @@ upgrade - To View All Plans With Price List.
 <b><details><summary>Tap On Me For Admin Commands</summary>
 
 ```
-users - Use This Command To See Total Users.
-allids - Use This Command To See All Users IDs List.
-broadcast - Message Broadcast Command.
-warn - Use This Command To Send A Message To A User.
-ceasepower - To Cease (Downgrade) Renaming Capacity.
-resetpower - To Reset Renaming Capacity (To Default 2GB).
-addpremium - To Upgrade User Plan.
-restart - Use This Command To Cancel All Process And Restart The Bot.
+ban - ban a user.
+unban - unban a user.
+banned - list all banned users.
+status - get bot statistics.
+broadcast - Send message to users.
+logs - get recent bot logs.
+addpremium - add a user to premium
+removepremium - remove a user from premium
+restart - restart the bot.
+maintenance - Toggle maintenance mode.
 ```
 </b>
 </details>
