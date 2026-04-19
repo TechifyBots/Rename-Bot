@@ -80,23 +80,15 @@ restart - Use This Command To Cancel All Process And Restart The Bot.
 
 ### 🥳 CREDIT
 
-<details><summary>Tap On Me For Credit</summary>
+- [TechifyBots](https://github.com/TechifyBots)
 
+- [DigitalBotz](https://github.com/DigitalBotz)
 
-💝 Credit Goes To [TechifyBots](https://github.com/TechifyBots)
+### 😇 [SUPPORT](https://techifybots.github.io/PayWeb)
 
-💘 Base Repo Credit [Jishu](https://github.com/JishuDeveloper)
+### 🥳 [DEVELOPER](https://instagram.com/ImRahulDhankhar)
 
-💖 And Thank You So Much To All Who Help In This Journey.
-</details>
-
-### 💕 CONTACT DEVELOPER
-
-- [Rahul](https://telegram.me/TechifySupport)
-
-### ☕ BUY ME A COFFEE
-- [PayPal](https://paypal.me/TechifyBots)
-- [UPI](https://TechifyBots.github.io/Donate)
+### 🚀 [DEPLOYMENT GUIDE](https://www.youtube.com/playlist?list=PLQrMSile4s5UnIEvWyKM1MKFuNg8Wfh2S)
 
 ### 📌 NOTE
 
