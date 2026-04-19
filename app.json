@@ -1,0 +1,56 @@
+{
+    "name": "Renamer Bot",
+    "description": "Telegram file Renamer Bot ",
+    "logo": "https://telegra.ph/file/b746aadfe59959eb76f59.jpg",
+    "keywords": ["Renamer Bot", "Mongo DB"],    
+    "repository": "https://github.com/TechifyBots/Rename-Bot",
+    "env": {
+        "API_ID": {
+            "description": "Your APP ID From my.telegram.org ",
+            "value": ""
+        },
+        "API_HASH": {
+            "description": "Your API Hash From my.telegram.org ",
+            "value": ""
+        },
+        
+        "IS_FSUB": {
+            "description": "Make it true Or false according to your need ",
+            "value": "",
+            "required": false 
+        },
+        "BOT_TOKEN": {
+            "description": "Your Bot Token From @BotFather",
+            "value": ""
+        },
+        "ADMIN": {
+            "description":"Add Your User ID multiple is use space to split"
+        },
+        "LOG_CHANNEL": {
+            "description":"Bot Log Sending Channel (just create a private channel and add bot to admin and take channel id to add this variable) ⚠️ id startswith -100 must",
+            "required": false           
+        },
+        "DB_URL": {
+            "description": "Your Mongo DB URL Obtained From mongodb.com",
+            "value": ""
+        },
+        "DB_NAME":{ 
+            "description":"Your Mongo DB Database Name ",
+            "value": "Digital_Rename_Bot",
+            "required": false
+        },
+        "PIC": {
+            "description": "Your Bot start cmd Pic",
+            "value": "https://telegra.ph/file/b746aadfe59959eb76f59.jpg",
+            "required": false
+        }
+    },
+    "buildpacks": [
+        {
+            "url": "heroku/python"
+        },
+        {
+            "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest"
+        }
+    ]
+}

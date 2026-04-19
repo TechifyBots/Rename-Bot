@@ -1,0 +1,11 @@
+pyrofork==2.3.69
+TgCrypto-pyrofork==1.2.8
+motor==3.7.1
+dnspython==2.8.0
+hachoir==3.3.0
+Pillow==12.2.0
+aiohttp==3.13.5
+pytz==2026.1.post1
+psutil==7.2.2
+ffmpeg-python
+ffmpeg

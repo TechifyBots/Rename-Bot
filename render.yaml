@@ -1,0 +1,33 @@
+services:
+  - type: web
+    plan: free
+    name: TechifyBots
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python3 bot.py
+    repo: https://github.com/TechifyBots/Rename-Bot.git
+    branch: main
+    autoDeploy: false
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: BOT_TOKEN
+        sync: false
+      - key: API_ID
+        sync: false
+      - key: API_HASH
+        sync: false
+      - key: IS_FSUB
+        sync: false
+      - key: LOG_CHANNEL
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: DB_URL
+        sync: false
+      - key: PIC
+        sync: false
+      - key: ADMIN
+        sync: false
+      - key: STRING_SESSION
+        sync: false
