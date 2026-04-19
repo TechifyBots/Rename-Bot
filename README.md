@@ -44,7 +44,7 @@
 - `AUTH_CHANNELS` : Your Public & Private FSUB channels IDs.
 - `AUTH_REQ_CHANNELS` : Your Private Request FSUB channels IDs.
 - `LOG_CHANNEL` - Your log channel id.
-
+- `STRING_SESSION` - Premium 4GB Client Pyrogram v2 String Session(Optional).
 </details>
 
 ### 😍 COMMANDS
