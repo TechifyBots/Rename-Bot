@@ -15,11 +15,14 @@
  - Premium plan feature.
  - Permanent Thumbnail support.
  - Supports Broadcasts.
- - Set custom caption.
- - Metadata added.
+ - Custom File Name Support.
+ - Ban/Unban users support.
+ - Custom Metadata Support.
+ - Premium trial available.
  - Convert video into file & vice versa.
  - Has a custom Start-up pic.
  - Force subscribe available.
+ - Maintenance mode available.
  - Supports ulimited renaming at a time.
  - Deploy to Koyeb + Heroku + Railway + Render.
  - [Developer support](https://telegram.me/TechifySupport) 24x7
@@ -48,16 +51,20 @@
 
 ```
 start - Check If The Bot Is Running.
+setprefix - Set Your Prefix
+seeprefix - See Your Prefix
+delprefix - Delete Your Prefix
 viewthumb - To View Current Thumbnail.
 delthumb - To Delete Current Thumbnail.
-set_caption - To Set A Custom Caption.
-see_caption - To See Your Custom Caption.
-del_caption - To Delete Custom Caption.
-ping - To Check Bot Ping.
-myplan - To View User Current Plan.
-donate - To Support Developer.
+setcaption - To Set A Custom Caption.
+seecaption - To See Your Custom Caption.
+delcaption - To Delete Custom Caption.
+setsuffix - Set Your Suffix
+seesuffix - See Your Suffix
+delsuffix - Delete Your Suffix
+plans - to check all available plans.
+myplan - to check your active plan.
 metadata - To set metadata
-upgrade - To View All Plans With Price List.
 ```
 </b>
 </details>
