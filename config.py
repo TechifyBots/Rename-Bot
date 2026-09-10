@@ -41,96 +41,105 @@ class Config(object):
 
 class rkn(object):
     # part of text configuration
-    START_TXT = """<b>{},
+    START_TXT = """<b>{},</b>
 
-𝚃ʜɪs 𝙸s 𝙰ɴ 𝙰ᴅᴠᴀᴄᴇᴅ 𝙰ɴᴅ 𝚈ᴇᴛ 𝙿ᴏᴡᴇʀғᴜʟ 𝚁ᴇɴᴀᴍᴇ 𝙱ᴏᴛ
-𝚄sɪɴɢ 𝚃ʜɪs 𝙱ᴏᴛ 𝚈ᴏᴜ 𝙲ᴀɴ 𝚁ᴇɴᴀᴍᴇ & 𝙲ʜᴀɴɢᴇ 𝚃ʜᴜᴍʙɴᴀɪʟ 𝙾ғ 𝚈ᴏᴜʀ 𝙵ɪʟᴇ 
-𝚈ᴏᴜ 𝙲ᴀɴ 𝙰ʟsᴏ 𝙲ᴏɴᴠᴇʀᴛ 𝚅ɪᴅᴇᴏ 𝚃ᴏ 𝙵ɪʟᴇ & 𝙵ɪʟᴇ 𝚃ᴏ 𝚅ɪᴅᴇᴏ
-𝚃𝙷𝙸𝚂 𝙱𝙾𝚃 𝙰𝙻𝚂𝙾 𝚂𝚄𝙿𝙿𝙾𝚁𝚃𝚂 𝙲𝚄𝚂𝚃𝙾𝙼 𝚃𝙷𝚄𝙼𝙱𝙽𝙰𝙸𝙻 𝙰𝙽𝙳 𝙲𝚄𝚂𝚃𝙾𝙼 𝙲𝙰𝙿𝚃𝙸𝙾𝙽
+𝖨 𝖠𝗆 𝖱𝖾𝗇𝖺𝗆𝖾 𝖡𝗈𝗍 — 𝖠 𝖲𝗆𝖺𝗋𝗍 𝖠𝗇𝖽 𝖯𝗈𝗐𝖾𝗋𝖿𝗎𝗅 𝖳𝗈𝗈𝗅 𝖡𝗎𝗂𝗅𝗍 𝖳𝗈 𝖬𝖺𝗄𝖾 𝖥𝗂𝗅𝖾 𝖬𝖺𝗇𝖺𝗀𝖾𝗆𝖾𝗇𝗍 𝖲𝗂𝗆𝗉𝗅𝖾.
 
-Tʜɪs Bᴏᴛ Wᴀs Cʀᴇᴀᴛᴇᴅ Bʏ : @TechifyBots 💞</b>"""
+𝖱𝖾𝗇𝖺𝗆𝖾 𝖸𝗈𝗎𝗋 𝖥𝗂𝗅𝖾𝗌, 𝖢𝗁𝖺𝗇𝗀𝖾 𝖳𝗁𝗎𝗆𝖻𝗇𝖺𝗂𝗅𝗌, 𝖢𝗎𝗌𝗍𝗈𝗆𝗂𝗓𝖾 𝖢𝖺𝗉𝗍𝗂𝗈𝗇𝗌, 𝖠𝗇𝖽 𝖢𝗈𝗇𝗏𝖾𝗋𝗍 𝖵𝗂𝖽𝖾𝗈𝗌 𝖳𝗈 𝖥𝗂𝗅𝖾𝗌 𝖮𝗋 𝖥𝗂𝗅𝖾𝗌 𝖳𝗈 𝖵𝗂𝖽𝖾𝗈𝗌.
+
+𝖳𝖺𝗉 𝖧𝖾𝗅𝗉 𝖳𝗈 𝖤𝗑𝗉𝗅𝗈𝗋𝖾 𝖠𝗅𝗅 𝖥𝖾𝖺𝗍𝗎𝗋𝖾𝗌
+
+<blockquote><b>‣ 𝖬𝖺𝗂𝗇𝗍𝖺𝗂𝗇𝖾𝖽 𝖡𝗒: <a href='https://techifybots.vercel.app'>𝖳𝖾𝖼𝗁𝗂𝖿𝗒 𝖡𝗈𝗍𝗌</a></b></blockquote>"""
 
     ABOUT_TXT = """<b>╭───────────⍟
-├🤖 ᴍy ɴᴀᴍᴇ : {}
-├🖥️ Dᴇᴠᴇʟᴏᴩᴇʀꜱ : {}
-├👨‍💻 Pʀᴏɢʀᴀᴍᴇʀ : {}
-├📕 Lɪʙʀᴀʀy : {}
-├✏️ Lᴀɴɢᴜᴀɢᴇ: {}
-├💾 Dᴀᴛᴀ Bᴀꜱᴇ: {}
-├📊 ᴠᴇʀsɪᴏɴ: <a href=https://github.com/TechifyBots/Rename-Bot>{}</a></b>     
-╰───────────────⍟ """
+├ 🤖 𝖭𝖺𝗆𝖾 : {}
+├ 🖥️ 𝖣𝖾𝗏𝖾𝗅𝗈𝗉𝖾𝗋𝗌 : {}
+├ 👨‍💻 𝖯𝗋𝗈𝗀𝗋𝖺𝗆𝗆𝖾𝗋 : {}
+├ 📕 𝖫𝗂𝖻𝗋𝖺𝗋𝗒 : {}
+├ ✏️ 𝖫𝖺𝗇𝗀𝗎𝖺𝗀𝖾 : {}
+├ 💾 𝖣𝖺𝗍𝖺𝖻𝖺𝗌𝖾 : {}
+├ 📊 𝖵𝖾𝗋𝗌𝗂𝗈𝗇 : <a href=https://github.com/TechifyBots/Rename-Bot>{}</a>
+╰───────────────⍟</b>"""
 
-    HELP_TXT = """✏️ <b><u>Hᴏᴡ Tᴏ Rᴇɴᴀᴍᴇ A Fɪʟᴇ</u></b>
-<b>•></b> Sᴇɴᴅ Aɴy Fɪʟᴇ Aɴᴅ Tyᴩᴇ Nᴇᴡ Fɪʟᴇ Nɴᴀᴍᴇ \nAɴᴅ Aᴇʟᴇᴄᴛ Tʜᴇ Fᴏʀᴍᴀᴛ [ document, video, audio ].           
-ℹ️ 𝗔𝗻𝘆 𝗢𝘁𝗵𝗲𝗿 𝗛𝗲𝗹𝗽 𝗖𝗼𝗻𝘁𝗮𝗰𝘁 :- <a href=https://t.me/TechifySupport>𝑺𝑼𝑷𝑷𝑶𝑹𝑻 𝑮𝑹𝑶𝑼𝑷</a>
-"""
+    HELP_TXT = """✏️ <b><u>𝖧𝗈𝗐 𝖳𝗈 𝖱𝖾𝗇𝖺𝗆𝖾 𝖠 𝖥𝗂𝗅𝖾</u></b>
 
-    UPGRADE_PREMIUM= """
-•⪼ ★𝘗𝘭𝘢𝘯𝘴    -  ⏳𝘋𝘢𝘵𝘦 - 💸𝘗𝘳𝘪𝘤𝘦 
-•⪼ 🥉𝘉𝘳𝘰𝘯𝘻𝘦  -   3𝘥𝘢𝘺𝘴 -   39
-•⪼ 🥈𝘚𝘪𝘭𝘷𝘦𝘳   -   7𝘥𝘢𝘺𝘴 -   59
-•⪼ 🥇𝘎𝘰𝘭𝘥    -  15𝘥𝘢𝘺𝘴 -  99
-•⪼ 🏆𝘗𝘭𝘢𝘵𝘪𝘯𝘶𝘮 -  1𝘮𝘰𝘯𝘵𝘩 -  179
-•⪼ 💎𝘋𝘪𝘢𝘮𝘰𝘯𝘥 -  2𝘮𝘰𝘯𝘵𝘩 -  339
+<b>•></b> 𝖲𝖾𝗇𝖽 𝖠𝗇𝗒 𝖥𝗂𝗅𝖾 𝖠𝗇𝖽 𝖤𝗇𝗍𝖾𝗋 𝖳𝗁𝖾 𝖭𝖾𝗐 𝖥𝗂𝗅𝖾 𝖭𝖺𝗆𝖾.
+𝖳𝗁𝖾𝗇 𝖲𝖾𝗅𝖾𝖼𝗍 𝖳𝗁𝖾 𝖱𝖾𝗊𝗎𝗂𝗋𝖾𝖽 𝖥𝗈𝗋𝗆𝖺𝗍 [ 𝖣𝗈𝖼𝗎𝗆𝖾𝗇𝗍, 𝖵𝗂𝖽𝖾𝗈, 𝖠𝗎𝖽𝗂𝗈 ].
 
-- 𝘋𝘢𝘪𝘭𝘺 𝘜𝘱𝘭𝘰𝘢𝘥 𝘓𝘪𝘮𝘪𝘵 𝘜𝘯𝘭𝘪𝘮𝘪𝘵𝘦𝘥
-- 𝘋𝘪𝘴𝘤𝘰𝘶𝘯𝘵 𝘈𝘭𝘭 𝘗𝘭𝘢𝘯 𝘙𝘴.9"""
+ℹ️ 𝖥𝗈𝗋 𝖠𝗇𝗒 𝖮𝗍𝗁𝖾𝗋 𝖧𝖾𝗅𝗉, 𝖢𝗈𝗇𝗍𝖺𝖼𝗍 𝖮𝗎𝗋 <a href=https://t.me/TechifySupport>𝖲𝖴𝖯𝖯𝖮𝖱𝖳 𝖦𝖱𝖮𝖴𝖯</a>"""
+
+    UPGRADE_PREMIUM = """
+•⪼ ★ 𝖯𝗅𝖺𝗇𝗌    -  ⏳ 𝖣𝗎𝗋𝖺𝗍𝗂𝗈𝗇 - 💸 𝖯𝗋𝗂𝖼𝖾
+
+•⪼ 🥉 𝖡𝗋𝗈𝗇𝗓𝖾    -  3 𝖣𝖺𝗒𝗌  -  ₹39
+•⪼ 🥈 𝖲𝗂𝗅𝗏𝖾𝗋     -  7 𝖣𝖺𝗒𝗌  -  ₹59
+•⪼ 🥇 𝖦𝗈𝗅𝖽      -  15 𝖣𝖺𝗒𝗌 -  ₹99
+•⪼ 🏆 𝖯𝗅𝖺𝗍𝗂𝗇𝗎𝗆 -  1 𝖬𝗈𝗇𝗍𝗁 - ₹179
+•⪼ 💎 𝖣𝗂𝖺𝗆𝗈𝗇𝖽  -  2 𝖬𝗈𝗇𝗍𝗁𝗌 - ₹339
+
+- 𝖣𝖺𝗂𝗅𝗒 𝖴𝗉𝗅𝗈𝖺𝖽 𝖫𝗂𝗆𝗂𝗍: 𝖴𝗇𝗅𝗂𝗆𝗂𝗍𝖾𝖽
+- 𝖣𝗂𝗌𝖼𝗈𝗎𝗇𝗍 𝖮𝗇 𝖠𝗅𝗅 𝖯𝗅𝖺𝗇𝗌: ₹9"""
     
-    UPGRADE_PLAN= """
-𝘗𝘭𝘢𝘯: 𝘗𝘳𝘰
-𝘋𝘢𝘵𝘦: 1 𝘮𝘰𝘯𝘵𝘩 
-𝘗𝘳𝘪𝘤𝘦: 179
-𝘓𝘪𝘮𝘪𝘵: 100 𝘎𝘉
+    UPGRADE_PLAN = """
+★ 𝖯𝗅𝖺𝗇 : 𝖯𝗋𝗈
+⏳ 𝖣𝗎𝗋𝖺𝗍𝗂𝗈𝗇 : 1 𝖬𝗈𝗇𝗍𝗁
+💸 𝖯𝗋𝗂𝖼𝖾 : ₹179
+💾 𝖫𝗂𝗆𝗂𝗍 : 100 𝖦𝖡
 
-𝘗𝘭𝘢𝘯: 𝘜𝘭𝘵𝘢 𝘗𝘳𝘰 
-𝘋𝘢𝘵𝘦: 1 𝘮𝘰𝘯𝘵𝘩 
-𝘗𝘳𝘪𝘤𝘦: 199
-𝘓𝘪𝘮𝘪𝘵: 1000 𝘎𝘉
+★ 𝖯𝗅𝖺𝗇 : 𝖴𝗅𝗍𝗋𝖺 𝖯𝗋𝗈
+⏳ 𝖣𝗎𝗋𝖺𝗍𝗂𝗈𝗇 : 1 𝖬𝗈𝗇𝗍𝗁
+💸 𝖯𝗋𝗂𝖼𝖾 : ₹199
+💾 𝖫𝗂𝗆𝗂𝗍 : 1000 𝖦𝖡
 
-- 𝘋𝘪𝘴𝘤𝘰𝘶𝘯𝘵 𝘈𝘭𝘭 𝘗𝘭𝘢𝘯 𝘙𝘴.9"""
+- 𝖣𝗂𝗌𝖼𝗈𝗎𝗇𝗍 𝖮𝗇 𝖠𝗅𝗅 𝖯𝗅𝖺𝗇𝗌 : ₹9"""
     
-    THUMBNAIL = """🌌 <b><u>Hᴏᴡ Tᴏ Sᴇᴛ Tʜᴜᴍʙɴɪʟᴇ</u></b>
+    THUMBNAIL = """🌌 <b><u>𝖧𝗈𝗐 𝖳𝗈 𝖲𝖾𝗍 𝖳𝗁𝗎𝗆𝖻𝗇𝖺𝗂𝗅</u></b>
 
-<b>•></b> Sᴇɴᴅ Aɴy Pʜᴏᴛᴏ Tᴏ Aᴜᴛᴏᴍᴀᴛɪᴄᴀʟʟy Sᴇᴛ Tʜᴜᴍʙɴɪʟᴇ.
-<b>•></b> /delthumb - Uꜱᴇ Tʜɪꜱ Cᴏᴍᴍᴀɴᴅ Tᴏ Dᴇʟᴇᴛᴇ Yᴏᴜʀ Oʟᴅ Tʜᴜᴍʙɴɪʟᴇ.
-<b>•></b> /viewthumb - Uꜱᴇ Tʜɪꜱ Cᴏᴍᴍᴀɴᴅ Tᴏ Vɪᴇᴡ Yᴏᴜʀ Cᴜʀʀᴇɴᴛ Tʜᴜᴍʙɴɪʟᴇ.
-"""
+<b>•></b> 𝖲𝖾𝗇𝖽 𝖠𝗇𝗒 𝖯𝗁𝗈𝗍𝗈 𝖳𝗈 𝖠𝗎𝗍𝗈𝗆𝖺𝗍𝗂𝖼𝖺𝗅𝗅𝗒 𝖲𝖾𝗍 𝖨𝗍 𝖠𝗌 𝖸𝗈𝗎𝗋 𝖥𝗂𝗅𝖾 𝖳𝗁𝗎𝗆𝖻𝗇𝖺𝗂𝗅.
 
-    CAPTION= """📑 <b><u>Hᴏᴡ Tᴏ Sᴇᴛ Cᴜꜱᴛᴏᴍ Cᴀᴩᴛɪᴏɴ</u></b>
+<b>•></b> /delthumb - 𝖴𝗌𝖾 𝖳𝗁𝗂𝗌 𝖢𝗈𝗆𝗆𝖺𝗇𝖽 𝖳𝗈 𝖣𝖾𝗅𝖾𝗍𝖾 𝖸𝗈𝗎𝗋 𝖮𝗅𝖽 𝖳𝗁𝗎𝗆𝖻𝗇𝖺𝗂𝗅.
 
-<b>•></b> /setcaption - Uꜱᴇ Tʜɪꜱ Cᴏᴍᴍᴀɴᴅ Tᴏ Sᴇᴛ ᴀ Cᴜꜱᴛᴏᴍ Cᴀᴩᴛɪᴏɴ
-<b>•></b> /seecaption - Uꜱᴇ Tʜɪꜱ Cᴏᴍᴍᴀɴᴅ Tᴏ Vɪᴇᴡ Yᴏᴜʀ Cᴜꜱᴛᴏᴍ Cᴀᴩᴛɪᴏɴ
-<b>•></b> /delcaption - Uꜱᴇ Tʜɪꜱ Cᴏᴍᴍᴀɴᴅ Tᴏ Dᴇʟᴇᴛᴇ Yᴏᴜʀ Cᴜꜱᴛᴏᴍ Cᴀᴩᴛɪᴏɴ
+<b>•></b> /viewthumb - 𝖴𝗌𝖾 𝖳𝗁𝗂𝗌 𝖢𝗈𝗆𝗆𝖺𝗇𝖽 𝖳𝗈 𝖵𝗂𝖾𝗐 𝖸𝗈𝗎𝗋 𝖢𝗎𝗋𝗋𝖾𝗇𝗍 𝖳𝗁𝗎𝗆𝖻𝗇𝖺𝗂𝗅."""
 
-Exᴀᴍᴩʟᴇ:- `/setcaption 📕 Fɪʟᴇ Nᴀᴍᴇ: {filename}
-💾 Sɪᴢᴇ: {filesize}
-⏰ Dᴜʀᴀᴛɪᴏɴ: {duration}`"""
+    CAPTION = """📑 <b><u>𝖧𝗈𝗐 𝖳𝗈 𝖲𝖾𝗍 𝖢𝗎𝗌𝗍𝗈𝗆 𝖢𝖺𝗉𝗍𝗂𝗈𝗇</u></b>
 
-    BOT_STATUS = """⚡️ ʙᴏᴛ sᴛᴀᴛᴜs ⚡️
+<b>•></b> /setcaption - 𝖴𝗌𝖾 𝖳𝗁𝗂𝗌 𝖢𝗈𝗆𝗆𝖺𝗇𝖽 𝖳𝗈 𝖲𝖾𝗍 𝖠 𝖢𝗎𝗌𝗍𝗈𝗆 𝖢𝖺𝗉𝗍𝗂𝗈𝗇.
 
-⌚️ ʙᴏᴛ ᴜᴩᴛɪᴍᴇ: `{}`
-👭 ᴛᴏᴛᴀʟ ᴜsᴇʀꜱ: `{}`
-💸 ᴛᴏᴛᴀʟ ᴘʀᴇᴍɪᴜᴍ ᴜsᴇʀs: `{}`
-֍ ᴜᴘʟᴏᴀᴅ: `{}`
-⊙ ᴅᴏᴡɴʟᴏᴀᴅ: `{}`"""
+<b>•></b> /seecaption - 𝖴𝗌𝖾 𝖳𝗁𝗂𝗌 𝖢𝗈𝗆𝗆𝖺𝗇𝖽 𝖳𝗈 𝖵𝗂𝖾𝗐 𝖸𝗈𝗎𝗋 𝖢𝗎𝗌𝗍𝗈𝗆 𝖢𝖺𝗉𝗍𝗂𝗈𝗇.
 
-    LIVE_STATUS = """⚡ ʟɪᴠᴇ sᴇʀᴠᴇʀ sᴛᴀᴛᴜs ⚡
+<b>•></b> /delcaption - 𝖴𝗌𝖾 𝖳𝗁𝗂𝗌 𝖢𝗈𝗆𝗆𝖺𝗇𝖽 𝖳𝗈 𝖣𝖾𝗅𝖾𝗍𝖾 𝖸𝗈𝗎𝗋 𝖢𝗎𝗌𝗍𝗈𝗆 𝖢𝖺𝗉𝗍𝗂𝗈𝗇.
 
-ᴜᴘᴛɪᴍᴇ: `{}`
-ᴄᴘᴜ: `{}%`
-ʀᴀᴍ: `{}%` 
-ᴛᴏᴛᴀʟ ᴅɪsᴋ: `{}`
-ᴜsᴇᴅ sᴘᴀᴄᴇ: `{} {}%`
-ғʀᴇᴇ sᴘᴀᴄᴇ: `{}`
-ᴜᴘʟᴏᴀᴅ: `{}`
-ᴅᴏᴡɴʟᴏᴀᴅ: `{}`
-V𝟹.𝟶.𝟶 [STABLE]"""
+𝖤𝗑𝖺𝗆𝗉𝗅𝖾:
+<code>/setcaption 📕 𝖥𝗂𝗅𝖾 𝖭𝖺𝗆𝖾: {filename}
+💾 𝖲𝗂𝗓𝖾: {filesize}
+⏰ 𝖣𝗎𝗋𝖺𝗍𝗂𝗈𝗇: {duration}</code>"""
 
-    DIGITAL_METADATA = """❪ SET CUSTOM METADATA ❫
+    BOT_STATUS = """⚡️ <b>𝖡𝗈𝗍 𝖲𝗍𝖺𝗍𝗎𝗌</b> ⚡️
 
-- /metadata - Tᴏ Sᴇᴛ & Cʜᴀɴɢᴇ ʏᴏᴜʀ ᴍᴇᴛᴀᴅᴀᴛᴀ ᴄᴏᴅᴇ
+⌚️ 𝖡𝗈𝗍 𝖴𝗉𝗍𝗂𝗆𝖾: {}
+👥 𝖳𝗈𝗍𝖺𝗅 𝖴𝗌𝖾𝗋𝗌: {}
+💸 𝖳𝗈𝗍𝖺𝗅 𝖯𝗋𝖾𝗆𝗂𝗎𝗆 𝖴𝗌𝖾𝗋𝗌: {}
+֍ 𝖴𝗉𝗅𝗈𝖺𝖽: {}
+⊙ 𝖣𝗈𝗐𝗇𝗅𝗈𝖺𝖽: {}"""
 
-☞ Fᴏʀ Exᴀᴍᴘʟᴇ:-
+    LIVE_STATUS = """⚡ 𝖫𝗂𝗏𝖾 𝖲𝖾𝗋𝗏𝖾𝗋 𝖲𝗍𝖺𝗍𝗎𝗌 ⚡
+
+⏱️ 𝖴𝗉𝗍𝗂𝗆𝖾: "{}"
+🖥️ 𝖢𝖯𝖴: "{}%"
+🧠 𝖱𝖠𝖬: "{}%"
+💽 𝖳𝗈𝗍𝖺𝗅 𝖣𝗂𝗌𝗄: "{}"
+📦 𝖴𝗌𝖾𝖽 𝖲𝗉𝖺𝖼𝖾: "{} {}%"
+💾 𝖥𝗋𝖾𝖾 𝖲𝗉𝖺𝖼𝖾: "{}"
+⬆️ 𝖴𝗉𝗅𝗈𝖺𝖽: "{}"
+⬇️ 𝖣𝗈𝗐𝗇𝗅𝗈𝖺𝖽: "{}"
+
+‣ 𝖵𝟥.𝟢.𝟢 [𝖲𝖳𝖠𝖡𝖫𝖤]"""
+
+    METADATA = """❪ 𝖲𝖤𝖳 𝖢𝖴𝖲𝖳𝖮𝖬 𝖬𝖤𝖳𝖠𝖣𝖠𝖳𝖠 ❫
+
+- /metadata - 𝖴𝗌𝖾 𝖳𝗁𝗂𝗌 𝖢𝗈𝗆𝗆𝖺𝗇𝖽 𝖳𝗈 𝖲𝖾𝗍 𝖠𝗇𝖽 𝖢𝗁𝖺𝗇𝗀𝖾 𝖸𝗈𝗎𝗋 𝖥𝗂𝗅𝖾 𝖬𝖾𝗍𝖺𝖽𝖺𝗍𝖺.
+
+☞ 𝖤𝗑𝖺𝗆𝗉𝗅𝖾:
 
 `--change-title @TechifyBots
 --change-video-title @TechifyBots
@@ -138,43 +147,29 @@ V𝟹.𝟶.𝟶 [STABLE]"""
 --change-subtitle-title @TechifyBots
 --change-author @TechifyBots`
 
-📥 Fᴏʀ Hᴇʟᴘ Cᴏɴᴛ. @TechifyBots"""
+📥 𝖥𝗈𝗋 𝖧𝖾𝗅𝗉, 𝖢𝗈𝗇𝗍𝖺𝖼𝗍: @TechifyBots"""
     
-    CUSTOM_FILE_NAME = """<u>🖋️ Custom File Name</u>
+    CUSTOM_FILE_NAME = """<u>🖋️ 𝖢𝗎𝗌𝗍𝗈𝗆 𝖥𝗂𝗅𝖾 𝖭𝖺𝗆𝖾</u>
 
-you can pre-add a prefix and suffix along with your new filename
+𝖸𝗈𝗎 𝖢𝖺𝗇 𝖯𝗋𝖾-𝖠𝖽𝖽 𝖠 𝖯𝗋𝖾𝖿𝗂𝗑 𝖮𝗋 𝖲𝗎𝖿𝖿𝗂𝗑 𝖠𝗅𝗈𝗇𝗀 𝖶𝗂𝗍𝗁 𝖸𝗈𝗎𝗋 𝖭𝖾𝗐 𝖥𝗂𝗅𝖾 𝖭𝖺𝗆𝖾.
 
-➢ /setprefix - To add a prefix along with your _filename.
-➢ /seeprefix - Tᴏ Sᴇᴇ Yᴏᴜʀ Pʀᴇғɪx !!
-➢ /delprefix - Tᴏ Dᴇʟᴇᴛᴇ Yᴏᴜʀ Pʀᴇғɪx !!
-➢ /setsuffix - To add a suffix along with your filename_.
-➢ /seesuffix - Tᴏ Sᴇᴇ Yᴏᴜʀ Sᴜғғɪx !!
-➢ /delsuffix - Tᴏ Dᴇʟᴇᴛᴇ Yᴏᴜʀ Sᴜғғɪx !!
+➢ /setprefix - 𝖴𝗌𝖾 𝖳𝗁𝗂𝗌 𝖢𝗈𝗆𝗆𝖺𝗇𝖽 𝖳𝗈 𝖠𝖽𝖽 𝖠 𝖯𝗋𝖾𝖿𝗂𝗑 𝖳𝗈 𝖸𝗈𝗎𝗋 𝖥𝗂𝗅𝖾𝗇𝖺𝗆𝖾.
+➢ /seeprefix - 𝖴𝗌𝖾 𝖳𝗁𝗂𝗌 𝖢𝗈𝗆𝗆𝖺𝗇𝖽 𝖳𝗈 𝖵𝗂𝖾𝗐 𝖸𝗈𝗎𝗋 𝖯𝗋𝖾𝖿𝗂𝗑.
+➢ /delprefix - 𝖴𝗌𝖾 𝖳𝗁𝗂𝗌 𝖢𝗈𝗆𝗆𝖺𝗇𝖽 𝖳𝗈 𝖣𝖾𝗅𝖾𝗍𝖾 𝖸𝗈𝗎𝗋 𝖯𝗋𝖾𝖿𝗂𝗑.
+➢ /setsuffix - 𝖴𝗌𝖾 𝖳𝗁𝗂𝗌 𝖢𝗈𝗆𝗆𝖺𝗇𝖽 𝖳𝗈 𝖠𝖽𝖽 𝖠 𝖲𝗎𝖿𝖿𝗂𝗑 𝖳𝗈 𝖸𝗈𝗎𝗋 𝖥𝗂𝗅𝖾𝗇𝖺𝗆𝖾.
+➢ /seesuffix - 𝖴𝗌𝖾 𝖳𝗁𝗂𝗌 𝖢𝗈𝗆𝗆𝖺𝗇𝖽 𝖳𝗈 𝖵𝗂𝖾𝗐 𝖸𝗈𝗎𝗋 𝖲𝗎𝖿𝖿𝗂𝗑.
+➢ /delsuffix - 𝖴𝗌𝖾 𝖳𝗁𝗂𝗌 𝖢𝗈𝗆𝗆𝖺𝗇𝖽 𝖳𝗈 𝖣𝖾𝗅𝖾𝗍𝖾 𝖸𝗈𝗎𝗋 𝖲𝗎𝖿𝖿𝗂𝗑.
 
-Exᴀᴍᴩʟᴇ:- `/setsuffix @TechifyBots`
-Exᴀᴍᴩʟᴇ:- `/setprefix @TechifyBots`"""
+𝖤𝗑𝖺𝗆𝗉𝗅𝖾: <code>/setsuffix @TechifyBots</code>
+𝖤𝗑𝖺𝗆𝗉𝗅𝖾: <code>/setprefix @TechifyBots</code>"""
 
-    DEV_TXT = """<b><u>Sᴩᴇᴄɪᴀʟ Tʜᴀɴᴋꜱ & Dᴇᴠᴇʟᴏᴩᴇʀꜱ</b></u>
-    
-» 𝗦𝗢𝗨𝗥𝗖𝗘 𝗖𝗢𝗗𝗘 : <a href=https://github.com/TechifyBots/Rename-Bot>Rename-Bot</a>
+    DEV_TXT = """<b><u>𝖲𝗉𝖾𝖼𝗂𝖺𝗅 𝖳𝗁𝖺𝗇𝗄𝗌 & 𝖣𝖾𝗏𝖾𝗅𝗈𝗉𝖾𝗋𝗌</u></b>
 
-• ❣️ <a href=https://github.com/RknDeveloper>RknDeveloper</a>
-• ❣️ <a href=https://github.com/DigitalBotz>DigitalBotz</a>
-• ❣️ <a href=https://github.com/TechifyBots>TechifyBots</a>"""
+» 𝖲𝗈𝗎𝗋𝖼𝖾 𝖢𝗈𝖽𝖾 : <a href=https://github.com/TechifyBots/Rename-Bot>𝖱𝖾𝗇𝖺𝗆𝖾-𝖡𝗈𝗍</a>
 
-    SEND_METADATA = """
-❪ SET CUSTOM METADATA ❫
-
-☞ Fᴏʀ Exᴀᴍᴘʟᴇ:-
-
-`--change-title @TechifyBots
---change-video-title @TechifyBots
---change-audio-title @TechifyBots
---change-subtitle-title @TechifyBots
---change-author @TechifyBots`
-
-📥 Fᴏʀ Hᴇʟᴘ Cᴏɴᴛ. @TechifyBots
-"""
+• ❣️ <a href=https://github.com/RknDeveloper>𝖱𝗄𝗇𝖣𝖾𝗏𝖾𝗅𝗈𝗉𝖾𝗋</a>
+• ❣️ <a href=https://github.com/DigitalBotz>𝖣𝗂𝗀𝗂𝗍𝖺𝗅𝖡𝗈𝗍𝗓</a>
+• ❣️ <a href=https://github.com/TechifyBots>𝖳𝖾𝖼𝗁𝗂𝖿𝗒𝖡𝗈𝗍𝗌</a>"""
     
     PROGRESS = """<b>
 ╭━━━━━━━━◉🚀◉━━━━━━━━╮
