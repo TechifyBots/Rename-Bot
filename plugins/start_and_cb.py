@@ -219,7 +219,7 @@ async def cb_handler(client, query: CallbackQuery):
                 InlineKeyboardButton("ᴄᴀᴘᴛɪᴏɴ", callback_data = "caption")
                 ],[
                 InlineKeyboardButton("ꜰɪʟᴇ ɴᴀᴍᴇ", callback_data = "custom_file_name"),
-                InlineKeyboardButton("ᴍᴇᴛᴀᴅᴀᴛᴀ", callback_data = "digital_meta_data")
+                InlineKeyboardButton("ᴍᴇᴛᴀᴅᴀᴛᴀ", callback_data = "custom_metadata")
                 ],[
                 InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "start")
                 ]]))         
@@ -273,46 +273,46 @@ async def cb_handler(client, query: CallbackQuery):
             text=rkn.THUMBNAIL,
             disable_web_page_preview=True,
             reply_markup=InlineKeyboardMarkup([[
-             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "help")]])) 
-      
+             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "help")]]))
+
     elif data == "caption":
         await query.message.edit_text(
             text=rkn.CAPTION,
             disable_web_page_preview=True,
             reply_markup=InlineKeyboardMarkup([[
-             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "help")]])) 
-      
+             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "help")]]))
+
     elif data == "custom_file_name":
         await query.message.edit_text(
             text=rkn.CUSTOM_FILE_NAME,
             disable_web_page_preview=True,
             reply_markup=InlineKeyboardMarkup([[
-             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "help")]])) 
-      
-    elif data == "digital_meta_data":
+             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "help")]]))
+
+    elif data == "custom_metadata":
         await query.message.edit_text(
-            text=rkn.DIGITAL_METADATA,
+            text=rkn.METADATA,
             disable_web_page_preview=True,
             reply_markup=InlineKeyboardMarkup([[
-             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "help")]])) 
-      
+             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "help")]]))
+
     elif data == "bot_status":
         total_users = await digital_botz.total_users_count()
         if client.premium:
             total_premium_users = await digital_botz.total_premium_users_count()
         else:
             total_premium_users = "Disabled ✅"
-        uptime = time.strftime("%Hh%Mm%Ss", time.gmtime(time.time() - client.uptime))    
+        uptime = time.strftime("%Hh%Mm%Ss", time.gmtime(time.time() - client.uptime))
         sent = humanbytes(psutil.net_io_counters().bytes_sent)
         recv = humanbytes(psutil.net_io_counters().bytes_recv)
         await query.message.edit_text(
             text=rkn.BOT_STATUS.format(uptime, total_users, total_premium_users, sent, recv),
             disable_web_page_preview=True,
             reply_markup=InlineKeyboardMarkup([[
-             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "about")]])) 
-      
+             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "about")]]))
+
     elif data == "live_status":
-        currentTime = time.strftime("%Hh%Mm%Ss", time.gmtime(time.time() - client.uptime))    
+        currentTime = time.strftime("%Hh%Mm%Ss", time.gmtime(time.time() - client.uptime))
         total, used, free = shutil.disk_usage(".")
         total = humanbytes(total)
         used = humanbytes(used)
@@ -326,8 +326,8 @@ async def cb_handler(client, query: CallbackQuery):
             text=rkn.LIVE_STATUS.format(currentTime, cpu_usage, ram_usage, total, used, disk_usage, free, sent, recv),
             disable_web_page_preview=True,
             reply_markup=InlineKeyboardMarkup([[
-             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "about")]])) 
-      
+             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "about")]]))
+
     elif data == "source_code":
         await query.message.edit_text(
             text=rkn.DEV_TXT,
@@ -337,9 +337,9 @@ async def cb_handler(client, query: CallbackQuery):
             ],[
                 InlineKeyboardButton("ᴄʟᴏꜱᴇ", callback_data = "close"),
                 InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "about")
-                 ]])
+            ]])
         )
-            
+
     elif data.startswith("upload"):
         await upload_doc(client, query)
 
