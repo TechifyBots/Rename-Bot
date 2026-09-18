@@ -1,5 +1,5 @@
 from pyrogram import Client, filters
-from pyrogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, LinkPreviewOptions
 from pyrogram.errors import ListenerTimeout
 from helper.database import digital_botz
 from config import rkn
@@ -37,7 +37,7 @@ async def query_metadata(bot: Client, query: CallbackQuery):
     elif data == 'custom_metadata':
         await query.message.delete()
         try:
-            metadata = await bot.ask(text=rkn.SEND_METADATA, chat_id=query.from_user.id, filters=filters.text, timeout=30, disable_web_page_preview=True)
+            metadata = await bot.ask(text=rkn.SEND_METADATA, chat_id=query.from_user.id, filters=filters.text, timeout=30, link_preview_options=LinkPreviewOptions(is_disabled=True))
             RknDev = await query.message.reply_text("**Please Wait...**", reply_to_message_id=metadata.id)
             await digital_botz.set_metadata_code(query.from_user.id, metadata_code=metadata.text)
             await RknDev.edit("**Your Metadata Code Set Successfully ✅**")
