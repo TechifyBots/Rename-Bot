@@ -1,6 +1,6 @@
 import random, asyncio, datetime, pytz, time, psutil, shutil
 from pyrogram import Client, filters, enums
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply, CallbackQuery
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply, LinkPreviewOptions, CallbackQuery
 from helper.database import digital_botz
 from config import Config, rkn
 from helper.utils import humanbytes
@@ -33,7 +33,7 @@ async def start(client, message):
     if Config.PIC:
         await message.reply_photo(Config.PIC, caption=rkn.START_TXT.format(user.mention), reply_markup=InlineKeyboardMarkup(start_button))    
     else:
-        await message.reply_text(text=rkn.START_TXT.format(user.mention), reply_markup=InlineKeyboardMarkup(start_button), disable_web_page_preview=True)
+        await message.reply_text(text=rkn.START_TXT.format(user.mention), reply_markup=InlineKeyboardMarkup(start_button), link_preview_options=LinkPreviewOptions(is_disabled=True))
 
 @Client.on_message(filters.private & filters.command('setprefix'))
 async def add_prefix(client, message):
@@ -188,11 +188,11 @@ async def plans(client, message):
     free_trial_status = await digital_botz.get_free_trial_status(user.id)
     if not await digital_botz.has_premium_access(user.id):
         if not free_trial_status:
-            await message.reply_text(text=upgrade_msg, reply_markup=upgrade_trial_button, disable_web_page_preview=True)
+            await message.reply_text(text=upgrade_msg, reply_markup=upgrade_trial_button, link_preview_options=LinkPreviewOptions(is_disabled=True))
         else:
-            await message.reply_text(text=upgrade_msg, reply_markup=upgrade_button, disable_web_page_preview=True)
+            await message.reply_text(text=upgrade_msg, reply_markup=upgrade_button, link_preview_options=LinkPreviewOptions(is_disabled=True))
     else:
-        await message.reply_text(text=upgrade_msg, reply_markup=upgrade_button, disable_web_page_preview=True)
+        await message.reply_text(text=upgrade_msg, reply_markup=upgrade_button, link_preview_options=LinkPreviewOptions(is_disabled=True))
 
 @Client.on_callback_query()
 async def cb_handler(client, query: CallbackQuery):
@@ -206,13 +206,13 @@ async def cb_handler(client, query: CallbackQuery):
             start_button.append([InlineKeyboardButton('💸 ᴜᴘɢʀᴀᴅᴇ ᴛᴏ ᴘʀᴇᴍɪᴜᴍ 💸', callback_data='upgrade')])
         await query.message.edit_text(
             text=rkn.START_TXT.format(query.from_user.mention),
-            disable_web_page_preview=True,
+            link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup = InlineKeyboardMarkup(start_button))
         
     elif data == "help":
         await query.message.edit_text(
             text=rkn.HELP_TXT,
-            disable_web_page_preview=True,
+            link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup=InlineKeyboardMarkup([[
                 #⚠️ don't change source code & source link ⚠️ #
                 InlineKeyboardButton("ᴛʜᴜᴍʙɴᴀɪʟ", callback_data = "thumbnail"),
@@ -239,7 +239,7 @@ async def cb_handler(client, query: CallbackQuery):
             about_button[-1].append(InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "start"))
         await query.message.edit_text(
             text=rkn.ABOUT_TXT.format(client.mention, __developer__, __programer__, __library__, __language__, __database__, _bot_version_),
-            disable_web_page_preview = True,
+            link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup=InlineKeyboardMarkup(about_button))    
         
     elif data == "upgrade":
@@ -250,11 +250,11 @@ async def cb_handler(client, query: CallbackQuery):
         free_trial_status = await digital_botz.get_free_trial_status(query.from_user.id)
         if not await digital_botz.has_premium_access(query.from_user.id):
             if not free_trial_status:
-                await query.message.edit_text(text=upgrade_msg, disable_web_page_preview=True, reply_markup=upgrade_trial_button)   
+                await query.message.edit_text(text=upgrade_msg, reply_markup=upgrade_trial_button, link_preview_options=LinkPreviewOptions(is_disabled=True))   
             else:
-                await query.message.edit_text(text=upgrade_msg, disable_web_page_preview=True, reply_markup=upgrade_button)
+                await query.message.edit_text(text=upgrade_msg, reply_markup=upgrade_button, link_preview_options=LinkPreviewOptions(is_disabled=True))
         else:
-            await query.message.edit_text(text=upgrade_msg, disable_web_page_preview=True, reply_markup=upgrade_button)
+            await query.message.edit_text(text=upgrade_msg, reply_markup=upgrade_button, link_preview_options=LinkPreviewOptions(is_disabled=True))
            
     elif data == "give_trial":
         if not client.premium:
@@ -271,28 +271,28 @@ async def cb_handler(client, query: CallbackQuery):
     elif data == "thumbnail":
         await query.message.edit_text(
             text=rkn.THUMBNAIL,
-            disable_web_page_preview=True,
+            link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup=InlineKeyboardMarkup([[
              InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "help")]]))
 
     elif data == "caption":
         await query.message.edit_text(
             text=rkn.CAPTION,
-            disable_web_page_preview=True,
+            link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup=InlineKeyboardMarkup([[
              InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "help")]]))
 
     elif data == "custom_file_name":
         await query.message.edit_text(
             text=rkn.CUSTOM_FILE_NAME,
-            disable_web_page_preview=True,
+            link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup=InlineKeyboardMarkup([[
              InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "help")]]))
 
     elif data == "custom_metadata":
         await query.message.edit_text(
             text=rkn.METADATA,
-            disable_web_page_preview=True,
+            link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup=InlineKeyboardMarkup([[
              InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "help")]]))
 
@@ -307,7 +307,7 @@ async def cb_handler(client, query: CallbackQuery):
         recv = humanbytes(psutil.net_io_counters().bytes_recv)
         await query.message.edit_text(
             text=rkn.BOT_STATUS.format(uptime, total_users, total_premium_users, sent, recv),
-            disable_web_page_preview=True,
+            link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup=InlineKeyboardMarkup([[
              InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "about")]]))
 
@@ -324,14 +324,14 @@ async def cb_handler(client, query: CallbackQuery):
         disk_usage = psutil.disk_usage('/').percent
         await query.message.edit_text(
             text=rkn.LIVE_STATUS.format(currentTime, cpu_usage, ram_usage, total, used, disk_usage, free, sent, recv),
-            disable_web_page_preview=True,
+            link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup=InlineKeyboardMarkup([[
              InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "about")]]))
 
     elif data == "source_code":
         await query.message.edit_text(
             text=rkn.DEV_TXT,
-            disable_web_page_preview=True,
+            link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup=InlineKeyboardMarkup([[
                 InlineKeyboardButton("💞 sᴏᴜʀᴄᴇ ᴄᴏᴅᴇ 💞", url="https://github.com/TechifyBots/Rename-Bot")
             ],[
