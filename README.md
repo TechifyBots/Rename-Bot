@@ -13,7 +13,7 @@ A **powerful, open-source, and feature-rich** Telegram bot designed to **rename,
 
 [![Last Commit](https://img.shields.io/github/last-commit/TechifyBots/Rename-Bot?style=for-the-badge)](https://github.com/TechifyBots/Rename-Bot/commits)
 <br>
-[![GitHub Stars](https://img.shields.io/github/stars/TechifyBots/Rename-Bot?style=for-the-badge)](https://github.com/TechifyBots/Rename-Bot/stargazers)
+[![GitHub Stars](https://img.shields.io/github/stars/TechifyBots/Rename-Bot?style=for-the-badge)](https://github.com/TechifyBots)
 [![GitHub Forks](https://img.shields.io/github/forks/TechifyBots/Rename-Bot?style=for-the-badge)](https://github.com/TechifyBots/Rename-Bot/fork)
 <br>
 [![Repo Size](https://img.shields.io/github/languages/code-size/TechifyBots/Rename-Bot?style=for-the-badge&color=8B5CF6)](https://github.com/TechifyBots/Rename-Bot)
