@@ -25,6 +25,9 @@ class Config(object):
     # database config
     DB_NAME = os.environ.get("DB_NAME", "Rename_Bot")     
     DB_URL = os.environ.get("DB_URL", "")
+
+    # logging - canonical log path for setup and the /logs command
+    LOG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "BotLog.txt")
  
     # other configs
     PIC = os.environ.get("PIC", "https://i.ibb.co/YTk9gzhY/IMG-20250906-144306-804.jpg")

@@ -10,9 +10,12 @@ from helper.ffmpeg import change_metadata, get_duration
 from config import Config, rkn
 import os, time, asyncio
 from html import escape
+import logging
 
 UPLOAD_TEXT = """Uploading Started...."""
 DOWNLOAD_TEXT = """Download Started..."""
+
+logger = logging.getLogger(__name__)
 
 app = Client("4gb_FileRenameBot", api_id=Config.API_ID, api_hash=Config.API_HASH, session_string=Config.STRING_SESSION, parse_mode=ParseMode.HTML)
 
@@ -52,7 +55,7 @@ async def rename_start(client, message):
                 reply_markup=ForceReply(True)
             )
         except Exception as e:
-            print(f"Error in rename_start: {e}")
+            logger.exception("Error in rename_start: %s", e)
     else:
         if rkn_file.file_size > 2000 * 1024 * 1024 and client.premium:
             return await message.reply_text("If you want to rename 4GB+ files then you will have to buy premium. /plans")
@@ -69,7 +72,7 @@ async def rename_start(client, message):
                 reply_markup=ForceReply(True)
             )
         except Exception as e:
-            print(f"Error in rename_start (non-premium): {e}")
+            logger.exception("Error in rename_start (non-premium): %s", e)
 
 @Client.on_message(filters.private & filters.reply)
 async def refunc(client, message):
@@ -192,7 +195,7 @@ async def upload_doc(bot, update):
             await rkn_processing.edit("I Fᴏᴜɴᴅ Yᴏᴜʀ Mᴇᴛᴀᴅᴀᴛᴀ\n\n<b><i>Pʟᴇᴀsᴇ Wᴀɪᴛ...</i></b>\n<b>Aᴅᴅɪɴɢ Mᴇᴛᴀᴅᴀᴛᴀ Tᴏ Fɪʟᴇ....</b>")            
             if await change_metadata(dl_path, metadata_path, metadata):            
                 await rkn_processing.edit("Metadata Added.....")
-                print("Metadata Added.....")
+                logger.info("Metadata added")
             else:
                 await rkn_processing.edit("Failed to add metadata, uploading original file...")
                 metadata_mode = False
@@ -228,7 +231,7 @@ async def upload_doc(bot, update):
                  with Image.open(ph_path) as img:
                      img.convert("RGB").resize((320, 320), Image.Resampling.LANCZOS).save(ph_path, "JPEG")
          except Exception as e:
-             print(f"Error processing thumbnail: {e}")
+             logger.exception("Error processing thumbnail: %s", e)
              ph_path = None
 
     upload_type = update.data.split("#")[1]

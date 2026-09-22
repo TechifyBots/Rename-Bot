@@ -1,7 +1,7 @@
 import aiohttp, asyncio, datetime, signal
 from zoneinfo import ZoneInfo
 import logging
-import logging.config
+import logging.config, logging.handlers
 from pyrogram import Client, __version__, errors, enums
 from pyrogram.raw.all import layer
 from html import escape
@@ -10,14 +10,21 @@ from helper.database import digital_botz
 from plugins.web_support import web_server
 from plugins.file_rename import app
 
-# Get logging configurations
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler('BotLog.txt'),
-             logging.StreamHandler()]
+# Structured logging: rotating file (canonical path from config) + console
+_fmt = logging.Formatter("%(asctime)s | %(levelname)-8s | %(name)s | %(message)s")
+_root = logging.getLogger()
+_root.setLevel(logging.INFO)
+_file = logging.handlers.RotatingFileHandler(
+    Config.LOG_FILE, maxBytes=2_000_000, backupCount=3, encoding="utf-8"
 )
-#logger = logging.getLogger(__name__)
+_file.setFormatter(_fmt)
+_stream = logging.StreamHandler()
+_stream.setFormatter(_fmt)
+_root.handlers = [_file, _stream]  # replace, keeps setup idempotent
 logging.getLogger("pyrogram").setLevel(logging.WARNING)
+logging.getLogger("pymongo").setLevel(logging.WARNING)
+
+logger = logging.getLogger(__name__)
 
 class TechifyBots(Client):
     def __init__(self):
@@ -49,7 +56,7 @@ class TechifyBots(Client):
         bind_address = "0.0.0.0"
         await aiohttp.web.TCPSite(self._web_runner, bind_address, Config.PORT).start()
 
-        print(f"{me.first_name} Iꜱ Sᴛᴀʀᴛᴇᴅ.....✨️")
+        logger.info("%s Iꜱ Sᴛᴀʀᴛᴇᴅ.....✨️", me.first_name)
 
         
         if Config.ADMIN:
@@ -71,7 +78,7 @@ class TechifyBots(Client):
                 time = curr.strftime('%I:%M:%S %p')
                 await self.send_message(Config.LOG_CHANNEL, f"<b><i>{me.mention} Iꜱ Rᴇsᴛᴀʀᴛᴇᴅ !!</i></b>\n\n📅 Dᴀᴛᴇ : <code>{date}</code>\n⏰ Tɪᴍᴇ : <code>{time}</code>\n🌐 Tɪᴍᴇᴢᴏɴᴇ : <code>Asia/Kolkata</code>\n\n🉐 Vᴇʀsɪᴏɴ : <code>v{__version__} (Layer {layer})</code>")
             except Exception:
-                print("Pʟᴇᴀꜱᴇ Mᴀᴋᴇ Tʜɪꜱ Iꜱ Aᴅᴍɪɴ Iɴ Yᴏᴜʀ Lᴏɢ Cʜᴀɴɴᴇʟ")
+                logger.error("Pʟᴇᴀꜱᴇ Mᴀᴋᴇ Tʜɪꜱ Iꜱ Aᴅᴍɪɴ Iɴ Yᴏᴜʀ Lᴏɢ Cʜᴀɴɴᴇʟ")
 
     async def stop(self, *args):
         if Config.ADMIN:
@@ -91,7 +98,7 @@ class TechifyBots(Client):
             await super().stop()
         except Exception:
             pass
-        print("Bot Stopped 🙄")
+        logger.info("Bot Stopped 🙄")
 
 
 tb = TechifyBots()
@@ -115,7 +122,7 @@ def main():
             await tb.start()
             await stop_event.wait()
         finally:
-            print("\n⏳ Shutting down gracefully...")
+            logger.info("⏳ Shutting down gracefully...")
             for client in reversed(started):
                 try:
                     await client.stop()
@@ -129,13 +136,13 @@ def main():
     try:
         asyncio.run(start_services())
     except KeyboardInterrupt:
-        print("\n🛑 Bot stopped by user!")
+        logger.info("🛑 Bot stopped by user!")
 
 if __name__ == "__main__":
     try:
         main()
     except errors.FloodWait as ft:
-        print(f"⏳ FloodWait: Sleeping for {ft.value} seconds")
+        logger.warning(f"⏳ FloodWait: Sleeping for {ft.value} seconds")
         asyncio.run(asyncio.sleep(ft.value))
-        print("Now Ready For Deploying!")
+        logger.info("Now Ready For Deploying!")
         main()

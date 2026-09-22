@@ -28,7 +28,7 @@ async def get_stats(bot, message):
 @Client.on_message(filters.command('logs') & filters.user(Config.ADMIN))
 async def log_file(b, m):
     try:
-        await m.reply_document('BotLog.txt')
+        await m.reply_document(Config.LOG_FILE)
     except Exception as e:
         await m.reply(str(e))
 
@@ -135,7 +135,7 @@ async def restart_bot(b, m):
         except Exception as e:
             failed += 1
             await digital_botz.delete_user(user['_id'])
-            print(e)
+            logger.warning("restart broadcast failed: %s", e)
             pass
         try:
             await rkn.edit(f"<u>ʀᴇsᴛᴀʀᴛ ɪɴ ᴩʀᴏɢʀᴇꜱꜱ:</u>\n\n• ᴛᴏᴛᴀʟ ᴜsᴇʀs: {total_users}\n• sᴜᴄᴄᴇssғᴜʟ: {success}\n• ʙʟᴏᴄᴋᴇᴅ ᴜsᴇʀs: {blocked}\n• ᴅᴇʟᴇᴛᴇᴅ ᴀᴄᴄᴏᴜɴᴛs: {deactivated}\n• ᴜɴsᴜᴄᴄᴇssғᴜʟ: {failed}")
@@ -169,13 +169,13 @@ async def ban(c: Client, m: Message):
             )
             ban_log_text += '\n\nUser notified successfully!'
         except Exception:
-            traceback.print_exc()
+            logger.exception("failed to notify banned user %s", user_id)
             ban_log_text += f"\n\nUser notification failed! \n\n<code>{escape(traceback.format_exc())}</code>"
 
         await digital_botz.ban_user(user_id, ban_duration, ban_reason)
         await m.reply_text(ban_log_text)
     except Exception:
-        traceback.print_exc()
+        logger.exception("ban command failed")
         await m.reply_text(
             f"Error occoured! Traceback given below\n\n<code>{escape(traceback.format_exc())}</code>"
         )
@@ -199,12 +199,12 @@ async def unban(c: Client, m: Message):
             await c.send_message(user_id, "Your ban was lifted!")
             unban_log_text += '\n\nUser notified successfully!'
         except Exception:
-            traceback.print_exc()
+            logger.exception("failed to notify unbanned user %s", user_id)
             unban_log_text += f"\n\nUser notification failed! \n\n<code>{escape(traceback.format_exc())}</code>"
         await digital_botz.remove_ban(user_id)
         await m.reply_text(unban_log_text)
     except Exception:
-        traceback.print_exc()
+        logger.exception("unban command failed")
         await m.reply_text(
             f"Error occurred! Traceback given below\n\n<code>{escape(traceback.format_exc())}</code>"
         )

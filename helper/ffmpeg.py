@@ -1,4 +1,7 @@
 import asyncio, subprocess, json
+import logging
+
+logger = logging.getLogger(__name__)
 from helper.utils import metadata_text
 
 
@@ -13,7 +16,7 @@ async def get_duration(file_path: str) -> int:
         )
         return int(float(out.decode().strip()))
     except Exception as e:
-        print(f"Error extracting duration: {e}")
+        logger.exception("Error extracting duration: %s", e)
         return 0
 
 async def change_metadata(input_file, output_file, metadata):
@@ -48,12 +51,12 @@ async def change_metadata(input_file, output_file, metadata):
     cmd.extend(['-metadata', 'comment=Added by @TechifyBots'])
     cmd.extend(['-f', 'matroska']) # support all format 
     cmd.append(output_file)
-    print(cmd)
+    logger.debug("ffmpeg cmd: %s", cmd)
     
     # Execute the command
     try:
         await asyncio.to_thread(subprocess.run, cmd, check=True, capture_output=True)
         return True
     except subprocess.CalledProcessError as e:
-        print("FFmpeg Error:", e.stderr)
+        logger.exception("FFmpeg failed: %s", e.stderr)
         return False
