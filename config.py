@@ -1,6 +1,17 @@
 import re, os, time
 from typing import List
-id_pattern = re.compile(r'^.\d+$') 
+from dotenv import load_dotenv
+
+load_dotenv()
+id_pattern = re.compile(r'^.\d+$')
+
+
+def _int_env(name, default=0):
+    try:
+        return int(os.environ.get(name, "") or default)
+    except (TypeError, ValueError):
+        return default
+
 
 class Config(object):
 
@@ -18,9 +29,9 @@ class Config(object):
  
     # other configs
     PIC = os.environ.get("PIC", "https://i.ibb.co/YTk9gzhY/IMG-20250906-144306-804.jpg")
-    ADMIN = int(os.environ.get("ADMIN", "1255023013"))
-    LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL", ""))
-    BIN_CHANNEL = int(os.environ.get("BIN_CHANNEL", ""))
+    ADMIN = _int_env("ADMIN", 0)
+    LOG_CHANNEL = _int_env("LOG_CHANNEL", 0)
+    BIN_CHANNEL = _int_env("BIN_CHANNEL", 0)
 
     # free upload limit 
     FREE_UPLOAD_LIMIT = 6442450944 # calculation 6*1024*1024*1024=results
