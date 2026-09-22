@@ -10,7 +10,7 @@ services:
     autoDeploy: false
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.9
+        value: 3.14.7
       - key: BOT_TOKEN
         sync: false
       - key: API_ID

@@ -16,7 +16,7 @@ class TechifyBots:
     async def add_join_req(self, user_id: int, channel_id: int):
         await self.join_requests.update_one(
             {"user_id": user_id},
-            {"$addToSet": {"channels": channel_id}, "$set": {"created_at": datetime.datetime.utcnow()}},
+            {"$addToSet": {"channels": channel_id}, "$set": {"created_at": datetime.datetime.now(datetime.timezone.utc)}},
             upsert=True
         )
 
@@ -31,7 +31,7 @@ class TechifyBots:
     async def save_fsub_msg(self, user_id: int, message_id: int):
         await self.fsub_cache.update_one(
             {"user_id": user_id},
-            {"$set": {"message_id": message_id, "created_at": datetime.datetime.utcnow()}},
+            {"$set": {"message_id": message_id, "created_at": datetime.datetime.now(datetime.timezone.utc)}},
             upsert=True
         )
 
@@ -104,7 +104,7 @@ async def del_requests(client: Client, message: Message):
 
 async def is_subscribed(bot: Client, user_id: int):
     missing = []
-    expire_at = datetime.datetime.utcnow() + datetime.timedelta(minutes=Config.FSUB_EXPIRE) if Config.FSUB_EXPIRE > 0 else None
+    expire_at = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=Config.FSUB_EXPIRE) if Config.FSUB_EXPIRE > 0 else None
     for channel_id in Config.AUTH_CHANNELS:
         try:
             await bot.get_chat_member(channel_id, user_id)

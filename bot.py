@@ -113,13 +113,10 @@ def main():
         else:
             await asyncio.gather(tb.stop())
 
-    loop = asyncio.get_event_loop()
     try:
-        loop.run_until_complete(start_services())
+        asyncio.run(start_services())
     except KeyboardInterrupt:
         print("\n🛑 Bot stopped by user!")
-    finally:
-        loop.close()
 
 if __name__ == "__main__":
     warnings.filterwarnings("ignore", message="There is no current event loop")
