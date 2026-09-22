@@ -148,11 +148,11 @@ async def restart_bot(b, m):
 async def ban(c: Client, m: Message):
     if len(m.command) == 1:
         await m.reply_text(
-            f"Use this command to ban any user from the bot.\n\n"
-            f"Usage:\n\n"
-            f"`/ban user_id ban_duration ban_reason`\n\n"
-            f"Eg: `/ban 1234567 28 You misused me.`\n"
-            f"This will ban user with id `1234567` for `28` days for the reason `You misused me`."
+            "Use this command to ban any user from the bot.\n\n"
+            "Usage:\n\n"
+            "`/ban user_id ban_duration ban_reason`\n\n"
+            "Eg: `/ban 1234567 28 You misused me.`\n"
+            "This will ban user with id `1234567` for `28` days for the reason `You misused me`."
         )
         return
 
@@ -184,10 +184,10 @@ async def ban(c: Client, m: Message):
 async def unban(c: Client, m: Message):
     if len(m.command) == 1:
         await m.reply_text(
-            f"Use this command to unban any user.\n\n"
-            f"Usage:\n\n`/unban user_id`\n\n"
-            f"Eg: `/unban 1234567`\n"
-            f"This will unban user with id `1234567`."
+            "Use this command to unban any user.\n\n"
+            "Usage:\n\n`/unban user_id`\n\n"
+            "Eg: `/unban 1234567`\n"
+            "This will unban user with id `1234567`."
         )
         return
 
@@ -195,7 +195,7 @@ async def unban(c: Client, m: Message):
         user_id = int(m.command[1])
         unban_log_text = f"Unbanning user {user_id}"
         try:
-            await c.send_message(user_id, f"Your ban was lifted!")
+            await c.send_message(user_id, "Your ban was lifted!")
             unban_log_text += '\n\nUser notified successfully!'
         except Exception:
             traceback.print_exc()

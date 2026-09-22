@@ -1,10 +1,8 @@
 from aiohttp import web
-import json
 import time
 import psutil
 import shutil
 import os
-import base64
 from config import Config
 from plugins import __version__
 from helper.utils import humanbytes

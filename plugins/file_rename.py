@@ -8,7 +8,6 @@ from helper.utils import progress_for_pyrogram, convert, humanbytes, add_prefix_
 from helper.database import digital_botz
 from helper.ffmpeg import change_metadata, get_duration
 from config import Config, rkn
-from asyncio import sleep
 import os, time, asyncio
 
 UPLOAD_TEXT = """Uploading Started...."""
@@ -174,7 +173,6 @@ async def upload_doc(bot, update):
     metadata_path = f"Metadata/{new_filename}"
     await rkn_processing.edit("`Try To Download....`")
     if bot.premium and bot.uploadlimit:
-        limit = user_data.get('uploadlimit', 0)
         used = user_data.get('used_limit', 0)        
         total_used = int(used) + int(media.file_size)
         await digital_botz.set_used_limit(user_id, total_used)

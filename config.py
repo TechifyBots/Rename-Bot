@@ -1,5 +1,4 @@
 import re, os, time
-from typing import List
 from dotenv import load_dotenv
 
 load_dotenv()
