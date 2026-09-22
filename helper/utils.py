@@ -1,4 +1,5 @@
-import math, time, re, datetime, pytz, os
+import math, time, re, datetime, os
+from zoneinfo import ZoneInfo
 from config import Config, rkn 
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -67,7 +68,7 @@ def convert(seconds):
 
 async def send_log(b, u):
     if Config.LOG_CHANNEL:
-        curr = datetime.datetime.now(pytz.timezone("Asia/Kolkata"))
+        curr = datetime.datetime.now(ZoneInfo("Asia/Kolkata"))
         log_message = (
             "**--Nᴇᴡ Uꜱᴇʀ Sᴛᴀʀᴛᴇᴅ Tʜᴇ Bᴏᴛ--**\n\n"
             f"Uꜱᴇʀ: {u.mention}\n"

@@ -1,5 +1,4 @@
 import datetime
-import pytz
 from pymongo import AsyncMongoClient
 from config import Config
 from helper.utils import send_log

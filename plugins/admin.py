@@ -1,7 +1,8 @@
 from config import Config
 from helper.database import digital_botz
 from helper.utils import get_seconds, humanbytes
-import os, sys, time, asyncio, logging, datetime, pytz, traceback
+import os, sys, time, asyncio, logging, datetime, traceback
+from zoneinfo import ZoneInfo
 from pyrogram.types import Message, LinkPreviewOptions
 from pyrogram import Client, filters
 from pyrogram.errors import FloodWait, InputUserDeactivated, UserIsBlocked, PeerIdInvalid
@@ -42,7 +43,7 @@ async def add_premium(client, message):
         if plan_type not in ["Pro", "UltraPro"]:
             return await message.reply_text("Invalid Plan Type. Please use 'Pro' or 'UltraPro'.", quote=True)
         time_string = " ".join(message.command[3:])
-        time_zone = datetime.datetime.now(pytz.timezone("Asia/Kolkata"))
+        time_zone = datetime.datetime.now(ZoneInfo("Asia/Kolkata"))
         current_time = time_zone.strftime("%d-%m-%Y\n⏱️ ᴊᴏɪɴɪɴɢ ᴛɪᴍᴇ : %I:%M:%S %p")
         user = await client.get_users(user_id)
         if plan_type == "Pro":
@@ -63,7 +64,7 @@ async def add_premium(client, message):
         type = user_data.get('usertype', "Free")
         data = await digital_botz.get_user(user_id)
         expiry = data.get("expiry_time")
-        expiry_str_in_ist = expiry.astimezone(pytz.timezone("Asia/Kolkata")).strftime("%d-%m-%Y\n⏱️ ᴇxᴘɪʀʏ ᴛɪᴍᴇ : %I:%M:%S %p")
+        expiry_str_in_ist = expiry.astimezone(ZoneInfo("Asia/Kolkata")).strftime("%d-%m-%Y\n⏱️ ᴇxᴘɪʀʏ ᴛɪᴍᴇ : %I:%M:%S %p")
         await message.reply_text(f"ᴘʀᴇᴍɪᴜᴍ ᴀᴅᴅᴇᴅ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ ✅\n\n👤 ᴜꜱᴇʀ : {user.mention}\n⚡ ᴜꜱᴇʀ ɪᴅ : <code>{user_id}</code>\nᴘʟᴀɴ :- `{type}`\nᴅᴀɪʟʏ ᴜᴘʟᴏᴀᴅ ʟɪᴍɪᴛ :- `{humanbytes(limit)}`\n⏰ ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ : <code>{time_string}</code>\n\n⏳ ᴊᴏɪɴɪɴɢ ᴅᴀᴛᴇ : {current_time}\n\n⌛️ ᴇxᴘɪʀʏ ᴅᴀᴛᴇ : {expiry_str_in_ist}", quote=True, link_preview_options=LinkPreviewOptions(is_disabled=True))
         await client.send_message(
                 chat_id=user_id,
@@ -74,7 +75,7 @@ async def add_premium(client, message):
             return await message.reply_text("Usage : /addpremium user_id time (e.g., '1 day for days', '1 hour for hours', or '1 min for minutes', or '1 month for months' or '1 year for year')", quote=True)
         user_id = int(message.command[1])
         time_string = " ".join(message.command[2:])
-        time_zone = datetime.datetime.now(pytz.timezone("Asia/Kolkata"))
+        time_zone = datetime.datetime.now(ZoneInfo("Asia/Kolkata"))
         current_time = time_zone.strftime("%d-%m-%Y\n⏱️ ᴊᴏɪɴɪɴɢ ᴛɪᴍᴇ : %I:%M:%S %p")
         user = await client.get_users(user_id)        
         seconds = await get_seconds(time_string)
@@ -85,7 +86,7 @@ async def add_premium(client, message):
         await digital_botz.addpremium(user_id, user_data)
         data = await digital_botz.get_user(user_id)
         expiry = data.get("expiry_time")
-        expiry_str_in_ist = expiry.astimezone(pytz.timezone("Asia/Kolkata")).strftime("%d-%m-%Y\n⏱️ ᴇxᴘɪʀʏ ᴛɪᴍᴇ : %I:%M:%S %p")
+        expiry_str_in_ist = expiry.astimezone(ZoneInfo("Asia/Kolkata")).strftime("%d-%m-%Y\n⏱️ ᴇxᴘɪʀʏ ᴛɪᴍᴇ : %I:%M:%S %p")
         await message.reply_text(f"ᴘʀᴇᴍɪᴜᴍ ᴀᴅᴅᴇᴅ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ ✅\n\n👤 ᴜꜱᴇʀ : {user.mention}\n⚡ ᴜꜱᴇʀ ɪᴅ : <code>{user_id}</code>\n⏰ ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ : <code>{time_string}</code>\n\n⏳ ᴊᴏɪɴɪɴɢ ᴅᴀᴛᴇ : {current_time}\n\n⌛️ ᴇxᴘɪʀʏ ᴅᴀᴛᴇ : {expiry_str_in_ist}", quote=True, link_preview_options=LinkPreviewOptions(is_disabled=True))
         await client.send_message(
                 chat_id=user_id,

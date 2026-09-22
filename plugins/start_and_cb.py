@@ -1,4 +1,4 @@
-import random, asyncio, datetime, pytz, time, psutil, shutil
+import random, asyncio, datetime, time, psutil, shutil
 from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply, LinkPreviewOptions, CallbackQuery
 from helper.database import digital_botz
