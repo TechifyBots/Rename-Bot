@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+*.session*
+.env
+.git
+BotLog.txt
+banned-users.txt
+venv/
+.pytest_cache/
