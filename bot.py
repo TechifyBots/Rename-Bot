@@ -1,10 +1,7 @@
-import aiohttp, asyncio, warnings, datetime
+import aiohttp, asyncio, datetime
 from zoneinfo import ZoneInfo
 import logging
 import logging.config
-import glob, sys
-import importlib.util
-from pathlib import Path
 from pyrogram import Client, __version__, errors
 from pyrogram.raw.all import layer
 from pyrogram import idle
@@ -49,45 +46,37 @@ class TechifyBots(Client):
         await self._web_runner.setup()
         bind_address = "0.0.0.0"
         await aiohttp.web.TCPSite(self._web_runner, bind_address, Config.PORT).start()
-        
-        path = "plugins/*.py"
-        files = glob.glob(path)
-        for name in files:
-            with open(name) as a:
-                patt = Path(a.name)
-                plugin_name = patt.stem.replace(".py", "")
-                plugins_path = Path(f"plugins/{plugin_name}.py")
-                import_path = "plugins.{}".format(plugin_name)
-                spec = importlib.util.spec_from_file_location(import_path, plugins_path)
-                load = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(load)
-                sys.modules["plugins" + plugin_name] = load
-                print("Digital Botz Imported " + plugin_name)
-                
+
         print(f"{me.first_name} Iꜱ Sᴛᴀʀᴛᴇᴅ.....✨️")
 
         
         if Config.ADMIN:
             if Config.STRING_SESSION:
-                try: await self.send_message(Config.ADMIN, f"𝟮𝗚𝗕+ ғɪʟᴇ sᴜᴘᴘᴏʀᴛ ʜᴀs ʙᴇᴇɴ ᴀᴅᴅᴇᴅ ᴛᴏ ʏᴏᴜʀ ʙᴏᴛ.\n\nNote: 𝐓𝐞𝐥𝐞𝐠𝐫𝐚𝐦 𝐩𝐫𝐞𝐦𝐢𝐮𝐦 𝐚𝐜𝐜𝐨𝐮𝐧𝐭 𝐬𝐭𝐫𝐢𝐧𝐠 𝐬𝐞𝐬𝐬𝐢𝐨𝐧 𝐫𝐞𝐪𝐮𝐢𝐫𝐞𝐝 𝐓𝐡𝐞𝐧 𝐬𝐮𝐩𝐩𝐨𝐫𝐭𝐬 𝟐𝐆𝐁+ 𝐟𝐢𝐥𝐞𝐬.\n\n**__{me.first_name}  Iꜱ Sᴛᴀʀᴛᴇᴅ.....✨️__**")                                
-                except: pass
+                try:
+                    await self.send_message(Config.ADMIN, f"𝟮𝗚𝗕+ ғɪʟᴇ sᴜᴘᴘᴏʀᴛ ʜᴀs ʙᴇᴇɴ ᴀᴅᴅᴇᴅ ᴛᴏ ʏᴏᴜʀ ʙᴏᴛ.\n\nNote: 𝐓𝐞𝐥𝐞𝐠𝐫𝐚𝐦 𝐩𝐫𝐞𝐦𝐢𝐮𝐦 𝐚𝐜𝐜𝐨𝐮𝐧𝐭 𝐬𝐭𝐫𝐢𝐧𝐠 𝐬𝐞𝐬𝐬𝐢𝐨𝐧 𝐫𝐞𝐪𝐮𝐢𝐫𝐞𝐝 𝐓𝐡𝐞𝐧 𝐬𝐮𝐩𝐩𝐨𝐫𝐭𝐬 𝟐𝐆𝐁+ 𝐟𝐢𝐥𝐞𝐬.\n\n**__{me.first_name}  Iꜱ Sᴛᴀʀᴛᴇᴅ.....✨️__**")
+                except Exception:
+                    pass
             else:
-                try: await self.send_message(Config.ADMIN, f"𝟮𝗚𝗕- ғɪʟᴇ sᴜᴘᴘᴏʀᴛ ʜᴀs ʙᴇᴇɴ ᴀᴅᴅᴇᴅ ᴛᴏ ʏᴏᴜʀ ʙᴏᴛ.\n\n**__{me.first_name}  Iꜱ Sᴛᴀʀᴛᴇᴅ.....✨️__**")                                
-                except: pass
+                try:
+                    await self.send_message(Config.ADMIN, f"𝟮𝗚𝗕- ғɪʟᴇ sᴜᴘᴘᴏʀᴛ ʜᴀs ʙᴇᴇɴ ᴀᴅᴅᴇᴅ ᴛᴏ ʏᴏᴜʀ ʙᴏᴛ.\n\n**__{me.first_name}  Iꜱ Sᴛᴀʀᴛᴇᴅ.....✨️__**")
+                except Exception:
+                    pass
                     
         if Config.LOG_CHANNEL:
             try:
                 curr = datetime.datetime.now(ZoneInfo("Asia/Kolkata"))
                 date = curr.strftime('%d %B, %Y')
                 time = curr.strftime('%I:%M:%S %p')
-                await self.send_message(Config.LOG_CHANNEL, f"**__{me.mention} Iꜱ Rᴇsᴛᴀʀᴛᴇᴅ !!**\n\n📅 Dᴀᴛᴇ : `{date}`\n⏰ Tɪᴍᴇ : `{time}`\n🌐 Tɪᴍᴇᴢᴏɴᴇ : `Asia/Kolkata`\n\n🉐 Vᴇʀsɪᴏɴ : `v{__version__} (Layer {layer})`</b>")                                
-            except:
+                await self.send_message(Config.LOG_CHANNEL, f"**__{me.mention} Iꜱ Rᴇsᴛᴀʀᴛᴇᴅ !!**\n\n📅 Dᴀᴛᴇ : `{date}`\n⏰ Tɪᴍᴇ : `{time}`\n🌐 Tɪᴍᴇᴢᴏɴᴇ : `Asia/Kolkata`\n\n🉐 Vᴇʀsɪᴏɴ : `v{__version__} (Layer {layer})`</b>")
+            except Exception:
                 print("Pʟᴇᴀꜱᴇ Mᴀᴋᴇ Tʜɪꜱ Iꜱ Aᴅᴍɪɴ Iɴ Yᴏᴜʀ Lᴏɢ Cʜᴀɴɴᴇʟ")
 
     async def stop(self, *args):
         if Config.ADMIN:
-            try: await self.send_message(Config.ADMIN, f"**Bot Stopped....**")                                
-            except: pass
+            try:
+                await self.send_message(Config.ADMIN, "**Bot Stopped....**")
+            except Exception:
+                pass
                 
         print("Bot Stopped 🙄")
         runner = getattr(self, "_web_runner", None)
@@ -120,7 +109,6 @@ def main():
         print("\n🛑 Bot stopped by user!")
 
 if __name__ == "__main__":
-    warnings.filterwarnings("ignore", message="There is no current event loop")
     try:
         main()
     except errors.FloodWait as ft:

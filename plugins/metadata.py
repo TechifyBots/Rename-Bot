@@ -15,7 +15,7 @@ FALSE = [[InlineKeyboardButton('Metadata Off', callback_data='metadata_0'),
 
 @Client.on_message(filters.private & filters.command('metadata'))
 async def handle_metadata(bot: Client, message: Message):
-    RknDev = await message.reply_text("**Please Wait...**", reply_to_message_id=message.id)
+    RknDev = await message.reply_text("**Please Wait...**")
     bool_metadata = await digital_botz.get_metadata_mode(message.from_user.id)
     user_metadata = await digital_botz.get_metadata_code(message.from_user.id)
     await RknDev.edit(
@@ -29,7 +29,7 @@ async def query_metadata(bot: Client, query: CallbackQuery):
     if data.startswith('metadata_'):
         _bool = data.split('_')[1]
         user_metadata = await digital_botz.get_metadata_code(query.from_user.id)
-        bool_meta = bool(eval(_bool))
+        bool_meta = _bool == "1"
         await digital_botz.set_metadata_mode(query.from_user.id, bool_meta=not bool_meta)
         await query.message.edit(f"Your Current Metadata:-\n\n➜ `{user_metadata}`", reply_markup=InlineKeyboardMarkup(FALSE if bool_meta else TRUE))
            
@@ -53,4 +53,4 @@ async def save_metadata_code(bot: Client, message: Message):
         return
     await digital_botz.set_metadata_code(message.from_user.id, metadata_code=message.text)
     await reply_to.delete()
-    await message.reply_text("**Your Metadata Code Set Successfully ✅**", reply_to_message_id=message.id)
+    await message.reply_text("**Your Metadata Code Set Successfully ✅**")

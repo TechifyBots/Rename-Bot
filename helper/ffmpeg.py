@@ -18,7 +18,11 @@ async def get_duration(file_path: str) -> int:
 
 async def change_metadata(input_file, output_file, metadata):
     author, title, video_title, audio_title, subtitle_title = await metadata_text(metadata)
-    output = subprocess.check_output(['ffprobe', '-v', 'error', '-show_streams', '-print_format', 'json', input_file])
+    output = await asyncio.to_thread(
+        subprocess.check_output,
+        ['ffprobe', '-v', 'error', '-show_streams', '-print_format', 'json', input_file],
+        timeout=15,
+    )
     data = json.loads(output)
     streams = data['streams']
     cmd = [
@@ -48,7 +52,7 @@ async def change_metadata(input_file, output_file, metadata):
     
     # Execute the command
     try:
-        subprocess.run(cmd, check=True)
+        await asyncio.to_thread(subprocess.run, cmd, check=True, capture_output=True)
         return True
     except subprocess.CalledProcessError as e:
         print("FFmpeg Error:", e.stderr)

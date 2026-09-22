@@ -2,7 +2,7 @@ from pyrogram import Client, filters
 from pyrogram.enums import MessageMediaType
 from pyrogram.errors import FloodWait
 from pyrogram.file_id import FileId
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply, ReplyParameters
 from PIL import Image
 from helper.utils import progress_for_pyrogram, convert, humanbytes, add_prefix_suffix, remove_path
 from helper.database import digital_botz
@@ -42,7 +42,6 @@ async def rename_start(client, message):
         try:
             await message.reply_text(
                 text=f"**__ᴍᴇᴅɪᴀ ɪɴꜰᴏ:\n\n◈ ᴏʟᴅ ꜰɪʟᴇ ɴᴀᴍᴇ: `{filename}`\n\n◈ ᴇxᴛᴇɴꜱɪᴏɴ: `{extension_type.upper()}`\n◈ ꜰɪʟᴇ ꜱɪᴢᴇ: `{filesize}`\n◈ ᴍɪᴍᴇ ᴛʏᴇᴩ: `{mime_type}`\n◈ ᴅᴄ ɪᴅ: `{dcid}`\n\nᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ғɪʟᴇɴᴀᴍᴇ ᴡɪᴛʜ ᴇxᴛᴇɴsɪᴏɴ ᴀɴᴅ ʀᴇᴘʟʏ ᴛʜɪs ᴍᴇssᴀɢᴇ....__**",
-                reply_to_message_id=message.id,  
                 reply_markup=ForceReply(True)
             )       
             await asyncio.sleep(30)
@@ -50,7 +49,6 @@ async def rename_start(client, message):
             await asyncio.sleep(e.value)
             await message.reply_text(
                 text=f"**__ᴍᴇᴅɪᴀ ɪɴꜰᴏ:\n\n◈ ᴏʟᴅ ꜰɪʟᴇ ɴᴀᴍᴇ: `{filename}`\n\n◈ ᴇxᴛᴇɴꜱɪᴏɴ: `{extension_type.upper()}`\n◈ ꜰɪʟᴇ ꜱɪᴢᴇ: `{filesize}`\n◈ ᴍɪᴍᴇ ᴛʏᴇᴩ: `{mime_type}`\n◈ ᴅᴄ ɪᴅ: `{dcid}`\n\nᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ғɪʟᴇɴᴀᴍᴇ ᴡɪᴛʜ ᴇxᴛᴇɴsɪᴏɴ ᴀɴᴅ ʀᴇᴘʟʏ ᴛʜɪs ᴍᴇssᴀɢᴇ....__**",
-                reply_to_message_id=message.id,  
                 reply_markup=ForceReply(True)
             )
         except Exception as e:
@@ -61,7 +59,6 @@ async def rename_start(client, message):
         try:
             await message.reply_text(
                 text=f"**__ᴍᴇᴅɪᴀ ɪɴꜰᴏ:\n\n◈ ᴏʟᴅ ꜰɪʟᴇ ɴᴀᴍᴇ: `{filename}`\n\n◈ ᴇxᴛᴇɴꜱɪᴏɴ: `{extension_type.upper()}`\n◈ ꜰɪʟᴇ ꜱɪᴢᴇ: `{filesize}`\n◈ ᴍɪᴍᴇ ᴛʏᴇᴩ: `{mime_type}`\n◈ ᴅᴄ ɪᴅ: `{dcid}`\n\nᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ғɪʟᴇɴᴀᴍᴇ ᴡɪᴛʜ ᴇxᴛᴇɴsɪᴏɴ ᴀɴᴅ ʀᴇᴘʟʏ ᴛʜɪs ᴍᴇssᴀɢᴇ....__**",
-                reply_to_message_id=message.id,  
                 reply_markup=ForceReply(True)
             )       
             await asyncio.sleep(30)
@@ -69,7 +66,6 @@ async def rename_start(client, message):
             await asyncio.sleep(e.value)
             await message.reply_text(
                 text=f"**__ᴍᴇᴅɪᴀ ɪɴꜰᴏ:\n\n◈ ᴏʟᴅ ꜰɪʟᴇ ɴᴀᴍᴇ: `{filename}`\n\n◈ ᴇxᴛᴇɴꜱɪᴏɴ: `{extension_type.upper()}`\n◈ ꜰɪʟᴇ ꜱɪᴢᴇ: `{filesize}`\n◈ ᴍɪᴍᴇ ᴛʏᴇᴩ: `{mime_type}`\n◈ ᴅᴄ ɪᴅ: `{dcid}`\n\nᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ғɪʟᴇɴᴀᴍᴇ ᴡɪᴛʜ ᴇxᴛᴇɴsɪᴏɴ ᴀɴᴅ ʀᴇᴘʟʏ ᴛʜɪs ᴍᴇssᴀɢᴇ....__**",
-                reply_to_message_id=message.id,  
                 reply_markup=ForceReply(True)
             )
         except Exception as e:
@@ -98,9 +94,10 @@ async def refunc(client, message):
             button.append([InlineKeyboardButton("🎥 Vɪᴅᴇᴏ", callback_data = "upload#video")])
         elif file.media == MessageMediaType.AUDIO:
             button.append([InlineKeyboardButton("🎵 Aᴜᴅɪᴏ", callback_data = "upload#audio")])
-        await message.reply(
+        await client.send_message(
+            chat_id=message.chat.id,
             text=f"**Sᴇʟᴇᴄᴛ Tʜᴇ Oᴜᴛᴩᴜᴛ Fɪʟᴇ Tyᴩᴇ**\n**• Fɪʟᴇ Nᴀᴍᴇ :-**`{new_name}`",
-            reply_to_message_id=file.id,
+            reply_parameters=ReplyParameters(message_id=file.id),
             reply_markup=InlineKeyboardMarkup(button)
         )
 
@@ -219,7 +216,7 @@ async def upload_doc(bot, update):
                  await digital_botz.set_used_limit(user_id, used_remove)
              return await rkn_processing.edit(text=f"Yᴏᴜʀ Cᴀᴩᴛɪᴏɴ Eʀʀᴏʀ Exᴄᴇᴩᴛ Kᴇyᴡᴏʀᴅ Aʀɢᴜᴍᴇɴᴛ ●> ({e})")             
     else:
-         caption = f"**{new_filename}**\n\n**User:** {message.from_user.first_name}\n**User ID:** `{user_id}`"
+         caption = f"**{new_filename}**\n\n**User:** {update.from_user.first_name}\n**User ID:** `{user_id}`"
     if (media.thumbs or c_thumb):
          # downloading thumbnail path
          try:

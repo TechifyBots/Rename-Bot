@@ -43,7 +43,7 @@ async def maintenance_blocker(client:Client,m:Message):
         return
     try:
         await m.delete()
-    except:
+    except Exception:
         pass
     try:
         await client.send_message(
@@ -57,7 +57,7 @@ async def maintenance_blocker(client:Client,m:Message):
                 [[InlineKeyboardButton("👨‍💻 ᴏᴡɴᴇʀ 👨‍💻",user_id=int(Config.ADMIN))]]
             )
         )
-    except:
+    except Exception:
         pass
     raise StopPropagation
 

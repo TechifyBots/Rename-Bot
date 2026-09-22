@@ -40,13 +40,13 @@ async def add_prefix(client, message):
     if len(message.command) == 1:
         return await message.reply_text("**__Give The Prefix__\n\nExᴀᴍᴩʟᴇ:- `/setprefix @TechifyBots`**")
     prefix = message.text.split(" ", 1)[1]
-    RknDev = await message.reply_text("Please Wait ...", reply_to_message_id=message.id)
+    RknDev = await message.reply_text("Please Wait ...")
     await digital_botz.set_prefix(message.from_user.id, prefix)
     await RknDev.edit("__**✅ ᴘʀᴇꜰɪx ꜱᴀᴠᴇᴅ**__")
 
 @Client.on_message(filters.private & filters.command('delprefix'))
 async def delete_prefix(client, message):
-    RknDev = await message.reply_text("Please Wait ...", reply_to_message_id=message.id)
+    RknDev = await message.reply_text("Please Wait ...")
     prefix = await digital_botz.get_prefix(message.from_user.id)
     if not prefix:
         return await RknDev.edit("__**😔 ʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴀɴʏ ᴘʀᴇꜰɪx**__")
@@ -55,7 +55,7 @@ async def delete_prefix(client, message):
 
 @Client.on_message(filters.private & filters.command('seeprefix'))
 async def see_prefix(client, message):
-    RknDev = await message.reply_text("Please Wait ...", reply_to_message_id=message.id)
+    RknDev = await message.reply_text("Please Wait ...")
     prefix = await digital_botz.get_prefix(message.from_user.id)
     if prefix:
         await RknDev.edit(f"**ʏᴏᴜʀ ᴘʀᴇꜰɪx:-**\n\n`{prefix}`")
@@ -67,13 +67,13 @@ async def add_suffix(client, message):
     if len(message.command) == 1:
         return await message.reply_text("**__Give The Suffix__\n\nExᴀᴍᴩʟᴇ:- `/setsuffix @TechifyBots`**")
     suffix = message.text.split(" ", 1)[1]
-    RknDev = await message.reply_text("Please Wait ...", reply_to_message_id=message.id)
+    RknDev = await message.reply_text("Please Wait ...")
     await digital_botz.set_suffix(message.from_user.id, suffix)
     await RknDev.edit("__**✅ ꜱᴜꜰꜰɪx ꜱᴀᴠᴇᴅ**__")
 
 @Client.on_message(filters.private & filters.command('delsuffix'))
 async def delete_suffix(client, message):
-    RknDev = await message.reply_text("Please Wait ...", reply_to_message_id=message.id)
+    RknDev = await message.reply_text("Please Wait ...")
     suffix = await digital_botz.get_suffix(message.from_user.id)
     if not suffix:
         return await RknDev.edit("__**😔 ʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴀɴʏ ꜱᴜꜰꜰɪx**__")
@@ -82,7 +82,7 @@ async def delete_suffix(client, message):
 
 @Client.on_message(filters.private & filters.command('seesuffix'))
 async def see_suffix(client, message):
-    RknDev = await message.reply_text("Please Wait ...", reply_to_message_id=message.id)
+    RknDev = await message.reply_text("Please Wait ...")
     suffix = await digital_botz.get_suffix(message.from_user.id)
     if suffix:
         await RknDev.edit(f"**ʏᴏᴜʀ ꜱᴜꜰꜰɪx:-**\n\n`{suffix}`")
@@ -162,7 +162,7 @@ async def myplan(client, message):
             type = user_data.get('usertype', "Free")
             text += f"ᴘʟᴀɴ :- `{type}`\nᴅᴀɪʟʏ ᴜᴘʟᴏᴀᴅ ʟɪᴍɪᴛ :- `{humanbytes(limit)}`\nᴛᴏᴅᴀʏ ᴜsᴇᴅ :- `{humanbytes(used)}`\nʀᴇᴍᴀɪɴ :- `{humanbytes(remain)}`\n"
         text += f"ᴛɪᴍᴇ ʟᴇꜰᴛ : {time_left_str}\nᴇxᴘɪʀʏ ᴅᴀᴛᴇ : {expiry_str_in_ist}"
-        await message.reply_text(text, quote=True)
+        await message.reply_text(text)
     else:
         if client.uploadlimit:
             user_data = await digital_botz.get_user_data(user_id)
@@ -171,7 +171,7 @@ async def myplan(client, message):
             remain = int(limit) - int(used)
             type = user_data.get('usertype', "Free")
             text = f"ᴜꜱᴇʀ :- {user}\nᴜꜱᴇʀ ɪᴅ :- <code>{user_id}</code>\nᴘʟᴀɴ :- `{type}`\nᴅᴀɪʟʏ ᴜᴘʟᴏᴀᴅ ʟɪᴍɪᴛ :- `{humanbytes(limit)}`\nᴛᴏᴅᴀʏ ᴜsᴇᴅ :- `{humanbytes(used)}`\nʀᴇᴍᴀɪɴ :- `{humanbytes(remain)}`\nᴇxᴘɪʀᴇᴅ ᴅᴀᴛᴇ :- ʟɪғᴇᴛɪᴍᴇ\n\nɪꜰ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴛᴀᴋᴇ ᴘʀᴇᴍɪᴜᴍ ᴛʜᴇɴ ᴄʟɪᴄᴋ ᴏɴ ʙᴇʟᴏᴡ ʙᴜᴛᴛᴏɴ 👇"
-            await message.reply_text(text, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("💸 ᴄʜᴇᴄᴋᴏᴜᴛ ᴘʀᴇᴍɪᴜᴍ ᴘʟᴀɴꜱ 💸", callback_data='upgrade')]]), quote=True)
+            await message.reply_text(text, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("💸 ᴄʜᴇᴄᴋᴏᴜᴛ ᴘʀᴇᴍɪᴜᴍ ᴘʟᴀɴꜱ 💸", callback_data='upgrade')]]))
         else:
             m=await message.reply_sticker("CAACAgIAAxkBAAIBTGVjQbHuhOiboQsDm35brLGyLQ28AAJ-GgACglXYSXgCrotQHjibHgQ")
             await message.reply_text(f"ʜᴇʏ {user},\n\nʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴀɴʏ ᴀᴄᴛɪᴠᴇ ᴘʀᴇᴍɪᴜᴍ ᴘʟᴀɴs, ɪꜰ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴛᴀᴋᴇ ᴘʀᴇᴍɪᴜᴍ ᴛʜᴇɴ ᴄʟɪᴄᴋ ᴏɴ ʙᴇʟᴏᴡ ʙᴜᴛᴛᴏɴ 👇",
@@ -348,6 +348,6 @@ async def cb_handler(client, query: CallbackQuery):
             await query.message.delete()
             await query.message.reply_to_message.delete()
             await query.message.continue_propagation()
-        except:
+        except Exception:
             await query.message.delete()
             await query.message.continue_propagation()
