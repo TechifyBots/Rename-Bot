@@ -98,8 +98,9 @@ Watch this short video to understand **what the bot is**, **why it's useful**, *
 | `API_HASH` | Telegram API Hash |
 | `BOT_TOKEN` | Telegram Bot Token |
 | `DB_URL` | MongoDB URI |
+| `DB_NAME` | MongoDB database name *(default: `Rename_Bot`)* |
 | `ADMIN` | Telegram User ID |
-| `PICS` | Start Images |
+| `PIC` | Start image URL |
 | `BIN_CHANNEL` | Bin Channel |
 | `IS_FSUB` | Enable / Disable Force Subscribe |
 | `FSUB_EXPIRE` | Force Subscribe Expire Time |
@@ -107,10 +108,11 @@ Watch this short video to understand **what the bot is**, **why it's useful**, *
 | `AUTH_REQ_CHANNELS` | Request FSUB Channels |
 | `LOG_CHANNEL` | Log Channel |
 | `STRING_SESSION` | Session string required for 4GB file processing |
+| `PORT` | Web server port *(default: `8080`)* |
 
 ### 📝 Notes
 
-> 💎 **4GB Support** — `STRING_SESSION` is **optional**. Add a **Pyrogram v2 String Session** to enable 4GB file processing.
+> 💎 **4GB Support** — `STRING_SESSION` is **optional**. Add a **Kurigram v2 String Session** (Pyrogram-compatible) to enable 4GB file processing.
 
 > ⚠️ **Without `STRING_SESSION`**, the bot will continue to work with its standard file-size limit.
 
@@ -161,6 +163,7 @@ addpremium - add a user to premium
 removepremium - remove a user from premium
 restart - restart the bot.
 maintenance - Toggle maintenance mode.
+delreq - Clear pending force-subscribe join requests.
 ```
 </details>
 
