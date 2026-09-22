@@ -1,12 +1,12 @@
-import aiohttp, asyncio, datetime
+import aiohttp, asyncio, datetime, signal
 from zoneinfo import ZoneInfo
 import logging
 import logging.config
 from pyrogram import Client, __version__, errors, enums
 from pyrogram.raw.all import layer
-from pyrogram import idle
 from html import escape
 from config import Config
+from helper.database import digital_botz
 from plugins.web_support import web_server
 from plugins.file_rename import app
 
@@ -80,30 +80,51 @@ class TechifyBots(Client):
             except Exception:
                 pass
                 
-        print("Bot Stopped 🙄")
         runner = getattr(self, "_web_runner", None)
         if runner is not None:
-            await runner.cleanup()
-        await super().stop()
+            self._web_runner = None
+            try:
+                await runner.cleanup()
+            except Exception:
+                logging.getLogger(__name__).exception("web server cleanup failed")
+        try:
+            await super().stop()
+        except Exception:
+            pass
+        print("Bot Stopped 🙄")
 
 
 tb = TechifyBots()
 
 def main():
     async def start_services():
-        if Config.STRING_SESSION:
-            await asyncio.gather(app.start(), tb.start())
-        else:
-            await asyncio.gather(tb.start())
-        
-        # Idle mode start karo
-        await idle()
-        
-        # Bot stop karo
-        if Config.STRING_SESSION:
-            await asyncio.gather(app.stop(), tb.stop())
-        else:
-            await asyncio.gather(tb.stop())
+        stop_event = asyncio.Event()
+        loop = asyncio.get_running_loop()
+        for sig in (signal.SIGINT, signal.SIGTERM):
+            try:
+                loop.add_signal_handler(sig, stop_event.set)
+            except (NotImplementedError, RuntimeError):
+                pass  # event loop/platform without signal handler support
+
+        started = []
+        try:
+            if Config.STRING_SESSION:
+                started.append(app)
+                await app.start()
+            started.append(tb)
+            await tb.start()
+            await stop_event.wait()
+        finally:
+            print("\n⏳ Shutting down gracefully...")
+            for client in reversed(started):
+                try:
+                    await client.stop()
+                except Exception:
+                    logging.getLogger(__name__).exception("failed to stop a client")
+            try:
+                await digital_botz.close()
+            except Exception:
+                logging.getLogger(__name__).exception("failed to close database")
 
     try:
         asyncio.run(start_services())
