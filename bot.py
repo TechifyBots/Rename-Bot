@@ -2,9 +2,10 @@ import aiohttp, asyncio, datetime
 from zoneinfo import ZoneInfo
 import logging
 import logging.config
-from pyrogram import Client, __version__, errors
+from pyrogram import Client, __version__, errors, enums
 from pyrogram.raw.all import layer
 from pyrogram import idle
+from html import escape
 from config import Config
 from plugins.web_support import web_server
 from plugins.file_rename import app
@@ -25,6 +26,7 @@ class TechifyBots(Client):
             api_id=Config.API_ID,
             api_hash=Config.API_HASH,
             bot_token=Config.BOT_TOKEN,
+            parse_mode=enums.ParseMode.HTML,
             workers=200,
             plugins={"root": "plugins"},
             sleep_threshold=5,
@@ -53,12 +55,12 @@ class TechifyBots(Client):
         if Config.ADMIN:
             if Config.STRING_SESSION:
                 try:
-                    await self.send_message(Config.ADMIN, f"𝟮𝗚𝗕+ ғɪʟᴇ sᴜᴘᴘᴏʀᴛ ʜᴀs ʙᴇᴇɴ ᴀᴅᴅᴇᴅ ᴛᴏ ʏᴏᴜʀ ʙᴏᴛ.\n\nNote: 𝐓𝐞𝐥𝐞𝐠𝐫𝐚𝐦 𝐩𝐫𝐞𝐦𝐢𝐮𝐦 𝐚𝐜𝐜𝐨𝐮𝐧𝐭 𝐬𝐭𝐫𝐢𝐧𝐠 𝐬𝐞𝐬𝐬𝐢𝐨𝐧 𝐫𝐞𝐪𝐮𝐢𝐫𝐞𝐝 𝐓𝐡𝐞𝐧 𝐬𝐮𝐩𝐩𝐨𝐫𝐭𝐬 𝟐𝐆𝐁+ 𝐟𝐢𝐥𝐞𝐬.\n\n**__{me.first_name}  Iꜱ Sᴛᴀʀᴛᴇᴅ.....✨️__**")
+                    await self.send_message(Config.ADMIN, f"𝟮𝗚𝗕+ ғɪʟᴇ sᴜᴘᴘᴏʀᴛ ʜᴀs ʙᴇᴇɴ ᴀᴅᴅᴇᴅ ᴛᴏ ʏᴏᴜʀ ʙᴏᴛ.\n\nNote: 𝐓𝐞𝐥𝐞𝐠𝐫𝐚𝐦 𝐩𝐫𝐞𝐦𝐢𝐮𝐦 𝐚𝐜𝐜𝐨𝐮𝐧𝐭 𝐬𝐭𝐫𝐢𝐧𝐠 𝐬𝐞𝐬𝐬𝐢𝐨𝐧 𝐫𝐞𝐪𝐮𝐢𝐫𝐞𝐝 𝐓𝐡𝐞𝐧 𝐬𝐮𝐩𝐩𝐨𝐫𝐭𝐬 𝟐𝐆𝐁+ 𝐟𝐢𝐥𝐞𝐬.\n\n<b><i>{escape(me.first_name)}  Iꜱ Sᴛᴀʀᴛᴇᴅ.....✨️</i></b>")
                 except Exception:
                     pass
             else:
                 try:
-                    await self.send_message(Config.ADMIN, f"𝟮𝗚𝗕- ғɪʟᴇ sᴜᴘᴘᴏʀᴛ ʜᴀs ʙᴇᴇɴ ᴀᴅᴅᴇᴅ ᴛᴏ ʏᴏᴜʀ ʙᴏᴛ.\n\n**__{me.first_name}  Iꜱ Sᴛᴀʀᴛᴇᴅ.....✨️__**")
+                    await self.send_message(Config.ADMIN, f"𝟮𝗚𝗕- ғɪʟᴇ sᴜᴘᴘᴏʀᴛ ʜᴀs ʙᴇᴇɴ ᴀᴅᴅᴇᴅ ᴛᴏ ʏᴏᴜʀ ʙᴏᴛ.\n\n<b><i>{escape(me.first_name)}  Iꜱ Sᴛᴀʀᴛᴇᴅ.....✨️</i></b>")
                 except Exception:
                     pass
                     
@@ -67,14 +69,14 @@ class TechifyBots(Client):
                 curr = datetime.datetime.now(ZoneInfo("Asia/Kolkata"))
                 date = curr.strftime('%d %B, %Y')
                 time = curr.strftime('%I:%M:%S %p')
-                await self.send_message(Config.LOG_CHANNEL, f"**__{me.mention} Iꜱ Rᴇsᴛᴀʀᴛᴇᴅ !!**\n\n📅 Dᴀᴛᴇ : `{date}`\n⏰ Tɪᴍᴇ : `{time}`\n🌐 Tɪᴍᴇᴢᴏɴᴇ : `Asia/Kolkata`\n\n🉐 Vᴇʀsɪᴏɴ : `v{__version__} (Layer {layer})`</b>")
+                await self.send_message(Config.LOG_CHANNEL, f"<b><i>{me.mention} Iꜱ Rᴇsᴛᴀʀᴛᴇᴅ !!</i></b>\n\n📅 Dᴀᴛᴇ : <code>{date}</code>\n⏰ Tɪᴍᴇ : <code>{time}</code>\n🌐 Tɪᴍᴇᴢᴏɴᴇ : <code>Asia/Kolkata</code>\n\n🉐 Vᴇʀsɪᴏɴ : <code>v{__version__} (Layer {layer})</code>")
             except Exception:
                 print("Pʟᴇᴀꜱᴇ Mᴀᴋᴇ Tʜɪꜱ Iꜱ Aᴅᴍɪɴ Iɴ Yᴏᴜʀ Lᴏɢ Cʜᴀɴɴᴇʟ")
 
     async def stop(self, *args):
         if Config.ADMIN:
             try:
-                await self.send_message(Config.ADMIN, "**Bot Stopped....**")
+                await self.send_message(Config.ADMIN, "<b>Bot Stopped....</b>")
             except Exception:
                 pass
                 

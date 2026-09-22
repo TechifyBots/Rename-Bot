@@ -151,11 +151,11 @@ class rkn(object):
 
 ☞ 𝖤𝗑𝖺𝗆𝗉𝗅𝖾:
 
-`--change-title @TechifyBots
+<code>--change-title @TechifyBots
 --change-video-title @TechifyBots
 --change-audio-title @TechifyBots
 --change-subtitle-title @TechifyBots
---change-author @TechifyBots`
+--change-author @TechifyBots</code>
 
 📥 𝖥𝗈𝗋 𝖧𝖾𝗅𝗉, 𝖢𝗈𝗇𝗍𝖺𝖼𝗍: @TechifyBots"""
 

@@ -71,10 +71,10 @@ async def maintenance_cmd(_,m:Message):
         if await tb.get_maintenance():
             return await m.reply("⚠️ Maintenance mode is already enabled.")
         await tb.set_maintenance(True)
-        return await m.reply("✅ Maintenance mode **enabled**.")
+        return await m.reply("✅ Maintenance mode <b>enabled</b>.")
     if status=="off":
         if not await tb.get_maintenance():
             return await m.reply("⚠️ Maintenance mode is already disabled.")
         await tb.set_maintenance(False)
-        return await m.reply("❌ Maintenance mode **disabled**.")
+        return await m.reply("❌ Maintenance mode <b>disabled</b>.")
     await m.reply("Invalid status. Use 'on' or 'off'.")

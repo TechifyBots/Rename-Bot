@@ -70,9 +70,9 @@ async def send_log(b, u):
     if Config.LOG_CHANNEL:
         curr = datetime.datetime.now(ZoneInfo("Asia/Kolkata"))
         log_message = (
-            "**--Nᴇᴡ Uꜱᴇʀ Sᴛᴀʀᴛᴇᴅ Tʜᴇ Bᴏᴛ--**\n\n"
+            "<b>--Nᴇᴡ Uꜱᴇʀ Sᴛᴀʀᴛᴇᴅ Tʜᴇ Bᴏᴛ--</b>\n\n"
             f"Uꜱᴇʀ: {u.mention}\n"
-            f"Iᴅ: `{u.id}`\n"
+            f"Iᴅ: <code>{u.id}</code>\n"
             f"Uɴ: @{u.username}\n\n"
             f"Dᴀᴛᴇ: {curr.strftime('%d %B, %Y')}\n"
             f"Tɪᴍᴇ: {curr.strftime('%I:%M:%S %p')}\n\n"

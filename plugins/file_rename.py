@@ -1,5 +1,5 @@
 from pyrogram import Client, filters
-from pyrogram.enums import MessageMediaType
+from pyrogram.enums import MessageMediaType, ParseMode
 from pyrogram.errors import FloodWait
 from pyrogram.file_id import FileId
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply, ReplyParameters
@@ -9,11 +9,12 @@ from helper.database import digital_botz
 from helper.ffmpeg import change_metadata, get_duration
 from config import Config, rkn
 import os, time, asyncio
+from html import escape
 
 UPLOAD_TEXT = """Uploading Started...."""
 DOWNLOAD_TEXT = """Download Started..."""
 
-app = Client("4gb_FileRenameBot", api_id=Config.API_ID, api_hash=Config.API_HASH, session_string=Config.STRING_SESSION)
+app = Client("4gb_FileRenameBot", api_id=Config.API_ID, api_hash=Config.API_HASH, session_string=Config.STRING_SESSION, parse_mode=ParseMode.HTML)
 
 @Client.on_message(filters.private & (filters.audio | filters.document | filters.video))
 async def rename_start(client, message):
@@ -32,7 +33,7 @@ async def rename_start(client, message):
         remain = int(limit) - int(used)
         used_percentage = int(used) / int(limit) * 100
         if remain < int(rkn_file.file_size):
-            return await message.reply_text(f"{used_percentage:.2f}% Of Daily Upload Limit {humanbytes(limit)}.\n\n Media Size: {filesize}\n Your Used Daily Limit {humanbytes(used)}\n\nYou have only **{humanbytes(remain)}** Data.\nPlease, Buy Premium Plan s.", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🪪 Uᴘɢʀᴀᴅᴇ", callback_data="plans")]]))
+            return await message.reply_text(f"{used_percentage:.2f}% Of Daily Upload Limit {humanbytes(limit)}.\n\n Media Size: {filesize}\n Your Used Daily Limit {humanbytes(used)}\n\nYou have only <b>{humanbytes(remain)}</b> Data.\nPlease, Buy Premium Plan s.", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🪪 Uᴘɢʀᴀᴅᴇ", callback_data="plans")]]))
          
     if await digital_botz.has_premium_access(user_id) and client.premium:
         if not Config.STRING_SESSION:
@@ -40,14 +41,14 @@ async def rename_start(client, message):
                  return await message.reply_text("Sᴏʀʀy Bʀᴏ Tʜɪꜱ Bᴏᴛ Iꜱ Dᴏᴇꜱɴ'ᴛ Sᴜᴩᴩᴏʀᴛ Uᴩʟᴏᴀᴅɪɴɢ Fɪʟᴇꜱ Bɪɢɢᴇʀ Tʜᴀɴ 2Gʙ+")
         try:
             await message.reply_text(
-                text=f"**__ᴍᴇᴅɪᴀ ɪɴꜰᴏ:\n\n◈ ᴏʟᴅ ꜰɪʟᴇ ɴᴀᴍᴇ: `{filename}`\n\n◈ ᴇxᴛᴇɴꜱɪᴏɴ: `{extension_type.upper()}`\n◈ ꜰɪʟᴇ ꜱɪᴢᴇ: `{filesize}`\n◈ ᴍɪᴍᴇ ᴛʏᴇᴩ: `{mime_type}`\n◈ ᴅᴄ ɪᴅ: `{dcid}`\n\nᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ғɪʟᴇɴᴀᴍᴇ ᴡɪᴛʜ ᴇxᴛᴇɴsɪᴏɴ ᴀɴᴅ ʀᴇᴘʟʏ ᴛʜɪs ᴍᴇssᴀɢᴇ....__**",
+                text=f"<b><i>ᴍᴇᴅɪᴀ ɪɴꜰᴏ:</i></b>\n\n◈ ᴏʟᴅ ꜰɪʟᴇ ɴᴀᴍᴇ: <code>{escape(str(filename))}</code>\n\n◈ ᴇxᴛᴇɴꜱɪᴏɴ: <code>{escape(extension_type.upper())}</code>\n◈ ꜰɪʟᴇ ꜱɪᴢᴇ: <code>{filesize}</code>\n◈ ᴍɪᴍᴇ ᴛʏᴇᴩ: <code>{escape(str(mime_type))}</code>\n◈ ᴅᴄ ɪᴅ: <code>{dcid}</code>\n\nᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ғɪʟᴇɴᴀᴍᴇ ᴡɪᴛʜ ᴇxᴛᴇɴsɪᴏɴ ᴀɴᴅ ʀᴇᴘʟʏ ᴛʜɪs ᴍᴇssᴀɢᴇ....",
                 reply_markup=ForceReply(True)
             )       
             await asyncio.sleep(30)
         except FloodWait as e:
             await asyncio.sleep(e.value)
             await message.reply_text(
-                text=f"**__ᴍᴇᴅɪᴀ ɪɴꜰᴏ:\n\n◈ ᴏʟᴅ ꜰɪʟᴇ ɴᴀᴍᴇ: `{filename}`\n\n◈ ᴇxᴛᴇɴꜱɪᴏɴ: `{extension_type.upper()}`\n◈ ꜰɪʟᴇ ꜱɪᴢᴇ: `{filesize}`\n◈ ᴍɪᴍᴇ ᴛʏᴇᴩ: `{mime_type}`\n◈ ᴅᴄ ɪᴅ: `{dcid}`\n\nᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ғɪʟᴇɴᴀᴍᴇ ᴡɪᴛʜ ᴇxᴛᴇɴsɪᴏɴ ᴀɴᴅ ʀᴇᴘʟʏ ᴛʜɪs ᴍᴇssᴀɢᴇ....__**",
+                text=f"<b><i>ᴍᴇᴅɪᴀ ɪɴꜰᴏ:</i></b>\n\n◈ ᴏʟᴅ ꜰɪʟᴇ ɴᴀᴍᴇ: <code>{escape(str(filename))}</code>\n\n◈ ᴇxᴛᴇɴꜱɪᴏɴ: <code>{escape(extension_type.upper())}</code>\n◈ ꜰɪʟᴇ ꜱɪᴢᴇ: <code>{filesize}</code>\n◈ ᴍɪᴍᴇ ᴛʏᴇᴩ: <code>{escape(str(mime_type))}</code>\n◈ ᴅᴄ ɪᴅ: <code>{dcid}</code>\n\nᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ғɪʟᴇɴᴀᴍᴇ ᴡɪᴛʜ ᴇxᴛᴇɴsɪᴏɴ ᴀɴᴅ ʀᴇᴘʟʏ ᴛʜɪs ᴍᴇssᴀɢᴇ....",
                 reply_markup=ForceReply(True)
             )
         except Exception as e:
@@ -57,14 +58,14 @@ async def rename_start(client, message):
             return await message.reply_text("If you want to rename 4GB+ files then you will have to buy premium. /plans")
         try:
             await message.reply_text(
-                text=f"**__ᴍᴇᴅɪᴀ ɪɴꜰᴏ:\n\n◈ ᴏʟᴅ ꜰɪʟᴇ ɴᴀᴍᴇ: `{filename}`\n\n◈ ᴇxᴛᴇɴꜱɪᴏɴ: `{extension_type.upper()}`\n◈ ꜰɪʟᴇ ꜱɪᴢᴇ: `{filesize}`\n◈ ᴍɪᴍᴇ ᴛʏᴇᴩ: `{mime_type}`\n◈ ᴅᴄ ɪᴅ: `{dcid}`\n\nᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ғɪʟᴇɴᴀᴍᴇ ᴡɪᴛʜ ᴇxᴛᴇɴsɪᴏɴ ᴀɴᴅ ʀᴇᴘʟʏ ᴛʜɪs ᴍᴇssᴀɢᴇ....__**",
+                text=f"<b><i>ᴍᴇᴅɪᴀ ɪɴꜰᴏ:</i></b>\n\n◈ ᴏʟᴅ ꜰɪʟᴇ ɴᴀᴍᴇ: <code>{escape(str(filename))}</code>\n\n◈ ᴇxᴛᴇɴꜱɪᴏɴ: <code>{escape(extension_type.upper())}</code>\n◈ ꜰɪʟᴇ ꜱɪᴢᴇ: <code>{filesize}</code>\n◈ ᴍɪᴍᴇ ᴛʏᴇᴩ: <code>{escape(str(mime_type))}</code>\n◈ ᴅᴄ ɪᴅ: <code>{dcid}</code>\n\nᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ғɪʟᴇɴᴀᴍᴇ ᴡɪᴛʜ ᴇxᴛᴇɴsɪᴏɴ ᴀɴᴅ ʀᴇᴘʟʏ ᴛʜɪs ᴍᴇssᴀɢᴇ....",
                 reply_markup=ForceReply(True)
             )       
             await asyncio.sleep(30)
         except FloodWait as e:
             await asyncio.sleep(e.value)
             await message.reply_text(
-                text=f"**__ᴍᴇᴅɪᴀ ɪɴꜰᴏ:\n\n◈ ᴏʟᴅ ꜰɪʟᴇ ɴᴀᴍᴇ: `{filename}`\n\n◈ ᴇxᴛᴇɴꜱɪᴏɴ: `{extension_type.upper()}`\n◈ ꜰɪʟᴇ ꜱɪᴢᴇ: `{filesize}`\n◈ ᴍɪᴍᴇ ᴛʏᴇᴩ: `{mime_type}`\n◈ ᴅᴄ ɪᴅ: `{dcid}`\n\nᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ғɪʟᴇɴᴀᴍᴇ ᴡɪᴛʜ ᴇxᴛᴇɴsɪᴏɴ ᴀɴᴅ ʀᴇᴘʟʏ ᴛʜɪs ᴍᴇssᴀɢᴇ....__**",
+                text=f"<b><i>ᴍᴇᴅɪᴀ ɪɴꜰᴏ:</i></b>\n\n◈ ᴏʟᴅ ꜰɪʟᴇ ɴᴀᴍᴇ: <code>{escape(str(filename))}</code>\n\n◈ ᴇxᴛᴇɴꜱɪᴏɴ: <code>{escape(extension_type.upper())}</code>\n◈ ꜰɪʟᴇ ꜱɪᴢᴇ: <code>{filesize}</code>\n◈ ᴍɪᴍᴇ ᴛʏᴇᴩ: <code>{escape(str(mime_type))}</code>\n◈ ᴅᴄ ɪᴅ: <code>{dcid}</code>\n\nᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ғɪʟᴇɴᴀᴍᴇ ᴡɪᴛʜ ᴇxᴛᴇɴsɪᴏɴ ᴀɴᴅ ʀᴇᴘʟʏ ᴛʜɪs ᴍᴇssᴀɢᴇ....",
                 reply_markup=ForceReply(True)
             )
         except Exception as e:
@@ -95,7 +96,7 @@ async def refunc(client, message):
             button.append([InlineKeyboardButton("🎵 Aᴜᴅɪᴏ", callback_data = "upload#audio")])
         await client.send_message(
             chat_id=message.chat.id,
-            text=f"**Sᴇʟᴇᴄᴛ Tʜᴇ Oᴜᴛᴩᴜᴛ Fɪʟᴇ Tyᴩᴇ**\n**• Fɪʟᴇ Nᴀᴍᴇ :-**`{new_name}`",
+            text=f"<b>Sᴇʟᴇᴄᴛ Tʜᴇ Oᴜᴛᴩᴜᴛ Fɪʟᴇ Tyᴩᴇ</b>\n<b>• Fɪʟᴇ Nᴀᴍᴇ :-</b><code>{escape(str(new_name))}</code>",
             reply_parameters=ReplyParameters(message_id=file.id),
             reply_markup=InlineKeyboardMarkup(button)
         )
@@ -150,7 +151,7 @@ async def upload_files(bot, sender_id, upload_type, file_path, ph_path, caption,
 
 #@Client.on_callback_query(filters.regex("upload"))
 async def upload_doc(bot, update):
-    rkn_processing = await update.message.edit("`Processing...`")
+    rkn_processing = await update.message.edit("<code>Processing...</code>")
     # Creating Directory for Metadata
     if not os.path.isdir("Metadata"):
         os.mkdir("Metadata")
@@ -164,14 +165,14 @@ async def upload_doc(bot, update):
         suffix = user_data.get('suffix', None)
         new_filename = await add_prefix_suffix(new_filename_, prefix, suffix)
     except Exception as e:
-        return await rkn_processing.edit(f"⚠️ Something went wrong can't able to set Prefix or Suffix ☹️ \n\n❄️ Contact My Creator -> @TechifyBots\nError: {e}")
+        return await rkn_processing.edit(f"⚠️ Something went wrong can't able to set Prefix or Suffix ☹️ \n\n❄️ Contact My Creator -> @TechifyBots\nError: {escape(str(e))}")
     # msg file location 
     file = update.message.reply_to_message
     media = getattr(file, file.media.value)
     # File paths for download and metadata
     file_path = f"Renames/{new_filename}"
     metadata_path = f"Metadata/{new_filename}"
-    await rkn_processing.edit("`Try To Download....`")
+    await rkn_processing.edit("<code>Try To Download....</code>")
     if bot.premium and bot.uploadlimit:
         used = user_data.get('used_limit', 0)        
         total_used = int(used) + int(media.file_size)
@@ -182,13 +183,13 @@ async def upload_doc(bot, update):
         if bot.premium and bot.uploadlimit:
             used_remove = int(used) - int(media.file_size)
             await digital_botz.set_used_limit(user_id, used_remove)
-        return await rkn_processing.edit(f"Download Error: {e}")
+        return await rkn_processing.edit(f"Download Error: {escape(str(e))}")
 
     metadata_mode = await digital_botz.get_metadata_mode(user_id)
     if metadata_mode:        
         metadata = await digital_botz.get_metadata_code(user_id)
         if metadata:
-            await rkn_processing.edit("I Fᴏᴜɴᴅ Yᴏᴜʀ Mᴇᴛᴀᴅᴀᴛᴀ\n\n__**Pʟᴇᴀsᴇ Wᴀɪᴛ...**__\n**Aᴅᴅɪɴɢ Mᴇᴛᴀᴅᴀᴛᴀ Tᴏ Fɪʟᴇ....**")            
+            await rkn_processing.edit("I Fᴏᴜɴᴅ Yᴏᴜʀ Mᴇᴛᴀᴅᴀᴛᴀ\n\n<b><i>Pʟᴇᴀsᴇ Wᴀɪᴛ...</i></b>\n<b>Aᴅᴅɪɴɢ Mᴇᴛᴀᴅᴀᴛᴀ Tᴏ Fɪʟᴇ....</b>")            
             if await change_metadata(dl_path, metadata_path, metadata):            
                 await rkn_processing.edit("Metadata Added.....")
                 print("Metadata Added.....")
@@ -199,7 +200,7 @@ async def upload_doc(bot, update):
             await rkn_processing.edit("No metadata found, uploading original file...")
             metadata_mode = False
     else:
-        await rkn_processing.edit("`Try To Uploading....`")
+        await rkn_processing.edit("<code>Try To Uploading....</code>")
     duration = await get_duration(file_path if os.path.exists(file_path) else dl_path)
     ph_path = None
     c_caption = user_data.get('caption', None)
@@ -207,14 +208,14 @@ async def upload_doc(bot, update):
     if c_caption:
          try:
              # adding custom caption 
-             caption = c_caption.format(filename=new_filename, filesize=humanbytes(media.file_size), duration=convert(duration))
+             caption = c_caption.format(filename=escape(str(new_filename)), filesize=escape(humanbytes(media.file_size)), duration=escape(str(convert(duration))))
          except Exception as e:
              if bot.premium and bot.uploadlimit:
                  used_remove = int(used) - int(media.file_size)
                  await digital_botz.set_used_limit(user_id, used_remove)
-             return await rkn_processing.edit(text=f"Yᴏᴜʀ Cᴀᴩᴛɪᴏɴ Eʀʀᴏʀ Exᴄᴇᴩᴛ Kᴇyᴡᴏʀᴅ Aʀɢᴜᴍᴇɴᴛ ●> ({e})")             
+             return await rkn_processing.edit(text=f"Yᴏᴜʀ Cᴀᴩᴛɪᴏɴ Eʀʀᴏʀ Exᴄᴇᴩᴛ Kᴇyᴡᴏʀᴅ Aʀɢᴜᴍᴇɴᴛ ●> ({escape(str(e))})")             
     else:
-         caption = f"**{new_filename}**\n\n**User:** {update.from_user.first_name}\n**User ID:** `{user_id}`"
+         caption = f"<b>{escape(str(new_filename))}</b>\n\n<b>User:</b> {escape(str(update.from_user.first_name))}\n<b>User ID:</b> <code>{user_id}</code>"
     if (media.thumbs or c_thumb):
          # downloading thumbnail path
          try:
@@ -244,7 +245,7 @@ async def upload_doc(bot, update):
                 used_remove = int(used) - int(media.file_size)
                 await digital_botz.set_used_limit(user_id, used_remove)
             await remove_path(ph_path, file_path, dl_path, metadata_path)
-            return await rkn_processing.edit(f"Upload Error: {error}")
+            return await rkn_processing.edit(f"Upload Error: {escape(str(error))}")
 
         from_chat = filw.chat.id
         mg_id = filw.id
@@ -263,7 +264,7 @@ async def upload_doc(bot, update):
                 used_remove = int(used) - int(media.file_size)
                 await digital_botz.set_used_limit(user_id, used_remove)
             await remove_path(ph_path, file_path, dl_path, metadata_path)
-            return await rkn_processing.edit(f"Upload Error: {error}")
+            return await rkn_processing.edit(f"Upload Error: {escape(str(error))}")
         await bot.copy_message(chat_id=Config.BIN_CHANNEL, from_chat_id=filw.chat.id, message_id=filw.id)
     await remove_path(ph_path, file_path, dl_path, metadata_path)
     return await rkn_processing.edit("Uploaded Successfully....")

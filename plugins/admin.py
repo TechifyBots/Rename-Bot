@@ -5,6 +5,7 @@ import os, sys, time, asyncio, logging, datetime, traceback
 from zoneinfo import ZoneInfo
 from pyrogram.types import Message, LinkPreviewOptions
 from pyrogram import Client, filters
+from html import escape
 from pyrogram.errors import FloodWait, InputUserDeactivated, UserIsBlocked, PeerIdInvalid
 
 logger = logging.getLogger(__name__)
@@ -19,10 +20,10 @@ async def get_stats(bot, message):
         total_premium_users = "Disabled ✅"
     uptime = time.strftime("%Hh%Mm%Ss", time.gmtime(time.time() - bot.uptime))    
     start_t = time.time()
-    rkn = await message.reply('**ᴘʀᴏᴄᴇssɪɴɢ.....**')    
+    rkn = await message.reply('<b>ᴘʀᴏᴄᴇssɪɴɢ.....</b>')    
     end_t = time.time()
     time_taken_s = (end_t - start_t) * 1000
-    await rkn.edit(text=f"**--Bᴏᴛ Sᴛᴀᴛᴜꜱ--** \n\n**⌚️ Bᴏᴛ Uᴩᴛɪᴍᴇ:** {uptime} \n**🐌 Cᴜʀʀᴇɴᴛ Pɪɴɢ:** `{time_taken_s:.3f} ᴍꜱ` \n**👭 Tᴏᴛᴀʟ Uꜱᴇʀꜱ:** `{total_users}`\n**💸 ᴛᴏᴛᴀʟ ᴘʀᴇᴍɪᴜᴍ ᴜsᴇʀs:** `{total_premium_users}`")
+    await rkn.edit(text=f"<b>--Bᴏᴛ Sᴛᴀᴛᴜꜱ--</b> \n\n<b>⌚️ Bᴏᴛ Uᴩᴛɪᴍᴇ:</b> {uptime} \n<b>🐌 Cᴜʀʀᴇɴᴛ Pɪɴɢ:</b> <code>{time_taken_s:.3f} ᴍꜱ</code> \n<b>👭 Tᴏᴛᴀʟ Uꜱᴇʀꜱ:</b> <code>{total_users}</code>\n<b>💸 ᴛᴏᴛᴀʟ ᴘʀᴇᴍɪᴜᴍ ᴜsᴇʀs:</b> <code>{total_premium_users}</code>")
  
 @Client.on_message(filters.command('logs') & filters.user(Config.ADMIN))
 async def log_file(b, m):
@@ -37,7 +38,7 @@ async def add_premium(client, message):
         return await message.reply_text("premium mode disabled ✅")
     if client.uploadlimit:
         if len(message.command) < 4:
-            return await message.reply_text("Usage : /addpremium user_id Plan_Type (e.g... `Pro`, `UltraPro`) time (e.g., '1 day for days', '1 hour for hours', or '1 min for minutes', or '1 month for months' or '1 year for year')")
+            return await message.reply_text("Usage : /addpremium user_id Plan_Type (e.g... <code>Pro</code>, <code>UltraPro</code>) time (e.g., '1 day for days', '1 hour for hours', or '1 min for minutes', or '1 month for months' or '1 year for year')")
         user_id = int(message.command[1])
         plan_type = message.command[2]
         if plan_type not in ["Pro", "UltraPro"]:
@@ -55,7 +56,7 @@ async def add_premium(client, message):
 
         seconds = await get_seconds(time_string)
         if seconds <= 0:
-            return await message.reply_text("Invalid time format. Please use `/addpremium user_id 1 year 1 month 1 day 1 min 10 s`")
+            return await message.reply_text("Invalid time format. Please use <code>/addpremium user_id 1 year 1 month 1 day 1 min 10 s</code>")
         expiry_time = datetime.datetime.now() + datetime.timedelta(seconds=seconds)
         user_data = {"id": user_id, "expiry_time": expiry_time}
         await digital_botz.addpremium(user_id, user_data, limit, type)
@@ -65,10 +66,10 @@ async def add_premium(client, message):
         data = await digital_botz.get_user(user_id)
         expiry = data.get("expiry_time")
         expiry_str_in_ist = expiry.astimezone(ZoneInfo("Asia/Kolkata")).strftime("%d-%m-%Y\n⏱️ ᴇxᴘɪʀʏ ᴛɪᴍᴇ : %I:%M:%S %p")
-        await message.reply_text(f"ᴘʀᴇᴍɪᴜᴍ ᴀᴅᴅᴇᴅ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ ✅\n\n👤 ᴜꜱᴇʀ : {user.mention}\n⚡ ᴜꜱᴇʀ ɪᴅ : <code>{user_id}</code>\nᴘʟᴀɴ :- `{type}`\nᴅᴀɪʟʏ ᴜᴘʟᴏᴀᴅ ʟɪᴍɪᴛ :- `{humanbytes(limit)}`\n⏰ ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ : <code>{time_string}</code>\n\n⏳ ᴊᴏɪɴɪɴɢ ᴅᴀᴛᴇ : {current_time}\n\n⌛️ ᴇxᴘɪʀʏ ᴅᴀᴛᴇ : {expiry_str_in_ist}", link_preview_options=LinkPreviewOptions(is_disabled=True))
+        await message.reply_text(f"ᴘʀᴇᴍɪᴜᴍ ᴀᴅᴅᴇᴅ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ ✅\n\n👤 ᴜꜱᴇʀ : {user.mention}\n⚡ ᴜꜱᴇʀ ɪᴅ : <code>{user_id}</code>\nᴘʟᴀɴ :- <code>{type}</code>\nᴅᴀɪʟʏ ᴜᴘʟᴏᴀᴅ ʟɪᴍɪᴛ :- <code>{humanbytes(limit)}</code>\n⏰ ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ : <code>{escape(str(time_string))}</code>\n\n⏳ ᴊᴏɪɴɪɴɢ ᴅᴀᴛᴇ : {current_time}\n\n⌛️ ᴇxᴘɪʀʏ ᴅᴀᴛᴇ : {expiry_str_in_ist}", link_preview_options=LinkPreviewOptions(is_disabled=True))
         await client.send_message(
                 chat_id=user_id,
-                text=f"👋 ʜᴇʏ {user.mention},\nᴛʜᴀɴᴋ ʏᴏᴜ ꜰᴏʀ ᴘᴜʀᴄʜᴀꜱɪɴɢ ᴘʀᴇᴍɪᴜᴍ.\nᴇɴᴊᴏʏ !! ✨🎉\n\n⏰ ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ : <code>{time}</code>\nᴘʟᴀɴ :- `{type}`\nᴅᴀɪʟʏ ᴜᴘʟᴏᴀᴅ ʟɪᴍɪᴛ :- `{humanbytes(limit)}`\n⏳ ᴊᴏɪɴɪɴɢ ᴅᴀᴛᴇ : {current_time}\n\n⌛️ ᴇxᴘɪʀʏ ᴅᴀᴛᴇ : {expiry_str_in_ist}", link_preview_options=LinkPreviewOptions(is_disabled=True)              
+                text=f"👋 ʜᴇʏ {user.mention},\nᴛʜᴀɴᴋ ʏᴏᴜ ꜰᴏʀ ᴘᴜʀᴄʜᴀꜱɪɴɢ ᴘʀᴇᴍɪᴜᴍ.\nᴇɴᴊᴏʏ !! ✨🎉\n\n⏰ ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ : <code>{escape(str(time))}</code>\nᴘʟᴀɴ :- <code>{type}</code>\nᴅᴀɪʟʏ ᴜᴘʟᴏᴀᴅ ʟɪᴍɪᴛ :- <code>{humanbytes(limit)}</code>\n⏳ ᴊᴏɪɴɪɴɢ ᴅᴀᴛᴇ : {current_time}\n\n⌛️ ᴇxᴘɪʀʏ ᴅᴀᴛᴇ : {expiry_str_in_ist}", link_preview_options=LinkPreviewOptions(is_disabled=True)              
             )
     else:
         if len(message.command) < 3:
@@ -80,17 +81,17 @@ async def add_premium(client, message):
         user = await client.get_users(user_id)        
         seconds = await get_seconds(time_string)
         if seconds <= 0:
-            return await message.reply_text("Invalid time format. Please use `/addpremium user_id 1 year 1 month 1 day 1 min 10 s`")
+            return await message.reply_text("Invalid time format. Please use <code>/addpremium user_id 1 year 1 month 1 day 1 min 10 s</code>")
         expiry_time = datetime.datetime.now() + datetime.timedelta(seconds=seconds)
         user_data = {"id": user_id, "expiry_time": expiry_time}
         await digital_botz.addpremium(user_id, user_data)
         data = await digital_botz.get_user(user_id)
         expiry = data.get("expiry_time")
         expiry_str_in_ist = expiry.astimezone(ZoneInfo("Asia/Kolkata")).strftime("%d-%m-%Y\n⏱️ ᴇxᴘɪʀʏ ᴛɪᴍᴇ : %I:%M:%S %p")
-        await message.reply_text(f"ᴘʀᴇᴍɪᴜᴍ ᴀᴅᴅᴇᴅ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ ✅\n\n👤 ᴜꜱᴇʀ : {user.mention}\n⚡ ᴜꜱᴇʀ ɪᴅ : <code>{user_id}</code>\n⏰ ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ : <code>{time_string}</code>\n\n⏳ ᴊᴏɪɴɪɴɢ ᴅᴀᴛᴇ : {current_time}\n\n⌛️ ᴇxᴘɪʀʏ ᴅᴀᴛᴇ : {expiry_str_in_ist}", link_preview_options=LinkPreviewOptions(is_disabled=True))
+        await message.reply_text(f"ᴘʀᴇᴍɪᴜᴍ ᴀᴅᴅᴇᴅ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ ✅\n\n👤 ᴜꜱᴇʀ : {user.mention}\n⚡ ᴜꜱᴇʀ ɪᴅ : <code>{user_id}</code>\n⏰ ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ : <code>{escape(str(time_string))}</code>\n\n⏳ ᴊᴏɪɴɪɴɢ ᴅᴀᴛᴇ : {current_time}\n\n⌛️ ᴇxᴘɪʀʏ ᴅᴀᴛᴇ : {expiry_str_in_ist}", link_preview_options=LinkPreviewOptions(is_disabled=True))
         await client.send_message(
                 chat_id=user_id,
-                text=f"👋 ʜᴇʏ {user.mention},\nᴛʜᴀɴᴋ ʏᴏᴜ ꜰᴏʀ ᴘᴜʀᴄʜᴀꜱɪɴɢ ᴘʀᴇᴍɪᴜᴍ.\nᴇɴᴊᴏʏ !! ✨🎉\n\n⏰ ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ : <code>{time}</code>\n⏳ ᴊᴏɪɴɪɴɢ ᴅᴀᴛᴇ : {current_time}\n\n⌛️ ᴇxᴘɪʀʏ ᴅᴀᴛᴇ : {expiry_str_in_ist}", link_preview_options=LinkPreviewOptions(is_disabled=True)
+                text=f"👋 ʜᴇʏ {user.mention},\nᴛʜᴀɴᴋ ʏᴏᴜ ꜰᴏʀ ᴘᴜʀᴄʜᴀꜱɪɴɢ ᴘʀᴇᴍɪᴜᴍ.\nᴇɴᴊᴏʏ !! ✨🎉\n\n⏰ ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇꜱꜱ : <code>{escape(str(time))}</code>\n⏳ ᴊᴏɪɴɪɴɢ ᴅᴀᴛᴇ : {current_time}\n\n⌛️ ᴇxᴘɪʀʏ ᴅᴀᴛᴇ : {expiry_str_in_ist}", link_preview_options=LinkPreviewOptions(is_disabled=True)
             )
 
 @Client.on_message(filters.command("removepremium") & filters.user(Config.ADMIN))
@@ -112,7 +113,7 @@ async def remove_premium(bot, message):
 
 @Client.on_message(filters.private & filters.command("restart") & filters.user(Config.ADMIN))
 async def restart_bot(b, m):
-    rkn = await b.send_message(text="**🔄 ᴘʀᴏᴄᴇssᴇs sᴛᴏᴘᴘᴇᴅ. ʙᴏᴛ ɪs ʀᴇsᴛᴀʀᴛɪɴɢ.....**", chat_id=m.chat.id)
+    rkn = await b.send_message(text="<b>🔄 ᴘʀᴏᴄᴇssᴇs sᴛᴏᴘᴘᴇᴅ. ʙᴏᴛ ɪs ʀᴇsᴛᴀʀᴛɪɴɢ.....</b>", chat_id=m.chat.id)
     failed = 0
     success = 0
     deactivated = 0
@@ -122,7 +123,7 @@ async def restart_bot(b, m):
     all_users = await digital_botz.get_all_users()
     async for user in all_users:
         try:
-            restart_msg = f"ʜᴇʏ, {(await b.get_users(user['_id'])).mention}\n\n**🔄 ᴘʀᴏᴄᴇssᴇs sᴛᴏᴘᴘᴇᴅ. ʙᴏᴛ ɪs ʀᴇsᴛᴀʀᴛɪɴɢ.....\n\n✅️ ʙᴏᴛ ɪs ʀᴇsᴛᴀʀᴛᴇᴅ. ɴᴏᴡ ʏᴏᴜ ᴄᴀɴ ᴜsᴇ ᴍᴇ.**"
+            restart_msg = f"ʜᴇʏ, {(await b.get_users(user['_id'])).mention}\n\n<b>🔄 ᴘʀᴏᴄᴇssᴇs sᴛᴏᴘᴘᴇᴅ. ʙᴏᴛ ɪs ʀᴇsᴛᴀʀᴛɪɴɢ.....\n\n✅️ ʙᴏᴛ ɪs ʀᴇsᴛᴀʀᴛᴇᴅ. ɴᴏᴡ ʏᴏᴜ ᴄᴀɴ ᴜsᴇ ᴍᴇ.</b>"
             await b.send_message(user['_id'], restart_msg)
             success += 1
         except InputUserDeactivated:
@@ -150,9 +151,9 @@ async def ban(c: Client, m: Message):
         await m.reply_text(
             "Use this command to ban any user from the bot.\n\n"
             "Usage:\n\n"
-            "`/ban user_id ban_duration ban_reason`\n\n"
-            "Eg: `/ban 1234567 28 You misused me.`\n"
-            "This will ban user with id `1234567` for `28` days for the reason `You misused me`."
+            "<code>/ban user_id ban_duration ban_reason</code>\n\n"
+            "Eg: <code>/ban 1234567 28 You misused me.</code>\n"
+            "This will ban user with id <code>1234567</code> for <code>28</code> days for the reason <code>You misused me</code>."
         )
         return
 
@@ -163,20 +164,20 @@ async def ban(c: Client, m: Message):
         ban_log_text = f"Banning user {user_id} for {ban_duration} days for the reason {ban_reason}."
         try:
             await c.send_message(user_id,              
-                f"You are banned to use this bot for **{ban_duration}** day(s) for the reason __{ban_reason}__ \n\n"
-                f"**Message from the admin**"
+                f"You are banned to use this bot for <b>{ban_duration}</b> day(s) for the reason <i>{escape(str(ban_reason))}</i> \n\n"
+                f"<b>Message from the admin</b>"
             )
             ban_log_text += '\n\nUser notified successfully!'
         except Exception:
             traceback.print_exc()
-            ban_log_text += f"\n\nUser notification failed! \n\n`{traceback.format_exc()}`"
+            ban_log_text += f"\n\nUser notification failed! \n\n<code>{escape(traceback.format_exc())}</code>"
 
         await digital_botz.ban_user(user_id, ban_duration, ban_reason)
         await m.reply_text(ban_log_text)
     except Exception:
         traceback.print_exc()
         await m.reply_text(
-            f"Error occoured! Traceback given below\n\n`{traceback.format_exc()}`"
+            f"Error occoured! Traceback given below\n\n<code>{escape(traceback.format_exc())}</code>"
         )
 
 
@@ -185,9 +186,9 @@ async def unban(c: Client, m: Message):
     if len(m.command) == 1:
         await m.reply_text(
             "Use this command to unban any user.\n\n"
-            "Usage:\n\n`/unban user_id`\n\n"
-            "Eg: `/unban 1234567`\n"
-            "This will unban user with id `1234567`."
+            "Usage:\n\n<code>/unban user_id</code>\n\n"
+            "Eg: <code>/unban 1234567</code>\n"
+            "This will unban user with id <code>1234567</code>."
         )
         return
 
@@ -199,13 +200,13 @@ async def unban(c: Client, m: Message):
             unban_log_text += '\n\nUser notified successfully!'
         except Exception:
             traceback.print_exc()
-            unban_log_text += f"\n\nUser notification failed! \n\n`{traceback.format_exc()}`"
+            unban_log_text += f"\n\nUser notification failed! \n\n<code>{escape(traceback.format_exc())}</code>"
         await digital_botz.remove_ban(user_id)
         await m.reply_text(unban_log_text)
     except Exception:
         traceback.print_exc()
         await m.reply_text(
-            f"Error occurred! Traceback given below\n\n`{traceback.format_exc()}`"
+            f"Error occurred! Traceback given below\n\n<code>{escape(traceback.format_exc())}</code>"
         )
 
 @Client.on_message(filters.private & filters.command("banned") & filters.user(Config.ADMIN))
@@ -219,9 +220,9 @@ async def _banned_users(_, m: Message):
         banned_on = banned_user['ban_status']['banned_on']
         ban_reason = banned_user['ban_status']['ban_reason']
         banned_usr_count += 1
-        text += f"> **user_id**: `{user_id}`, **Ban Duration**: `{ban_duration}`, " \
-                f"**Banned on**: `{banned_on}`, **Reason**: `{ban_reason}`\n\n"
-    reply_text = f"Total banned user(s): `{banned_usr_count}`\n\n{text}"
+        text += f"> <b>user_id</b>: <code>{user_id}</code>, <b>Ban Duration</b>: <code>{ban_duration}</code>, " \
+                f"<b>Banned on</b>: <code>{banned_on}</code>, <b>Reason</b>: <code>{escape(str(ban_reason))}</code>\n\n"
+    reply_text = f"Total banned user(s): <code>{banned_usr_count}</code>\n\n{text}"
     if len(reply_text) > 4096:
         with open('banned-users.txt', 'w') as f:
             f.write(reply_text)
@@ -253,7 +254,7 @@ async def broadcast_handler(bot: Client, m: Message):
         if not done % 20:
            await sts_msg.edit(f"Bʀᴏᴀᴅᴄᴀꜱᴛ Iɴ Pʀᴏɢʀᴇꜱꜱ: \nTᴏᴛᴀʟ Uꜱᴇʀꜱ {total_users} \nCᴏᴍᴩʟᴇᴛᴇᴅ: {done} / {total_users}\nSᴜᴄᴄᴇꜱꜱ: {success}\nFᴀɪʟᴇᴅ: {failed}")
     completed_in = datetime.timedelta(seconds=int(time.time() - start_time))
-    await sts_msg.edit(f"Bʀᴏᴀᴅᴄᴀꜱᴛ Cᴏᴍᴩʟᴇᴛᴇᴅ: \nCᴏᴍᴩʟᴇᴛᴇᴅ Iɴ `{completed_in}`.\n\nTᴏᴛᴀʟ Uꜱᴇʀꜱ {total_users}\nCᴏᴍᴩʟᴇᴛᴇᴅ: {done} / {total_users}\nSᴜᴄᴄᴇꜱꜱ: {success}\nFᴀɪʟᴇᴅ: {failed}")
+    await sts_msg.edit(f"Bʀᴏᴀᴅᴄᴀꜱᴛ Cᴏᴍᴩʟᴇᴛᴇᴅ: \nCᴏᴍᴩʟᴇᴛᴇᴅ Iɴ <code>{completed_in}</code>.\n\nTᴏᴛᴀʟ Uꜱᴇʀꜱ {total_users}\nCᴏᴍᴩʟᴇᴛᴇᴅ: {done} / {total_users}\nSᴜᴄᴄᴇꜱꜱ: {success}\nFᴀɪʟᴇᴅ: {failed}")
            
 async def send_msg(user_id, message):
     try:
