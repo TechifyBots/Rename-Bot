@@ -1,6 +1,6 @@
 from pyrogram import Client, filters, StopPropagation
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
-from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo import AsyncMongoClient
 from config import Config
 
 def normalize_ids(*items):
@@ -18,7 +18,7 @@ BYPASS_IDS=normalize_ids(Config.ADMIN,Config.LOG_CHANNEL,Config.BIN_CHANNEL,Conf
 
 class TechifyBots:
     def __init__(self):
-        mongo_client=AsyncIOMotorClient(Config.DB_URL)
+        mongo_client=AsyncMongoClient(Config.DB_URL)
         db=mongo_client[Config.DB_NAME]
         self.settings_col=db["settings"]
 

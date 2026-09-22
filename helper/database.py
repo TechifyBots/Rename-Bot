@@ -1,13 +1,19 @@
-import motor.motor_asyncio, datetime, pytz
+import datetime
+import pytz
+from pymongo import AsyncMongoClient
 from config import Config
 from helper.utils import send_log
 
+
 class Database:
     def __init__(self, uri, database_name):
-        self._client = motor.motor_asyncio.AsyncIOMotorClient(uri)
+        self._client = AsyncMongoClient(uri)
         self.db = self._client[database_name]
         self.col = self.db.user
         self.premium = self.db.premium
+
+    async def close(self):
+        await self._client.close()
 
     def new_user(self, id):
         return dict(
@@ -172,7 +178,7 @@ class Database:
             await self.col.update_one(
                 {'_id': user_id}, 
                 {'$set': {
-                    'usertype': user_type,
+                    'usertype': type,
                     'uploadlimit': limit
                 }}
             )

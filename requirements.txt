@@ -1,6 +1,6 @@
 pyrofork==2.3.69
 TgCrypto-pyrofork
-motor
+pymongo==4.18.1
 hachoir
 Pillow
 aiohttp

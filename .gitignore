@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+pip-wheel-metadata/
+
+# Secrets / local config
+.env
+.env.*
+*.session
+*.session-journal
+
+# Bot runtime artifacts (written by bot.py / admin.py)
+BotLog.txt
+banned-users.txt
+downloads/
+*.log
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp

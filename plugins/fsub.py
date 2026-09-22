@@ -1,6 +1,6 @@
 import logging
 import datetime
-from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo import AsyncMongoClient
 from pyrogram import Client, filters, StopPropagation, enums
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, ChatJoinRequest, ChatMemberUpdated
 from pyrogram.errors import UserNotParticipant, ChatAdminRequired
@@ -8,7 +8,7 @@ from config import Config
 
 class TechifyBots:
     def __init__(self):
-        client = AsyncIOMotorClient(Config.DB_URL)
+        client = AsyncMongoClient(Config.DB_URL)
         db = client[Config.DB_NAME]
         self.join_requests = db["join_requests"]
         self.fsub_cache = db["fsub_cache"]
