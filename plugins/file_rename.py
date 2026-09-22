@@ -241,10 +241,8 @@ async def upload_doc(bot, update):
                  ph_path = await bot.download_media(media.thumbs[0].file_id)
              
              if ph_path and os.path.exists(ph_path):
-                 Image.open(ph_path).convert("RGB").save(ph_path)
-                 img = Image.open(ph_path)
-                 img.resize((320, 320))
-                 img.save(ph_path, "JPEG")
+                 with Image.open(ph_path) as img:
+                     img.convert("RGB").resize((320, 320), Image.Resampling.LANCZOS).save(ph_path, "JPEG")
          except Exception as e:
              print(f"Error processing thumbnail: {e}")
              ph_path = None
