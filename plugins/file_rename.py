@@ -9,7 +9,7 @@ from PIL import Image
 from helper.utils import progress_for_pyrogram, convert, humanbytes, add_prefix_suffix, remove_path
 from helper.database import digital_botz
 from helper.ffmpeg import change_metadata
-from config import Config
+from config import Config, rkn
 from asyncio import sleep
 import os, time, asyncio
 
@@ -81,6 +81,8 @@ async def rename_start(client, message):
 async def refunc(client, message):
     reply_message = message.reply_to_message
     if (reply_message.reply_markup) and isinstance(reply_message.reply_markup, ForceReply):
+        if rkn.SEND_METADATA.splitlines()[0] in (reply_message.text or ""):
+            return  # handled by metadata.save_metadata_code
         new_name = message.text 
         await message.delete() 
         msg = await client.get_messages(message.chat.id, reply_message.id)

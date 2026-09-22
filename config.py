@@ -148,6 +148,16 @@ class rkn(object):
 --change-author @TechifyBots`
 
 📥 𝖥𝗈𝗋 𝖧𝖾𝗅𝗉, 𝖢𝗈𝗇𝗍𝖺𝖼𝗍: @TechifyBots"""
+
+    SEND_METADATA = """<b>📝 𝖲𝖾𝗇𝖽 𝖸𝗈𝗎𝗋 𝖢𝗎𝗌𝗍𝗈𝗆 𝖬𝖾𝗍𝖺𝖽𝖺𝗍𝖺 𝖢𝗈𝖽𝖾</b>
+
+<code>--change-title @TechifyBots
+--change-video-title @TechifyBots
+--change-audio-title @TechifyBots
+--change-subtitle-title @TechifyBots
+--change-author @TechifyBots</code>
+
+𝖱𝖾𝗉𝗅𝗒 𝗍𝗈 𝗍𝗁𝗂𝗌 𝗆𝖾𝗌𝗌𝖺𝗀𝖾 𝗐𝗂𝗍𝗁 𝗒𝗈𝗎𝗋 𝖼𝗈𝖽𝖾 (𝗍𝖾𝗑𝗍 𝗈𝗇𝗅𝗒)."""
     
     CUSTOM_FILE_NAME = """<u>🖋️ 𝖢𝗎𝗌𝗍𝗈𝗆 𝖥𝗂𝗅𝖾 𝖭𝖺𝗆𝖾</u>
 

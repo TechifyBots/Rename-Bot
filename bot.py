@@ -18,7 +18,7 @@ logging.basicConfig(
              logging.StreamHandler()]
 )
 #logger = logging.getLogger(__name__)
-logging.getLogger("pyrofork").setLevel(logging.WARNING)
+logging.getLogger("pyrogram").setLevel(logging.WARNING)
 
 class TechifyBots(Client):
     def __init__(self):

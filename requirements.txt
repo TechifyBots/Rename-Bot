@@ -1,5 +1,4 @@
-pyrofork==2.3.69
-TgCrypto-pyrofork
+kurigram[fast]
 pymongo==4.18.1
 hachoir
 Pillow
@@ -8,3 +7,4 @@ pytz
 psutil
 ffmpeg-python
 ffmpeg
+
