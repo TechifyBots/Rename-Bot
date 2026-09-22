@@ -4,7 +4,7 @@ uvloop
 pymongo==4.18.1
 Pillow==12.3.0
 aiohttp==3.14.3
-psutil
+psutil==7.2.2
 ffmpeg-python
 ffmpeg
 
