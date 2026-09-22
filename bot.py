@@ -44,10 +44,10 @@ class TechifyBots(Client):
         self.uploadlimit = Config.UPLOAD_LIMIT_MODE
         Config.BOT = self
         
-        app = aiohttp.web.AppRunner(await web_server())
-        await app.setup()
+        self._web_runner = aiohttp.web.AppRunner(await web_server())
+        await self._web_runner.setup()
         bind_address = "0.0.0.0"
-        await aiohttp.web.TCPSite(app, bind_address, Config.PORT).start()
+        await aiohttp.web.TCPSite(self._web_runner, bind_address, Config.PORT).start()
         
         path = "plugins/*.py"
         files = glob.glob(path)
@@ -89,6 +89,9 @@ class TechifyBots(Client):
             except: pass
                 
         print("Bot Stopped 🙄")
+        runner = getattr(self, "_web_runner", None)
+        if runner is not None:
+            await runner.cleanup()
         await super().stop()
 
 
