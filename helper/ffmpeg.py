@@ -1,6 +1,21 @@
 import os, time, asyncio, subprocess, json
 from helper.utils import metadata_text
 
+
+async def get_duration(file_path: str) -> int:
+    """Media duration in seconds via ffprobe, 0 on any failure. Blocking call, keep off hot paths."""
+    try:
+        out = await asyncio.to_thread(
+            subprocess.check_output,
+            ['ffprobe', '-v', 'error', '-show_entries', 'format=duration',
+             '-of', 'default=noprint_wrappers=1:nokey=1', file_path],
+            timeout=15,
+        )
+        return int(float(out.decode().strip()))
+    except Exception as e:
+        print(f"Error extracting duration: {e}")
+        return 0
+
 async def change_metadata(input_file, output_file, metadata):
     author, title, video_title, audio_title, subtitle_title = await metadata_text(metadata)
     output = subprocess.check_output(['ffprobe', '-v', 'error', '-show_streams', '-print_format', 'json', input_file])

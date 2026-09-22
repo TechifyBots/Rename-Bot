@@ -3,12 +3,10 @@ from pyrogram.enums import MessageMediaType
 from pyrogram.errors import FloodWait
 from pyrogram.file_id import FileId
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
-from hachoir.metadata import extractMetadata
-from hachoir.parser import createParser
 from PIL import Image
 from helper.utils import progress_for_pyrogram, convert, humanbytes, add_prefix_suffix, remove_path
 from helper.database import digital_botz
-from helper.ffmpeg import change_metadata
+from helper.ffmpeg import change_metadata, get_duration
 from config import Config, rkn
 from asyncio import sleep
 import os, time, asyncio
@@ -207,17 +205,7 @@ async def upload_doc(bot, update):
             metadata_mode = False
     else:
         await rkn_processing.edit("`Try To Uploading....`")
-    duration = 0
-    try:
-        parser = createParser(file_path)
-        metadata = extractMetadata(parser)
-        if metadata and metadata.has("duration"):
-            duration = metadata.get('duration').seconds
-        if parser:
-            parser.close()
-    except Exception as e:
-        print(f"Error extracting metadata: {e}")
-        pass
+    duration = await get_duration(file_path if os.path.exists(file_path) else dl_path)
     ph_path = None
     c_caption = user_data.get('caption', None)
     c_thumb = user_data.get('file_id', None)
