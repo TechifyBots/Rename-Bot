@@ -219,7 +219,7 @@ async def _banned_users(_, m: Message):
     banned_usr_count = 0
     text = ''
     async for banned_user in all_banned_users:
-        user_id = banned_user['id']
+        user_id = banned_user['_id']  # col docs key on _id; 'id' only exists in the premium collection
         ban_duration = banned_user['ban_status']['ban_duration']
         banned_on = banned_user['ban_status']['banned_on']
         ban_reason = banned_user['ban_status']['ban_reason']

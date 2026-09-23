@@ -99,6 +99,9 @@ async def refunc(client, message):
             # file_name can be None for some uploads; fall back to mkv like the no-dot case
             extn = (media.file_name or "").rsplit(".", 1)[-1] or "mkv"
             new_name = new_name + "." + extn
+        # Users can type separators; pyrogram joins this name into the download path
+        # (download_media.py splits on "/"), so keep only the final path component.
+        new_name = new_name.replace("\\", "/").split("/")[-1]
         await reply_message.delete()
         button = [[InlineKeyboardButton("📁 Dᴏᴄᴜᴍᴇɴᴛ",callback_data = "upload#document")]]
         if file.media in [MessageMediaType.VIDEO, MessageMediaType.DOCUMENT]:
