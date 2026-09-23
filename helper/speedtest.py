@@ -59,11 +59,29 @@ def _run_speedtest_cli() -> dict:
     }
 
 
+def _is_official(path: str | None) -> bool:
+    if not path:
+        return False
+    try:
+        out = subprocess.check_output(
+            [path, "--version"], timeout=10, stderr=subprocess.STDOUT
+        ).decode(errors="ignore")
+        return "ookla" in out.lower()
+    except Exception:
+        return False  # shortcut: version probe failed -> treat as unofficial
+
+
 def _run_sync() -> SpeedResult:
+    official = shutil.which("speedtest")
+    cli = shutil.which("speedtest-cli")
     runners = []
-    if shutil.which("speedtest"):
+    if _is_official(official):
         runners.append(_run_official)
-    if shutil.which("speedtest-cli"):
+    elif official and official != cli:
+        # `speedtest` exists but isn't Ookla (often a speedtest-cli alias):
+        # skip it, the --accept-license flags would just fail noisily.
+        logger.debug("speedtest: ignoring non-Ookla binary at %s", official)
+    if cli or (official and not runners):
         runners.append(_run_speedtest_cli)
     if not runners:
         logger.warning("speedtest: no Ookla client found (install 'speedtest' or 'speedtest-cli')")

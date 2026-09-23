@@ -96,6 +96,10 @@ async def root_route_handler(request):
         html_content = html_content.replace(placeholder, value)
     return web.Response(text=html_content, content_type='text/html')
 
+@TechifyBots.get("/favicon.ico", allow_head=True)
+async def favicon_handler(request):
+    return web.Response(status=204)
+
 async def web_server():
     web_app = web.Application(client_max_size=30000000)
     web_app.add_routes(TechifyBots)

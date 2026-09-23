@@ -6,7 +6,22 @@ from helper.utils import send_log
 
 class Database:
     def __init__(self, uri, database_name):
-        self._client = AsyncMongoClient(uri)
+        from pymongo.errors import ConfigurationError as _ConfigError
+
+        uri = (uri or "").strip().strip("\"'")
+        if not uri:
+            raise RuntimeError(
+                "DB_URL is empty: set the DB_URL env var to your MongoDB "
+                "connection string (e.g. heroku config:set DB_URL='mongodb+srv://...')"
+            )
+        try:
+            self._client = AsyncMongoClient(uri)
+        except _ConfigError as e:
+            raise RuntimeError(
+                f"Invalid DB_URL ({e}): expected "
+                "'mongodb://...' or 'mongodb+srv://...', no extra commas/quotes, "
+                "URL-encode @/: in the password"
+            ) from e
         self.db = self._client[database_name]
         self.col = self.db.user
         self.premium = self.db.premium
