@@ -1,4 +1,4 @@
-import asyncio, datetime, time, psutil, shutil
+import asyncio, datetime, time, psutil
 from html import escape
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, LinkPreviewOptions, CallbackQuery
@@ -7,6 +7,7 @@ from helper.speedtest import network_speed_label
 from config import Config, rkn
 from helper.utils import humanbytes
 from plugins import __version__ as _bot_version_, __developer__, __database__, __library__, __language__, __programer__
+from plugins.web_support import get_status
 
 upgrade_button = InlineKeyboardMarkup([[        
         InlineKeyboardButton('ʙᴜʏ ᴘʀᴇᴍɪᴜᴍ ✓', user_id=int(Config.ADMIN)),
@@ -308,19 +309,12 @@ async def cb_handler(client, query: CallbackQuery):
              InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "about")]]))
 
     elif data == "live_status":
-        currentTime = time.strftime("%Hh%Mm%Ss", time.gmtime(time.time() - client.uptime))
-        total, used, free = shutil.disk_usage(".")
-        total = humanbytes(total)
-        used = humanbytes(used)
-        free = humanbytes(free)
-        sent = humanbytes(psutil.net_io_counters().bytes_sent)
-        recv = humanbytes(psutil.net_io_counters().bytes_recv)
-        cpu_usage = await asyncio.to_thread(psutil.cpu_percent, 0.5)
-        ram_usage = psutil.virtual_memory().percent
-        disk_usage = psutil.disk_usage('/').percent
+        # Same numbers as the web dashboard, so both share its caching and
+        # its thread offload for the CPU sample.
+        status = await get_status()
         speed_label = await network_speed_label()
         await query.message.edit_text(
-            text=rkn.LIVE_STATUS.format(currentTime, cpu_usage, ram_usage, total, used, disk_usage, free, sent, recv, speed_label),
+            text=rkn.LIVE_STATUS.format(status["uptime"], status["cpu_usage"], status["ram_usage"], status["total_disk"], status["used_disk"], status["disk_usage"], status["free_disk"], status["sent"], status["recv"], speed_label),
             link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup=InlineKeyboardMarkup([[
              InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "about")]]))

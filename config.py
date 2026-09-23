@@ -148,20 +148,6 @@ class rkn(object):
 
 ‣ 𝖵𝟥.𝟢.𝟢 [𝖲𝖳𝖠𝖡𝖫𝖤]"""
 
-    METADATA = """❪ 𝖲𝖤𝖳 𝖢𝖴𝖲𝖳𝖮𝖬 𝖬𝖤𝖳𝖠𝖣𝖠𝖳𝖠 ❫
-
-- /metadata - 𝖴𝗌𝖾 𝖳𝗁𝗂𝗌 𝖢𝗈𝗆𝗆𝖺𝗇𝖽 𝖳𝗈 𝖲𝖾𝗍 𝖠𝗇𝖽 𝖢𝗁𝖺𝗇𝗀𝖾 𝖸𝗈𝗎𝗋 𝖥𝗂𝗅𝖾 𝖬𝖾𝗍𝖺𝖽𝖺𝗍𝖺.
-
-☞ 𝖤𝗑𝖺𝗆𝗉𝗅𝖾:
-
-<code>--change-title @TechifyBots
---change-video-title @TechifyBots
---change-audio-title @TechifyBots
---change-subtitle-title @TechifyBots
---change-author @TechifyBots</code>
-
-📥 𝖥𝗈𝗋 𝖧𝖾𝗅𝗉, 𝖢𝗈𝗇𝗍𝖺𝖼𝗍: @TechifyBots"""
-
     SEND_METADATA = """<b>📝 𝖲𝖾𝗇𝖽 𝖸𝗈𝗎𝗋 𝖢𝗎𝗌𝗍𝗈𝗆 𝖬𝖾𝗍𝖺𝖽𝖺𝗍𝖺 𝖢𝗈𝖽𝖾</b>
 
 <code>--change-title @TechifyBots

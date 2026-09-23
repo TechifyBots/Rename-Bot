@@ -1,11 +1,11 @@
 import logging
 import datetime
 import time
-from pymongo import AsyncMongoClient
 from pyrogram import Client, filters, StopPropagation, enums
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, ChatJoinRequest, ChatMemberUpdated
 from pyrogram.errors import UserNotParticipant
 from config import Config
+from helper.database import digital_botz
 
 logger = logging.getLogger(__name__)
 
@@ -28,10 +28,9 @@ PROMPT_COOLDOWN = 15
 
 class TechifyBots:
     def __init__(self):
-        client = AsyncMongoClient(Config.DB_URL)
-        db = client[Config.DB_NAME]
-        self.join_requests = db["join_requests"]
-        self.fsub_cache = db["fsub_cache"]
+        # Same client as the main Database instance, not a second pool.
+        self.join_requests = digital_botz.db["join_requests"]
+        self.fsub_cache = digital_botz.db["fsub_cache"]
 
     # Audit trail only. Access is decided by re-checking Telegram, never by this record:
     # a pending join request is not yet a membership and an approval can be revoked.

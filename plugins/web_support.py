@@ -81,8 +81,6 @@ async def root_route_handler(request):
         "{{premium_users}}": str(status_data["total_premium_users"]),
         "{{bot_uptime}}": status_data["uptime"],
         "{{system_uptime}}": status_data["uptime"],
-        "{{data_sent}}": status_data["sent"],
-        "{{data_recv}}": status_data["recv"],
         "{{system_sent}}": status_data["sent"],
         "{{system_recv}}": status_data["recv"],
         "{{cpu_usage}}": str(status_data["cpu_usage"]),
@@ -91,7 +89,6 @@ async def root_route_handler(request):
         "{{total_disk}}": status_data["total_disk"],
         "{{used_disk}}": status_data["used_disk"],
         "{{free_disk}}": status_data["free_disk"],
-        "{{timestamp}}": str(int(time.time())),
         "{{net_speed}}": speed_label,
     }
     html_content = _WELCOME_TEMPLATE

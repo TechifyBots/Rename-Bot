@@ -110,15 +110,6 @@ class Database:
     async def set_used_limit(self, id, used):
         await self.col.update_one({'_id': int(id)}, {'$set': {'used_limit': used}})
       
-    async def set_usertype(self, id, type):
-        await self.col.update_one({'_id': int(id)}, {'$set': {'usertype': type}})
-
-    async def set_uploadlimit(self, id, limit):
-        await self.col.update_one({'_id': int(id)}, {'$set': {'uploadlimit': limit}})
-  
-    async def set_reset_dailylimit(self, id, date):
-        await self.col.update_one({'_id': int(id)}, {'$set': {'daily': date}})
-        
     async def reset_uploadlimit_access(self, user_id):
         seconds = 1440 * 60
         reset_date = datetime.datetime.now() + datetime.timedelta(seconds=seconds)
@@ -263,15 +254,6 @@ class Database:
             banned_on=datetime.date.today().isoformat(),
             ban_reason=ban_reason)
         await self.col.update_one({'_id': int(user_id)}, {'$set': {'ban_status': ban_status}})
-
-    async def get_ban_status(self, id):
-        default = dict(
-            is_banned=False,
-            ban_duration=0,
-            banned_on=datetime.date.max.isoformat(),
-            ban_reason='')
-        user = await self.col.find_one({'_id': int(id)})
-        return user.get('ban_status', default)
 
     async def get_all_banned_users(self):
         banned_users = self.col.find({'ban_status.is_banned': True})
