@@ -1,8 +1,7 @@
-import re, os, time
+import os, time
 from dotenv import load_dotenv
 
 load_dotenv()
-id_pattern = re.compile(r'^.\d+$')
 
 
 def _int_env(name, default=0):

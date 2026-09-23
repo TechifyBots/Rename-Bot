@@ -80,26 +80,6 @@ async def send_log(b, u):
         )
         await b.send_message(Config.LOG_CHANNEL, log_message)
 
-async def get_seconds_first(time_string):
-    conversion_factors = {
-        's': 1,
-        'min': 60,
-        'hour': 3600,
-        'day': 86400,
-        'month': 86400 * 30,
-        'year': 86400 * 365
-    }
-
-    parts = time_string.split()
-    total_seconds = 0
-
-    for i in range(0, len(parts), 2):
-        value = int(parts[i])
-        unit = parts[i+1].rstrip('s')  # Remove 's' from unit
-        total_seconds += value * conversion_factors.get(unit, 0)
-
-    return total_seconds
-
 async def get_seconds(time_string):
     conversion_factors = {
         's': 1,

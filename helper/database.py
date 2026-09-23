@@ -182,12 +182,6 @@ class Database:
                 }}
             )
           
-    async def checking_remaining_time(self, user_id):
-        user_data = await self.get_user(user_id)
-        expiry_time = user_data.get("expiry_time")
-        time_left_str = expiry_time - datetime.datetime.now()
-        return time_left_str
-
     async def has_premium_access(self, user_id):
         user_data = await self.get_user(user_id)
         if user_data:
@@ -204,10 +198,6 @@ class Database:
     async def total_premium_users_count(self):
         count = await self.premium.count_documents({"expiry_time": {"$gt": datetime.datetime.now()}})
         return count
-
-    async def get_all_premium_users(self):
-        all_premium_users = self.premium.find({"expiry_time": {"$gt": datetime.datetime.now()}})
-        return all_premium_users
 
     async def get_free_trial_status(self, user_id):
         user_data = await self.get_user(user_id)

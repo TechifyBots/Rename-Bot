@@ -23,8 +23,9 @@ async def get_status():
     total = humanbytes(total)
     used = humanbytes(used)
     free = humanbytes(free)
-    sent = humanbytes(psutil.net_io_counters().bytes_sent)
-    recv = humanbytes(psutil.net_io_counters().bytes_recv)
+    net = psutil.net_io_counters()
+    sent = humanbytes(net.bytes_sent)
+    recv = humanbytes(net.bytes_recv)
     cpu_usage = psutil.cpu_percent(interval=0.5)
     ram_usage = psutil.virtual_memory().percent
     disk_usage = psutil.disk_usage('/').percent

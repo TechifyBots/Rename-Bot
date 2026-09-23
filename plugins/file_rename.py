@@ -28,6 +28,17 @@ async def rename_start(client, message):
     mime_type = rkn_file.mime_type
     dcid = FileId.decode(rkn_file.file_id).dc_id
     extension_type = mime_type.split('/')[0]
+
+    media_info_text = (
+        f"<b><i>ᴍᴇᴅɪᴀ ɪɴꜰᴏ:</i></b>\n\n"
+        f"◈ ᴏʟᴅ ꜰɪʟᴇ ɴᴀᴍᴇ: <code>{escape(str(filename))}</code>\n\n"
+        f"◈ ᴇxᴛᴇɴꜱɪᴏɴ: <code>{escape(extension_type.upper())}</code>\n"
+        f"◈ ꜰɪʟᴇ ꜱɪᴢᴇ: <code>{filesize}</code>\n"
+        f"◈ ᴍɪᴍᴇ ᴛʏᴩ: <code>{escape(str(mime_type))}</code>\n"
+        f"◈ ᴅᴄ ɪᴅ: <code>{dcid}</code>\n\n"
+        "ᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ғɪʟᴇɴᴀᴍᴇ ᴡɪᴛʜ ᴇxᴛᴇɴsɪᴏɴ ᴀɴᴅ ʀᴇᴘʟʏ ᴛʜɪs ᴍᴇssᴀɢᴇ...."
+    )
+
     if client.premium and client.uploadlimit:
         await digital_botz.reset_uploadlimit_access(user_id)
         user_data = await digital_botz.get_user_data(user_id)
@@ -44,14 +55,14 @@ async def rename_start(client, message):
                  return await message.reply_text("Sᴏʀʀy Bʀᴏ Tʜɪꜱ Bᴏᴛ Iꜱ Dᴏᴇꜱɴ'ᴛ Sᴜᴩᴩᴏʀᴛ Uᴩʟᴏᴀᴅɪɴɢ Fɪʟᴇꜱ Bɪɢɢᴇʀ Tʜᴀɴ 2Gʙ+")
         try:
             await message.reply_text(
-                text=f"<b><i>ᴍᴇᴅɪᴀ ɪɴꜰᴏ:</i></b>\n\n◈ ᴏʟᴅ ꜰɪʟᴇ ɴᴀᴍᴇ: <code>{escape(str(filename))}</code>\n\n◈ ᴇxᴛᴇɴꜱɪᴏɴ: <code>{escape(extension_type.upper())}</code>\n◈ ꜰɪʟᴇ ꜱɪᴢᴇ: <code>{filesize}</code>\n◈ ᴍɪᴍᴇ ᴛʏᴇᴩ: <code>{escape(str(mime_type))}</code>\n◈ ᴅᴄ ɪᴅ: <code>{dcid}</code>\n\nᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ғɪʟᴇɴᴀᴍᴇ ᴡɪᴛʜ ᴇxᴛᴇɴsɪᴏɴ ᴀɴᴅ ʀᴇᴘʟʏ ᴛʜɪs ᴍᴇssᴀɢᴇ....",
+                text=media_info_text,
                 reply_markup=ForceReply(True)
             )       
             await asyncio.sleep(30)
         except FloodWait as e:
             await asyncio.sleep(e.value)
             await message.reply_text(
-                text=f"<b><i>ᴍᴇᴅɪᴀ ɪɴꜰᴏ:</i></b>\n\n◈ ᴏʟᴅ ꜰɪʟᴇ ɴᴀᴍᴇ: <code>{escape(str(filename))}</code>\n\n◈ ᴇxᴛᴇɴꜱɪᴏɴ: <code>{escape(extension_type.upper())}</code>\n◈ ꜰɪʟᴇ ꜱɪᴢᴇ: <code>{filesize}</code>\n◈ ᴍɪᴍᴇ ᴛʏᴇᴩ: <code>{escape(str(mime_type))}</code>\n◈ ᴅᴄ ɪᴅ: <code>{dcid}</code>\n\nᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ғɪʟᴇɴᴀᴍᴇ ᴡɪᴛʜ ᴇxᴛᴇɴsɪᴏɴ ᴀɴᴅ ʀᴇᴘʟʏ ᴛʜɪs ᴍᴇssᴀɢᴇ....",
+                text=media_info_text,
                 reply_markup=ForceReply(True)
             )
         except Exception as e:
@@ -61,14 +72,14 @@ async def rename_start(client, message):
             return await message.reply_text("If you want to rename 4GB+ files then you will have to buy premium. /plans")
         try:
             await message.reply_text(
-                text=f"<b><i>ᴍᴇᴅɪᴀ ɪɴꜰᴏ:</i></b>\n\n◈ ᴏʟᴅ ꜰɪʟᴇ ɴᴀᴍᴇ: <code>{escape(str(filename))}</code>\n\n◈ ᴇxᴛᴇɴꜱɪᴏɴ: <code>{escape(extension_type.upper())}</code>\n◈ ꜰɪʟᴇ ꜱɪᴢᴇ: <code>{filesize}</code>\n◈ ᴍɪᴍᴇ ᴛʏᴇᴩ: <code>{escape(str(mime_type))}</code>\n◈ ᴅᴄ ɪᴅ: <code>{dcid}</code>\n\nᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ғɪʟᴇɴᴀᴍᴇ ᴡɪᴛʜ ᴇxᴛᴇɴsɪᴏɴ ᴀɴᴅ ʀᴇᴘʟʏ ᴛʜɪs ᴍᴇssᴀɢᴇ....",
+                text=media_info_text,
                 reply_markup=ForceReply(True)
             )       
             await asyncio.sleep(30)
         except FloodWait as e:
             await asyncio.sleep(e.value)
             await message.reply_text(
-                text=f"<b><i>ᴍᴇᴅɪᴀ ɪɴꜰᴏ:</i></b>\n\n◈ ᴏʟᴅ ꜰɪʟᴇ ɴᴀᴍᴇ: <code>{escape(str(filename))}</code>\n\n◈ ᴇxᴛᴇɴꜱɪᴏɴ: <code>{escape(extension_type.upper())}</code>\n◈ ꜰɪʟᴇ ꜱɪᴢᴇ: <code>{filesize}</code>\n◈ ᴍɪᴍᴇ ᴛʏᴇᴩ: <code>{escape(str(mime_type))}</code>\n◈ ᴅᴄ ɪᴅ: <code>{dcid}</code>\n\nᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ᴛʜᴇ ɴᴇᴡ ғɪʟᴇɴᴀᴍᴇ ᴡɪᴛʜ ᴇxᴛᴇɴsɪᴏɴ ᴀɴᴅ ʀᴇᴘʟʏ ᴛʜɪs ᴍᴇssᴀɢᴇ....",
+                text=media_info_text,
                 reply_markup=ForceReply(True)
             )
         except Exception as e:
