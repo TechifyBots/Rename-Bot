@@ -55,6 +55,14 @@
         "AUTH_CHANNELS": {
             "description": "Force-subscribe channel ids, space separated (optional)",
             "required": false
+        },
+        "AUTH_REQ_CHANNELS": {
+            "description": "Force-subscribe channel ids that need a join request, space separated (optional)",
+            "required": false
+        },
+        "FSUB_EXPIRE": {
+            "description": "Minutes after which a pending join request is approved, 0 = never (optional, default 2)",
+            "required": false
         }
     },
     "stack": "container",
