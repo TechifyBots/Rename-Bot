@@ -325,7 +325,7 @@ python bot.py
 |:---------|:-----|:------|
 | Docker (any host) | `Dockerfile` | `ffmpeg` + Ookla speedtest baked in; `CMD ["python", "bot.py"]` (`bot.py` entrypoint) |
 | Heroku | `app.json`, `Procfile`, `heroku.yml` | One-click via `app.json`; all 14 env vars declared |
-| Render | `render.yaml` | Free web service, `autoDeploy: false`; all 14 env vars declared |
+| Render | `render.yaml` (`runtime: docker`, health check `/`) | Docker build of `Dockerfile` (ffmpeg + Ookla inside), `autoDeploy: false`; all 14 env vars declared |
 | Koyeb / Railway | `Dockerfile` | Deploy from repo, use the Docker builder, set env vars below |
 
 ### Required environment variables

@@ -117,9 +117,17 @@ jobs:
 
           render = yaml.safe_load(open("render.yaml", encoding="utf-8"))
           render_vars = {e["key"] for s in render["services"] for e in s.get("envVars", [])}
-          # Render injects PORT itself; PYTHON_VERSION is platform config, not app env.
+          # Render injects PORT itself; Docker runtime needs no PYTHON_VERSION.
           code_vars.discard("PORT")
-          render_vars.discard("PYTHON_VERSION")
+          # Native-runtime leftovers must not coexist with runtime: docker.
+          for s in render["services"]:
+              for stale in ("buildCommand", "startCommand", "env"):
+                  assert stale not in s, f"render.yaml: '{stale}' is native-runtime only, remove it (runtime: docker)"
+              assert "PYTHON_VERSION" not in {e["key"] for e in s.get("envVars", [])},                   "render.yaml: PYTHON_VERSION is native-runtime only, Docker pins python in the Dockerfile"
+              assert s.get("runtime") == "docker", "render.yaml: service must set 'runtime: docker'"
+              import os as _os
+              df = s.get("dockerfilePath", "./Dockerfile")
+              assert _os.path.exists(df.lstrip("./") or "Dockerfile"), f"render.yaml: dockerfilePath missing: {df}"
 
           errors = []
           for var in sorted(code_vars - app_env):
