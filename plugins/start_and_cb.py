@@ -199,10 +199,13 @@ async def plans(client, message):
 
 @Client.on_callback_query()
 async def cb_handler(client, query: CallbackQuery):
-    data = query.data 
-    # Answer first: Telegram keeps the tapped button spinning until this lands,
-    # and the branches below can take seconds (photo edit, live speed test).
-    await query.answer()
+    data = query.data
+    try:
+        # Answer first: Telegram keeps the tapped button spinning until this lands,
+        # and the branches below can take seconds (photo edit, live speed test).
+        await query.answer()
+    except Exception:
+        pass  # shortcut: stale/duplicate taps raise QUERY_ID_INVALID; handler still runs
     if data == "start":
         start_button = [[
         InlineKeyboardButton('ᴀʙᴏᴜᴛ', callback_data='about', style=ButtonStyle.PRIMARY),

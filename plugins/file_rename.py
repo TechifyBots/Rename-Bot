@@ -263,7 +263,13 @@ async def upload_doc(bot, update):
 
         from_chat = filw.chat.id
         mg_id = filw.id
-        await bot.copy_message(chat_id=Config.BIN_CHANNEL, from_chat_id=from_chat, message_id=mg_id)
+        # shortcut: BIN_CHANNEL unset (0) crashes resolve_peer with "Peer id
+        # invalid: 0" — the store copy is optional, the user copy is not.
+        if Config.BIN_CHANNEL:
+            try:
+                await bot.copy_message(chat_id=Config.BIN_CHANNEL, from_chat_id=from_chat, message_id=mg_id)
+            except Exception:
+                logger.exception("bin channel copy failed, continuing with user copy")
         await asyncio.sleep(2)
         await bot.copy_message(update.from_user.id, from_chat, mg_id)
         await bot.delete_messages(from_chat, mg_id)
@@ -279,6 +285,10 @@ async def upload_doc(bot, update):
                 await digital_botz.set_used_limit(user_id, used_remove)
             await remove_path(ph_path, file_path, dl_path, metadata_path)
             return await rkn_processing.edit(f"Upload Error: {escape(str(error))}")
-        await bot.copy_message(chat_id=Config.BIN_CHANNEL, from_chat_id=filw.chat.id, message_id=filw.id)
+        if Config.BIN_CHANNEL:
+            try:
+                await bot.copy_message(chat_id=Config.BIN_CHANNEL, from_chat_id=filw.chat.id, message_id=filw.id)
+            except Exception:
+                logger.exception("bin channel copy failed, file already delivered to user")
     await remove_path(ph_path, file_path, dl_path, metadata_path)
     return await rkn_processing.edit("Uploaded Successfully....")
