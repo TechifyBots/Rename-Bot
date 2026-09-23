@@ -13,6 +13,9 @@ A **powerful, open-source, and feature-rich** Telegram bot designed to **rename,
 
 [![Last Commit](https://img.shields.io/github/last-commit/TechifyBots/Rename-Bot?style=for-the-badge)](https://github.com/TechifyBots/Rename-Bot/commits)
 <br>
+[![CI](https://github.com/bisug/Rename-Bot/actions/workflows/ci.yml/badge.svg)](https://github.com/bisug/Rename-Bot/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/bisug/Rename-Bot/actions/workflows/codeql.yml/badge.svg)](https://github.com/bisug/Rename-Bot/actions/workflows/codeql.yml)
+<br>
 [![GitHub Stars](https://img.shields.io/github/stars/TechifyBots/Rename-Bot?style=for-the-badge)](https://github.com/TechifyBots)
 [![GitHub Forks](https://img.shields.io/github/forks/TechifyBots/Rename-Bot?style=for-the-badge)](https://github.com/TechifyBots/Rename-Bot/fork)
 <br>
@@ -180,6 +183,49 @@ Need help deploying this project? We've got you covered.
 > 📺 **Complete Deployment Playlist** — Follow the step-by-step video tutorials to get started.
 >
 > **▶ [Watch on YouTube](https://www.youtube.com/playlist?list=PLQrMSile4s5UnIEvWyKM1MKFuNg8Wfh2S)**
+
+### Prerequisites
+
+- Python **3.14.7** (see `.python-version`; Docker uses `python:3.14-slim`)
+- [ffmpeg](https://ffmpeg.org/download.html) on `PATH` (metadata + thumbnails; `ffprobe` too)
+- MongoDB database (URI for `DB_URL`)
+- Telegram `API_ID` / `API_HASH` / `BOT_TOKEN`, plus `ADMIN` user ID
+
+### Run locally
+
+```bash
+pip install -r requirements.txt
+export API_ID=… API_HASH=… BOT_TOKEN=… ADMIN=… DB_URL=mongodb://localhost:27017 LOG_CHANNEL=…
+python bot.py
+```
+
+### Deploy targets (all wired in this repo)
+
+| Platform | File | Notes |
+|:---------|:-----|:------|
+| Docker (any host) | `Dockerfile` | `ffmpeg` + Ookla speedtest baked in; `CMD ["python", "bot.py"]` (`bot.py` entrypoint) |
+| Heroku | `app.json`, `Procfile`, `heroku.yml` | One-click via `app.json`; all 14 env vars declared |
+| Render | `render.yaml` | Free web service, `autoDeploy: false`; all 14 env vars declared |
+| Koyeb / Railway | `Dockerfile` | Deploy from repo, use the Docker builder, set env vars below |
+
+### Required environment variables
+
+All 14 are declared in `app.json` and `render.yaml` (CI's `validate` job fails the PR if they drift from `config.py`):
+
+`API_ID` · `API_HASH` · `BOT_TOKEN` · `DB_URL` · `DB_NAME` · `ADMIN` · `PIC` · `BIN_CHANNEL` · `LOG_CHANNEL` · `STRING_SESSION` · `IS_FSUB` · `AUTH_CHANNELS` · `AUTH_REQ_CHANNELS` · `FSUB_EXPIRE` · (`PORT` is injected by the host, default `8080`)
+
+> 💎 **4GB Support** — `STRING_SESSION` is **optional**. Add a **Kurigram v2 String Session** (Pyrogram-compatible) to enable 4GB file processing. Without it the bot keeps its standard 2GB limit.
+
+### CI — what runs before deploy
+
+Every push/PR runs [`.github/workflows/ci.yml`](.github/workflows/ci.yml) (badge ↑ top):
+
+| Job | What it catches |
+|:----|:----------------|
+| `build` | Syntax errors (`compileall`), bug-class lint (`ruff F,E9`), plugin wiring (38 handlers + web routes smoke test) |
+| `audit` | Known CVEs in `requirements.txt` (`pip-audit`, advisory) |
+| `validate` | `config.py` ↔ `app.json` ↔ `render.yaml` env drift · unparseable manifests · Docker base ≠ `.python-version` · stale `welcome.html` placeholders · hardcoded secrets / committed session files |
+| CodeQL | Python security analysis (weekly + per-push, [config](.github/workflows/codeql.yml)) |
 
 
 ---
