@@ -1,17 +1,18 @@
+from pyrogram.enums import ButtonStyle
 from pyrogram import Client, filters
 from pyrogram.types import Message, CallbackQuery, ForceReply, InlineKeyboardButton, InlineKeyboardMarkup, LinkPreviewOptions
 from helper.database import digital_botz
 from config import rkn
 from html import escape
 
-TRUE = [[InlineKeyboardButton('Metadata On', callback_data='metadata_1'),
-       InlineKeyboardButton('✅', callback_data='metadata_1')
+TRUE = [[InlineKeyboardButton('Metadata On', callback_data='metadata_1', style=ButtonStyle.SUCCESS),
+       InlineKeyboardButton('✅', callback_data='metadata_1', style=ButtonStyle.SUCCESS)
        ],[
-       InlineKeyboardButton('Set Custom Metadata', callback_data='custom_metadata')]]
-FALSE = [[InlineKeyboardButton('Metadata Off', callback_data='metadata_0'),
-        InlineKeyboardButton('❌', callback_data='metadata_0')
+       InlineKeyboardButton('Set Custom Metadata', callback_data='custom_metadata', style=ButtonStyle.PRIMARY)]]
+FALSE = [[InlineKeyboardButton('Metadata Off', callback_data='metadata_0', style=ButtonStyle.DANGER),
+        InlineKeyboardButton('❌', callback_data='metadata_0', style=ButtonStyle.DANGER)
        ],[
-       InlineKeyboardButton('Set Custom Metadata', callback_data='custom_metadata')]]
+       InlineKeyboardButton('Set Custom Metadata', callback_data='custom_metadata', style=ButtonStyle.PRIMARY)]]
 
 
 @Client.on_message(filters.private & filters.command('metadata'))

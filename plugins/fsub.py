@@ -103,7 +103,7 @@ async def auto_delete_fsub_and_start(client: Client, user_id: int):
             user_id,
             f"<b>{user.mention},\n\nʏᴏᴜ ʜᴀᴠᴇ ᴊᴏɪɴᴇᴅ ᴀʟʟ ʀᴇǫᴜɪʀᴇᴅ ᴄʜᴀɴɴᴇʟs.\n\nᴄʟɪᴄᴋ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ</b>",
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("▶️ 𝖲𝗍𝖺𝗋𝗍", url=f"https://telegram.me/{bot_username}?start=start")]]
+                [[InlineKeyboardButton("▶️ 𝖲𝗍𝖺𝗋𝗍", url=f"https://telegram.me/{bot_username}?start=start", style=enums.ButtonStyle.PRIMARY)]]
             )
         )
     except Exception:
@@ -239,7 +239,7 @@ async def get_fsub(bot: Client, message: Message) -> bool:
             buttons.append(row)
 
         buttons.append(
-            [InlineKeyboardButton("🔄 𝖳𝗋𝗒 𝖠𝗀𝖺𝗂𝗇", url=f"https://telegram.me/{bot_username}?start=start")]
+            [InlineKeyboardButton("🔄 𝖳𝗋𝗒 𝖠𝗀𝖺𝗂𝗇", url=f"https://telegram.me/{bot_username}?start=start", style=enums.ButtonStyle.PRIMARY)]
         )
 
         text = (
