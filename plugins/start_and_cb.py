@@ -3,6 +3,7 @@ from html import escape
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, LinkPreviewOptions, CallbackQuery
 from helper.database import digital_botz
+from helper.speedtest import network_speed_label
 from config import Config, rkn
 from helper.utils import humanbytes
 from plugins import __version__ as _bot_version_, __developer__, __database__, __library__, __language__, __programer__
@@ -303,8 +304,10 @@ async def cb_handler(client, query: CallbackQuery):
         uptime = time.strftime("%Hh%Mm%Ss", time.gmtime(time.time() - client.uptime))
         sent = humanbytes(psutil.net_io_counters().bytes_sent)
         recv = humanbytes(psutil.net_io_counters().bytes_recv)
+        # First call may run a real Ookla test (up to ~2 min); then cached 10 min.
+        speed_label = await network_speed_label()
         await query.message.edit_text(
-            text=rkn.BOT_STATUS.format(uptime, total_users, total_premium_users, sent, recv),
+            text=rkn.BOT_STATUS.format(uptime, total_users, total_premium_users, speed_label, sent, recv),
             link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup=InlineKeyboardMarkup([[
              InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "about")]]))
@@ -320,8 +323,9 @@ async def cb_handler(client, query: CallbackQuery):
         cpu_usage = psutil.cpu_percent(interval=0.5)
         ram_usage = psutil.virtual_memory().percent
         disk_usage = psutil.disk_usage('/').percent
+        speed_label = await network_speed_label()
         await query.message.edit_text(
-            text=rkn.LIVE_STATUS.format(currentTime, cpu_usage, ram_usage, total, used, disk_usage, free, sent, recv),
+            text=rkn.LIVE_STATUS.format(currentTime, cpu_usage, ram_usage, total, used, disk_usage, free, sent, recv, speed_label),
             link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup=InlineKeyboardMarkup([[
              InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "about")]]))

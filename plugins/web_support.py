@@ -1,4 +1,5 @@
 from aiohttp import web
+import asyncio
 import time
 import psutil
 import shutil
@@ -7,6 +8,7 @@ from config import Config
 from plugins import __version__
 from helper.utils import humanbytes
 from helper.database import digital_botz
+from helper.speedtest import network_speed_label
 
 # Identity of the main bot client, injected from TechifyBots.start() after
 # set_identity() has cached it; placeholders until startup completes.
@@ -49,13 +51,13 @@ async def get_status():
         "used_disk": used,
         "free_disk": free,
         "sent": sent,
-        "recv": recv
+        "recv": recv,
     }
 TechifyBots = web.RouteTableDef()
 
 @TechifyBots.get("/", allow_head=True)
 async def root_route_handler(request):
-    status_data = await get_status()
+    status_data, speed_label = await asyncio.gather(get_status(), network_speed_label())
     data = {
         "{{bot_status}}": status_data["status"],
         "{{bot_version}}": str(status_data["version"]),
@@ -76,6 +78,7 @@ async def root_route_handler(request):
         "{{used_disk}}": status_data["used_disk"],
         "{{free_disk}}": status_data["free_disk"],
         "{{timestamp}}": str(int(time.time())),
+        "{{net_speed}}": speed_label,
     }
     html_content = _WELCOME_TEMPLATE
     for placeholder, value in data.items():
