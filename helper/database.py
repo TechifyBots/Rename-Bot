@@ -139,6 +139,9 @@ class Database:
                         'used_limit': zero_usage
                     }}
                 )
+                user_data['daily'] = reset_date
+                user_data['used_limit'] = zero_usage
+        return user_data
                         
     async def get_user_data(self, id) -> dict:
         user_data = await self.col.find_one({'_id': int(id)})

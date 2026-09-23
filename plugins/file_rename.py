@@ -40,8 +40,7 @@ async def rename_start(client, message):
     )
 
     if client.premium and client.uploadlimit:
-        await digital_botz.reset_uploadlimit_access(user_id)
-        user_data = await digital_botz.get_user_data(user_id)
+        user_data = await digital_botz.reset_uploadlimit_access(user_id)
         limit = user_data.get('uploadlimit', 0)
         used = user_data.get('used_limit', 0)
         remain = int(limit) - int(used)

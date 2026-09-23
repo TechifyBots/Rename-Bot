@@ -30,7 +30,6 @@ async def start(client, message):
     if client.premium:
         start_button.append([InlineKeyboardButton('💸 ᴜᴘɢʀᴀᴅᴇ ᴛᴏ ᴘʀᴇᴍɪᴜᴍ 💸', callback_data='upgrade')])
     user = message.from_user
-    await digital_botz.add_user(client, message) 
     if Config.PIC:
         await message.reply_photo(Config.PIC, caption=rkn.START_TXT.format(user.mention), reply_markup=InlineKeyboardMarkup(start_button))    
     else:
@@ -155,8 +154,7 @@ async def myplan(client, message):
         time_left_str = expiry_str_in_ist - datetime.datetime.now()
         text = f"ᴜꜱᴇʀ :- {user}\nᴜꜱᴇʀ ɪᴅ :- <code>{user_id}</code>\n"
         if client.uploadlimit:
-            await digital_botz.reset_uploadlimit_access(user_id)                
-            user_data = await digital_botz.get_user_data(user_id)
+            user_data = await digital_botz.reset_uploadlimit_access(user_id)
             limit = user_data.get('uploadlimit', 0)
             used = user_data.get('used_limit', 0)
             remain = int(limit) - int(used)
