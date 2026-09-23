@@ -14,17 +14,31 @@ from helper.speedtest import network_speed_label
 # set_identity() has cached it; placeholders until startup completes.
 bot_info = {"name": "Rename Bot", "username": ""}
 
+# Status page counts are cosmetic; cache them so a page view doesn't hit Mongo
+# twice. 60s staleness on a dashboard is invisible.
+_COUNTS_TTL = 60
+_counts_cache = (0.0, 0, "Disabled ✅")
+
+async def _cached_counts():
+    global _counts_cache
+    ts, users, premium = _counts_cache
+    if time.monotonic() - ts < _COUNTS_TTL:
+        return users, premium
+    users = await digital_botz.total_users_count()
+    premium = (
+        await digital_botz.total_premium_users_count()
+        if Config.PREMIUM_MODE else "Disabled ✅"
+    )
+    _counts_cache = (time.monotonic(), users, premium)
+    return users, premium
+
 _TEMPLATE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "templates", "welcome.html")
 with open(_TEMPLATE_PATH, encoding="utf-8") as f:
     _WELCOME_TEMPLATE = f.read()
 
 async def get_status():
     # Calculate your bot status metrics
-    total_users = await digital_botz.total_users_count()
-    if Config.PREMIUM_MODE:
-        total_premium_users = await digital_botz.total_premium_users_count()
-    else:
-        total_premium_users = "Disabled ✅"
+    total_users, total_premium_users = await _cached_counts()
     currentTime = time.strftime("%Hh%Mm%Ss", time.gmtime(time.time() - Config.BOT_UPTIME))    
     total, used, free = shutil.disk_usage(".")
     total = humanbytes(total)

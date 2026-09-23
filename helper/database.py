@@ -11,6 +11,11 @@ class Database:
         self.col = self.db.user
         self.premium = self.db.premium
 
+    async def ensure_indexes(self):
+        # premium docs key on a plain "id" field; without this index every
+        # premium upsert/find/expire-sweep scans the collection.
+        await self.premium.create_index("id", unique=True)
+
     async def close(self):
         await self._client.close()
 
@@ -46,7 +51,7 @@ class Database:
             await send_log(b, u)
 
     async def is_user_exist(self, id):
-        user = await self.col.find_one({'_id': int(id)})
+        user = await self.col.find_one({'_id': int(id)}, {'_id': 1})
         return bool(user)
 
     async def total_users_count(self):
@@ -143,8 +148,8 @@ class Database:
                 user_data['used_limit'] = zero_usage
         return user_data
                         
-    async def get_user_data(self, id) -> dict:
-        user_data = await self.col.find_one({'_id': int(id)})
+    async def get_user_data(self, id, projection=None) -> dict:
+        user_data = await self.col.find_one({'_id': int(id)}, projection)
         return user_data or None
         
     async def get_user(self, user_id):
@@ -207,6 +212,24 @@ class Database:
         if user_data:
             return user_data.get("has_free_trial", False)
         return False
+
+    async def premium_state(self, user_id) -> dict:
+        """One read for callers that need trial flag + access verdict."""
+        user_data = await self.get_user(user_id)
+        active = False
+        if user_data:
+            expiry_time = user_data.get("expiry_time")
+            if expiry_time is None:
+                active = False  # free trial was used up
+            elif isinstance(expiry_time, datetime.datetime) and datetime.datetime.now() <= expiry_time:
+                active = True
+            else:
+                await self.remove_premium(user_id)
+                user_data["expiry_time"] = None
+        return {
+            "has_free_trial": bool(user_data and user_data.get("has_free_trial", False)),
+            "has_premium_access": active,
+        }
 
     async def give_free_trial(self, user_id):
         seconds = 720 * 60

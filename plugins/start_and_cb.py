@@ -148,7 +148,9 @@ async def myplan(client, message):
         return # premium mode disabled ✓
     user_id = message.from_user.id
     user = message.from_user.mention
-    if await digital_botz.has_premium_access(user_id):
+    # one premium read for both the access verdict and the expiry display
+    premium = await digital_botz.premium_state(user_id)
+    if premium["has_premium_access"]:
         data = await digital_botz.get_user(user_id)
         expiry_str_in_ist = data.get("expiry_time")
         time_left_str = expiry_str_in_ist - datetime.datetime.now()
@@ -184,9 +186,9 @@ async def plans(client, message):
         return # premium mode disabled ✓
     user = message.from_user
     upgrade_msg = rkn.UPGRADE_PLAN.format(user.mention) if client.uploadlimit else rkn.UPGRADE_PREMIUM.format(user.mention)
-    free_trial_status = await digital_botz.get_free_trial_status(user.id)
-    if not await digital_botz.has_premium_access(user.id):
-        if not free_trial_status:
+    premium = await digital_botz.premium_state(user.id)
+    if not premium["has_premium_access"]:
+        if not premium["has_free_trial"]:
             await message.reply_text(text=upgrade_msg, reply_markup=upgrade_trial_button, link_preview_options=LinkPreviewOptions(is_disabled=True))
         else:
             await message.reply_text(text=upgrade_msg, reply_markup=upgrade_button, link_preview_options=LinkPreviewOptions(is_disabled=True))
@@ -246,9 +248,9 @@ async def cb_handler(client, query: CallbackQuery):
             return await query.message.delete()
         user = query.from_user
         upgrade_msg = rkn.UPGRADE_PLAN.format(user.mention) if client.uploadlimit else rkn.UPGRADE_PREMIUM.format(user.mention)
-        free_trial_status = await digital_botz.get_free_trial_status(query.from_user.id)
-        if not await digital_botz.has_premium_access(query.from_user.id):
-            if not free_trial_status:
+        premium = await digital_botz.premium_state(user.id)
+        if not premium["has_premium_access"]:
+            if not premium["has_free_trial"]:
                 await query.message.edit_text(text=upgrade_msg, reply_markup=upgrade_trial_button, link_preview_options=LinkPreviewOptions(is_disabled=True))   
             else:
                 await query.message.edit_text(text=upgrade_msg, reply_markup=upgrade_button, link_preview_options=LinkPreviewOptions(is_disabled=True))

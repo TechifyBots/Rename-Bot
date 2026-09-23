@@ -57,6 +57,10 @@ class TechifyBots(Client):
     async def start(self):
         await super().start()
         me = await set_identity(self)
+        try:
+            await digital_botz.ensure_indexes()
+        except Exception:
+            logger.exception("failed to ensure database indexes")
         self.uptime = Config.BOT_UPTIME
         self.premium = Config.PREMIUM_MODE
         self.uploadlimit = Config.UPLOAD_LIMIT_MODE
