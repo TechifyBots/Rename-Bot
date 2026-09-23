@@ -26,6 +26,19 @@ logging.getLogger("pymongo").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
 
+async def set_identity(client: Client):
+    """Fetch the client's own identity once and cache it as attributes.
+
+    Pyrogram does not expose username/mention as properties, so every consumer
+    (web status page, fsub deep links, about text) reads them from the client.
+    """
+    me = await client.get_me()
+    client.id = me.id
+    client.username = me.username
+    client.first_name = me.first_name
+    client.mention = me.mention
+    return me
+
 class TechifyBots(Client):
     def __init__(self):
         super().__init__(
@@ -43,9 +56,7 @@ class TechifyBots(Client):
          
     async def start(self):
         await super().start()
-        me = await self.get_me()
-        self.mention = me.mention
-        self.username = me.username  
+        me = await set_identity(self)
         self.uptime = Config.BOT_UPTIME
         self.premium = Config.PREMIUM_MODE
         self.uploadlimit = Config.UPLOAD_LIMIT_MODE
@@ -56,6 +67,10 @@ class TechifyBots(Client):
         await aiohttp.web.TCPSite(self._web_runner, bind_address, Config.PORT).start()
 
         logger.info("%s Iꜱ Sᴛᴀʀᴛᴇᴅ.....✨️", me.first_name)
+
+        from plugins import web_support
+        web_support.bot_info["name"] = escape(me.first_name)
+        web_support.bot_info["username"] = me.username or ""
 
         
         if Config.ADMIN:
@@ -115,6 +130,7 @@ def main():
         started = []
         try:
             if Config.STRING_SESSION:
+                await set_identity(app)
                 started.append(app)
                 await app.start()
             started.append(tb)

@@ -98,13 +98,13 @@ async def auto_delete_fsub_and_start(client: Client, user_id: int):
     if doc:
         await _clear_prompt(client, user_id, doc)
     user = await client.get_users(user_id)
-    bot_user = await client.get_me()
+    bot_username = getattr(client, "username", "")  # cached by set_identity() in bot.start()
     try:
         await client.send_message(
             user_id,
             f"<b>{user.mention},\n\nʏᴏᴜ ʜᴀᴠᴇ ᴊᴏɪɴᴇᴅ ᴀʟʟ ʀᴇǫᴜɪʀᴇᴅ ᴄʜᴀɴɴᴇʟs.\n\nᴄʟɪᴄᴋ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴛᴏ ᴄᴏɴᴛɪɴᴜᴇ</b>",
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("▶️ 𝖲𝗍𝖺𝗋𝗍", url=f"https://telegram.me/{bot_user.username}?start=start")]]
+                [[InlineKeyboardButton("▶️ 𝖲𝗍𝖺𝗋𝗍", url=f"https://telegram.me/{bot_username}?start=start")]]
             )
         )
     except Exception:
@@ -228,7 +228,7 @@ async def get_fsub(bot: Client, message: Message) -> bool:
             await tb.save_fsub_msg(user_id, msg.id)
             return False
 
-        bot_user = await bot.get_me()
+        bot_username = getattr(bot, "username", "")  # cached by set_identity()
         buttons = []
 
         for i in range(0, len(joinable), 2):
@@ -240,7 +240,7 @@ async def get_fsub(bot: Client, message: Message) -> bool:
             buttons.append(row)
 
         buttons.append(
-            [InlineKeyboardButton("🔄 𝖳𝗋𝗒 𝖠𝗀𝖺𝗂𝗇", url=f"https://telegram.me/{bot_user.username}?start=start")]
+            [InlineKeyboardButton("🔄 𝖳𝗋𝗒 𝖠𝗀𝖺𝗂𝗇", url=f"https://telegram.me/{bot_username}?start=start")]
         )
 
         text = (

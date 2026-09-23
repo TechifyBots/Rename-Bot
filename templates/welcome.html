@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Techify Bots ™- Bot Status</title>
+    <title>{{bot_name}} - Bot Status</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Base styles */
@@ -469,7 +469,7 @@
 <body>
     <!-- Loading Screen -->
     <div class="loading-screen" id="loadingScreen">
-        <div class="loading-logo">Techify Bots ™</div>
+        <div class="loading-logo">{{bot_name}}</div>
         <div class="loading-spinner"></div>
         <div class="loading-text">Initializing Status Dashboard...</div>
     </div>
@@ -484,7 +484,7 @@
     <!-- Main Content -->
     <div class="container">
         <div class="logo-container">
-            <div class="logo">Techify Bots ™</div>
+            <div class="logo">{{bot_name}}</div>
             <div class="tagline">Advanced Automation Solutions</div>
         </div>
 
@@ -507,6 +507,10 @@
                     <div class="status-item">
                         <div class="status-label">Version</div>
                         <div class="status-value">{{bot_version}}</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-label">Bot</div>
+                        <div class="status-value">{{bot_username}}</div>
                     </div>
                     <div class="status-item">
                         <div class="status-label">Users</div>

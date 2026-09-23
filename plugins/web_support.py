@@ -8,6 +8,10 @@ from plugins import __version__
 from helper.utils import humanbytes
 from helper.database import digital_botz
 
+# Identity of the main bot client, injected from TechifyBots.start() after
+# set_identity() has cached it; placeholders until startup completes.
+bot_info = {"name": "Rename Bot", "username": ""}
+
 _TEMPLATE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "templates", "welcome.html")
 with open(_TEMPLATE_PATH, encoding="utf-8") as f:
     _WELCOME_TEMPLATE = f.read()
@@ -33,6 +37,8 @@ async def get_status():
     return {
         "status": "Operational",
         "version": __version__,
+        "bot_name": bot_info["name"],
+        "bot_username": f"@{bot_info['username']}" if bot_info["username"] else "—",
         "total_users": total_users,
         "total_premium_users": total_premium_users,
         "uptime": currentTime,
@@ -53,6 +59,8 @@ async def root_route_handler(request):
     data = {
         "{{bot_status}}": status_data["status"],
         "{{bot_version}}": str(status_data["version"]),
+        "{{bot_name}}": str(status_data["bot_name"]),
+        "{{bot_username}}": str(status_data["bot_username"]),
         "{{total_users}}": str(status_data["total_users"]),
         "{{premium_users}}": str(status_data["total_premium_users"]),
         "{{bot_uptime}}": status_data["uptime"],
