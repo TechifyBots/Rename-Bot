@@ -84,3 +84,114 @@ jobs:
         run: |
           python -m pip install --upgrade pip pip-audit
           pip-audit -r requirements.txt --desc
+
+  validate:
+    # Deployment gate: cheap static checks that fail the PR when deploy
+    # configs drift from the code (missing env vars, stale template
+    # placeholders, floating Docker base, unparseable manifests) or when
+    # secrets/session files are staged. No extra services needed.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version-file: .python-version
+
+      - name: Install YAML parser
+        run: python -m pip install --upgrade pip "pyyaml==6.0.3"
+
+      - name: Config parity (config.py vs app.json vs render.yaml)
+        run: |
+          python - <<'EOF'
+          import json, re, sys
+          import yaml
+
+          config_src = open("config.py", encoding="utf-8").read()
+          code_vars = set(re.findall(r'os\.environ\.get\(\"([A-Z_]+)\"', config_src))
+          # _int_env("NAME", ...) vars are env vars too
+          code_vars |= set(re.findall(r'_int_env\(\"([A-Z_]+)\"', config_src))
+
+          app_env = set(json.load(open("app.json", encoding="utf-8"))["env"].keys())
+
+          render = yaml.safe_load(open("render.yaml", encoding="utf-8"))
+          render_vars = {e["key"] for s in render["services"] for e in s.get("envVars", [])}
+          # Render injects PORT itself; PYTHON_VERSION is platform config, not app env.
+          code_vars.discard("PORT")
+          render_vars.discard("PYTHON_VERSION")
+
+          errors = []
+          for var in sorted(code_vars - app_env):
+              errors.append(f"app.json missing env var used in config.py: {var}")
+          for var in sorted(code_vars - render_vars):
+              errors.append(f"render.yaml missing env var used in config.py: {var}")
+          if errors:
+              print("\n".join(errors))
+              sys.exit(1)
+          print(f"env parity OK: {len(code_vars)} vars in code, "
+                f"{len(app_env)} in app.json, {len(render_vars)} in render.yaml")
+          EOF
+
+      - name: Manifests parse (app.json, render.yaml, workflows, Dockerfile)
+        run: |
+          python - <<'EOF'
+          import json
+          import yaml
+
+          json.load(open("app.json", encoding="utf-8"))
+          render = yaml.safe_load(open("render.yaml", encoding="utf-8"))
+          assert render["services"], "render.yaml has no services"
+          for wf in (".github/workflows/ci.yml", ".github/workflows/codeql.yml",
+                     ".github/dependabot.yml"):
+              yaml.safe_load(open(wf, encoding="utf-8"))
+              print(f"{wf} OK")
+          assert open("Dockerfile", encoding="utf-8").read().strip(), "Dockerfile is empty"
+          print("manifests OK")
+          EOF
+
+      - name: Docker base pin matches .python-version
+        run: |
+          python - <<'EOF'
+          import re, sys
+          pyver = open(".python-version", encoding="utf-8").read().strip()
+          major_minor = ".".join(pyver.split(".")[:2])
+          docker = open("Dockerfile", encoding="utf-8").read()
+          m = re.search(r"^FROM python:([0-9.]+)-slim", docker, re.M)
+          if not m:
+              print("Dockerfile does not use python:X.Y-slim base"); sys.exit(1)
+          if not m.group(1).startswith(major_minor):
+              print(f"Docker base python:{m.group(1)} != .python-version {pyver}"); sys.exit(1)
+          print(f"docker base OK: python:{m.group(1)} matches {pyver}")
+          EOF
+
+      - name: Web template placeholders match web_support data keys
+        run: |
+          python - <<'EOF'
+          import re, sys
+          html = open("templates/welcome.html", encoding="utf-8").read()
+          src = open("plugins/web_support.py", encoding="utf-8").read()
+          in_html = set(re.findall(r"\{\{[a-z_]+\}\}", html))
+          in_code = set(re.findall(r"\{\{[a-z_]+\}\}", src))
+          missing = in_html - in_code
+          if missing:
+              print(f"placeholders in welcome.html with no data key: {sorted(missing)}"); sys.exit(1)
+          print(f"template OK: {len(in_html)} placeholders all have data keys")
+          EOF
+
+      - name: No secrets or runtime artifacts committed
+        run: |
+          # Hardcoded credentials / session files / local logs must never reach git.
+          # POSIX class avoids the nested-quote trap of backslash-s in YAML.
+          ! grep -RInE "(api_hash|api_id|bot_token|db_url|string_session)[[:space:]]*=[[:space:]]*['\"]" \
+            --include='*.py' bot.py config.py helper plugins | grep -v 'os.environ.get' || \
+            { echo "possible hardcoded credential in committed python files"; exit 1; }
+          ! git ls-files | grep -E '(\.env$|\.session|\.session-journal|BotLog\.txt|banned-users\.txt|__pycache__|\.pyc$)' \
+            || { echo "runtime artifact tracked by git"; exit 1; }
+          echo "secrets/artifacts OK"
+
+      - name: Full ruff (advisory)
+        continue-on-error: true
+        run: |
+          python -m pip install --upgrade pip "ruff==0.16.8"
+          ruff check --exclude .venv . || true

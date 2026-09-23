@@ -31,3 +31,11 @@ services:
         sync: false
       - key: STRING_SESSION
         sync: false
+      - key: BIN_CHANNEL
+        sync: false
+      - key: AUTH_CHANNELS
+        sync: false
+      - key: AUTH_REQ_CHANNELS
+        sync: false
+      - key: FSUB_EXPIRE
+        sync: false
