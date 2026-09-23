@@ -96,10 +96,8 @@ async def refunc(client, message):
         file = msg.reply_to_message
         media = getattr(file, file.media.value)
         if not "." in new_name:
-            if "." in media.file_name:
-                extn = media.file_name.rsplit('.', 1)[-1]
-            else:
-                extn = "mkv"
+            # file_name can be None for some uploads; fall back to mkv like the no-dot case
+            extn = (media.file_name or "").rsplit(".", 1)[-1] or "mkv"
             new_name = new_name + "." + extn
         await reply_message.delete()
         button = [[InlineKeyboardButton("📁 Dᴏᴄᴜᴍᴇɴᴛ",callback_data = "upload#document")]]
@@ -162,7 +160,7 @@ async def upload_files(bot, sender_id, upload_type, file_path, ph_path, caption,
         # Return error if upload fails
         return None, str(e)
 
-#@Client.on_callback_query(filters.regex("upload"))
+@Client.on_callback_query(filters.regex("upload#"), group=-5)
 async def upload_doc(bot, update):
     rkn_processing = await update.message.edit("<code>Processing...</code>")
     # Creating Directory for Metadata

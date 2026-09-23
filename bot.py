@@ -49,8 +49,7 @@ class TechifyBots(Client):
         self.uptime = Config.BOT_UPTIME
         self.premium = Config.PREMIUM_MODE
         self.uploadlimit = Config.UPLOAD_LIMIT_MODE
-        Config.BOT = self
-        
+
         self._web_runner = aiohttp.web.AppRunner(await web_server())
         await self._web_runner.setup()
         bind_address = "0.0.0.0"

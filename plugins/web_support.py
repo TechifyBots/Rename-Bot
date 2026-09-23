@@ -8,8 +8,9 @@ from plugins import __version__
 from helper.utils import humanbytes
 from helper.database import digital_botz
 
-# Ensure templates directory exists
-os.makedirs('templates', exist_ok=True)
+_TEMPLATE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "templates", "welcome.html")
+with open(_TEMPLATE_PATH, encoding="utf-8") as f:
+    _WELCOME_TEMPLATE = f.read()
 
 async def get_status():
     # Calculate your bot status metrics
@@ -48,31 +49,29 @@ TechifyBots = web.RouteTableDef()
 
 @TechifyBots.get("/", allow_head=True)
 async def root_route_handler(request):
-    # Get real-time status data - CORRECTED: use get_status() instead of get_bot_status() and get_live_status()
     status_data = await get_status()
-    # Render template with actual data
-    with open('templates/welcome.html', 'r', encoding='utf-8') as f:
-        template_content = f.read()
-    # Replace placeholders with actual data - CORRECTED: use status_data dictionary
-    html_content = template_content
-    html_content = html_content.replace('{{bot_status}}', status_data['status'])
-    html_content = html_content.replace('{{bot_version}}', status_data['version'])
-    html_content = html_content.replace('{{total_users}}', str(status_data['total_users']))
-    html_content = html_content.replace('{{premium_users}}', str(status_data['total_premium_users']))
-    html_content = html_content.replace('{{bot_uptime}}', status_data['uptime'])
-    html_content = html_content.replace('{{data_sent}}', status_data['sent'])
-    html_content = html_content.replace('{{data_recv}}', status_data['recv'])
-    html_content = html_content.replace('{{system_uptime}}', status_data['uptime'])
-    html_content = html_content.replace('{{cpu_usage}}', str(status_data['cpu_usage']))
-    html_content = html_content.replace('{{ram_usage}}', str(status_data['ram_usage']))
-    html_content = html_content.replace('{{disk_usage}}', str(status_data['disk_usage']))
-    html_content = html_content.replace('{{total_disk}}', status_data['total_disk'])
-    html_content = html_content.replace('{{used_disk}}', status_data['used_disk'])
-    html_content = html_content.replace('{{free_disk}}', status_data['free_disk'])
-    html_content = html_content.replace('{{system_sent}}', status_data['sent'])
-    html_content = html_content.replace('{{system_recv}}', status_data['recv'])
-    # Add current timestamp for cache busting
-    html_content = html_content.replace('{{timestamp}}', str(int(time.time())))
+    data = {
+        "{{bot_status}}": status_data["status"],
+        "{{bot_version}}": str(status_data["version"]),
+        "{{total_users}}": str(status_data["total_users"]),
+        "{{premium_users}}": str(status_data["total_premium_users"]),
+        "{{bot_uptime}}": status_data["uptime"],
+        "{{system_uptime}}": status_data["uptime"],
+        "{{data_sent}}": status_data["sent"],
+        "{{data_recv}}": status_data["recv"],
+        "{{system_sent}}": status_data["sent"],
+        "{{system_recv}}": status_data["recv"],
+        "{{cpu_usage}}": str(status_data["cpu_usage"]),
+        "{{ram_usage}}": str(status_data["ram_usage"]),
+        "{{disk_usage}}": str(status_data["disk_usage"]),
+        "{{total_disk}}": status_data["total_disk"],
+        "{{used_disk}}": status_data["used_disk"],
+        "{{free_disk}}": status_data["free_disk"],
+        "{{timestamp}}": str(int(time.time())),
+    }
+    html_content = _WELCOME_TEMPLATE
+    for placeholder, value in data.items():
+        html_content = html_content.replace(placeholder, value)
     return web.Response(text=html_content, content_type='text/html')
 
 async def web_server():

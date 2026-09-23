@@ -2,6 +2,7 @@ from pyrogram import Client, filters, StopPropagation
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from pymongo import AsyncMongoClient
 from config import Config
+import time
 
 def normalize_ids(*items):
     ids=set()
@@ -21,17 +22,29 @@ class TechifyBots:
         mongo_client=AsyncMongoClient(Config.DB_URL)
         db=mongo_client[Config.DB_NAME]
         self.settings_col=db["settings"]
+        self._maint_cache=None
 
-    async def get_maintenance(self)->bool:
-        data=await self.settings_col.find_one({"_id":"maintenance"})
-        return data.get("status",False) if data else False
+    # 30s cache: the blocker runs on every message, and one Mongo round-trip per
+    # message is disproportionate. /maintenance toggles now take up to 30s to apply.
+    _MAINT_TTL = 30
 
-    async def set_maintenance(self,status:bool):
+    async def get_maintenance(self) -> bool:
+        cached = self._maint_cache
+        now = time.monotonic()
+        if cached and now - cached[1] < self._MAINT_TTL:
+            return cached[0]
+        data = await self.settings_col.find_one({"_id": "maintenance"})
+        value = data.get("status", False) if data else False
+        self._maint_cache = (value, now)
+        return value
+
+    async def set_maintenance(self, status: bool):
         await self.settings_col.update_one(
-            {"_id":"maintenance"},
-            {"$set":{"status":status}},
+            {"_id": "maintenance"},
+            {"$set": {"status": status}},
             upsert=True
         )
+        self._maint_cache = (status, time.monotonic())
 
 tb=TechifyBots()
 

@@ -132,11 +132,15 @@ async def restart_bot(b, m):
         except UserIsBlocked:
             blocked +=1
             await digital_botz.delete_user(user['_id'])
+        except FloodWait as e:
+            await asyncio.sleep(e.value)
+            failed += 1
+        except PeerIdInvalid:
+            failed += 1
+            logger.warning("restart: peer not cached for %s, skipping", user['_id'])
         except Exception as e:
             failed += 1
-            await digital_botz.delete_user(user['_id'])
             logger.warning("restart broadcast failed: %s", e)
-            pass
         try:
             await rkn.edit(f"<u>ʀᴇsᴛᴀʀᴛ ɪɴ ᴩʀᴏɢʀᴇꜱꜱ:</u>\n\n• ᴛᴏᴛᴀʟ ᴜsᴇʀs: {total_users}\n• sᴜᴄᴄᴇssғᴜʟ: {success}\n• ʙʟᴏᴄᴋᴇᴅ ᴜsᴇʀs: {blocked}\n• ᴅᴇʟᴇᴛᴇᴅ ᴀᴄᴄᴏᴜɴᴛs: {deactivated}\n• ᴜɴsᴜᴄᴄᴇssғᴜʟ: {failed}")
         except FloodWait as e:

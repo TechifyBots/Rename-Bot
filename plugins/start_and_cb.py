@@ -6,7 +6,6 @@ from helper.database import digital_botz
 from config import Config, rkn
 from helper.utils import humanbytes
 from plugins import __version__ as _bot_version_, __developer__, __database__, __library__, __language__, __programer__
-from plugins.file_rename import upload_doc
 
 upgrade_button = InlineKeyboardMarkup([[        
         InlineKeyboardButton('ʙᴜʏ ᴘʀᴇᴍɪᴜᴍ ✓', user_id=int(Config.ADMIN)),
@@ -338,9 +337,6 @@ async def cb_handler(client, query: CallbackQuery):
                 InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "about")
             ]])
         )
-
-    elif data.startswith("upload"):
-        await upload_doc(client, query)
 
     elif data == "close":
         try:
