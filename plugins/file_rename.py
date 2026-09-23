@@ -163,6 +163,8 @@ async def upload_files(bot, sender_id, upload_type, file_path, ph_path, caption,
 
 @Client.on_callback_query(filters.regex("upload#"), group=-5)
 async def upload_doc(bot, update):
+    # Ack before the upload starts: group -5 runs alone here (no later handler acks it).
+    await update.answer()
     rkn_processing = await update.message.edit("<code>Processing...</code>")
     # Creating Directory for Metadata
     if not os.path.isdir("Metadata"):

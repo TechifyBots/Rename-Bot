@@ -20,7 +20,14 @@ upgrade_trial_button = InlineKeyboardMarkup([[
         InlineKeyboardButton("ᴛʀɪᴀʟ", callback_data = "give_trial"),
         InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "start")
 ]])
-        
+async def upgrade_view(client, user):
+    """Upgrade screen (text, keyboard) shared by /plans and the upgrade buttons."""
+    text = rkn.UPGRADE_PLAN.format(user.mention) if client.uploadlimit else rkn.UPGRADE_PREMIUM.format(user.mention)
+    premium = await digital_botz.premium_state(user.id)
+    if not premium["has_premium_access"] and not premium["has_free_trial"]:
+        return text, upgrade_trial_button
+    return text, upgrade_button
+
 @Client.on_message(filters.private & filters.command("start"))
 async def start(client, message):
     start_button = [[
@@ -184,20 +191,15 @@ async def myplan(client, message):
 async def plans(client, message):
     if not client.premium:
         return # premium mode disabled ✓
-    user = message.from_user
-    upgrade_msg = rkn.UPGRADE_PLAN.format(user.mention) if client.uploadlimit else rkn.UPGRADE_PREMIUM.format(user.mention)
-    premium = await digital_botz.premium_state(user.id)
-    if not premium["has_premium_access"]:
-        if not premium["has_free_trial"]:
-            await message.reply_text(text=upgrade_msg, reply_markup=upgrade_trial_button, link_preview_options=LinkPreviewOptions(is_disabled=True))
-        else:
-            await message.reply_text(text=upgrade_msg, reply_markup=upgrade_button, link_preview_options=LinkPreviewOptions(is_disabled=True))
-    else:
-        await message.reply_text(text=upgrade_msg, reply_markup=upgrade_button, link_preview_options=LinkPreviewOptions(is_disabled=True))
+    text, markup = await upgrade_view(client, message.from_user)
+    await message.reply_text(text=text, reply_markup=markup, link_preview_options=LinkPreviewOptions(is_disabled=True))
 
 @Client.on_callback_query()
 async def cb_handler(client, query: CallbackQuery):
     data = query.data 
+    # Answer first: Telegram keeps the tapped button spinning until this lands,
+    # and the branches below can take seconds (photo edit, live speed test).
+    await query.answer()
     if data == "start":
         start_button = [[
         InlineKeyboardButton('ᴀʙᴏᴜᴛ', callback_data='about'),
@@ -246,16 +248,14 @@ async def cb_handler(client, query: CallbackQuery):
     elif data == "upgrade":
         if not client.premium:
             return await query.message.delete()
-        user = query.from_user
-        upgrade_msg = rkn.UPGRADE_PLAN.format(user.mention) if client.uploadlimit else rkn.UPGRADE_PREMIUM.format(user.mention)
-        premium = await digital_botz.premium_state(user.id)
-        if not premium["has_premium_access"]:
-            if not premium["has_free_trial"]:
-                await query.message.edit_text(text=upgrade_msg, reply_markup=upgrade_trial_button, link_preview_options=LinkPreviewOptions(is_disabled=True))   
-            else:
-                await query.message.edit_text(text=upgrade_msg, reply_markup=upgrade_button, link_preview_options=LinkPreviewOptions(is_disabled=True))
-        else:
-            await query.message.edit_text(text=upgrade_msg, reply_markup=upgrade_button, link_preview_options=LinkPreviewOptions(is_disabled=True))
+        text, markup = await upgrade_view(client, query.from_user)
+        await query.message.edit_text(text=text, reply_markup=markup, link_preview_options=LinkPreviewOptions(is_disabled=True))
+
+    elif data == "plans":
+        if not client.premium:
+            return await query.message.delete()
+        text, markup = await upgrade_view(client, query.from_user)
+        await query.message.edit_text(text=text, reply_markup=markup, link_preview_options=LinkPreviewOptions(is_disabled=True))
            
     elif data == "give_trial":
         if not client.premium:
@@ -290,13 +290,6 @@ async def cb_handler(client, query: CallbackQuery):
             reply_markup=InlineKeyboardMarkup([[
              InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "help")]]))
 
-    elif data == "custom_metadata":
-        await query.message.edit_text(
-            text=rkn.METADATA,
-            link_preview_options=LinkPreviewOptions(is_disabled=True),
-            reply_markup=InlineKeyboardMarkup([[
-             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "help")]]))
-
     elif data == "bot_status":
         total_users = await digital_botz.total_users_count()
         if client.premium:
@@ -322,7 +315,7 @@ async def cb_handler(client, query: CallbackQuery):
         free = humanbytes(free)
         sent = humanbytes(psutil.net_io_counters().bytes_sent)
         recv = humanbytes(psutil.net_io_counters().bytes_recv)
-        cpu_usage = psutil.cpu_percent(interval=0.5)
+        cpu_usage = await asyncio.to_thread(psutil.cpu_percent, 0.5)
         ram_usage = psutil.virtual_memory().percent
         disk_usage = psutil.disk_usage('/').percent
         speed_label = await network_speed_label()
@@ -345,10 +338,15 @@ async def cb_handler(client, query: CallbackQuery):
         )
 
     elif data == "close":
-        try:
-            await query.message.delete()
-            await query.message.reply_to_message.delete()
-            await query.message.continue_propagation()
-        except Exception:
-            await query.message.delete()
-            await query.message.continue_propagation()
+        # Grab the parent before deleting anything: a missing parent (the user removed
+        # their /start command) must not abort the close, and deleting an already
+        # deleted message is what Telegram answers with MESSAGE_ID_INVALID.
+        parent = query.message.reply_to_message
+        for target in (query.message, parent):
+            if target is None:
+                continue
+            try:
+                await target.delete()
+            except Exception:
+                pass
+        await query.message.continue_propagation()
