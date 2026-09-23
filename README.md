@@ -105,7 +105,7 @@ Watch this short video to understand **what the bot is**, **why it's useful**, *
 | `IS_FSUB` | Enable / Disable Force Subscribe |
 | `FSUB_EXPIRE` | Force Subscribe Expire Time |
 | `AUTH_CHANNELS` | Force Subscribe Channels |
-| `AUTH_REQ_CHANNELS` | Request FSUB Channels |
+| `AUTH_REQ_CHANNELS` | Request FSUB Channels (membership verified live) |
 | `LOG_CHANNEL` | Log Channel |
 | `STRING_SESSION` | Session string required for 4GB file processing |
 | `PORT` | Web server port *(default: `8080`)* |
