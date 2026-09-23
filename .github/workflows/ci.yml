@@ -1,0 +1,86 @@
+name: CI
+
+# Runs on every push and PR, whatever the branch name is.
+on:
+  push:
+  pull_request:
+
+# Least privilege: CI only reads the repo.
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install "ruff==0.16.8"
+
+      - name: Byte-compile
+        run: python -m compileall -q bot.py config.py helper plugins
+
+      - name: Lint
+        # F = pyflakes (unused imports/vars, the real bug-catchers);
+        # E9 = hard syntax errors. The full 72-hit default set is style
+        # opinion (blind-except, naive-datetime, import order); enforcing it
+        # here would fail every existing commit, so those stay advisory only.
+        run: ruff check --exclude .venv --select F,E9 .
+
+      - name: Plugin-load smoke test
+        # importing helper.database builds an AsyncMongoClient at module level,
+        # which only parses the URI (no connection), so a dummy URL suffices.
+        env:
+          DB_URL: mongodb://localhost:27017
+        run: |
+          python - <<'EOF'
+          import importlib
+
+          modules = ["__init__", "admin", "file_rename", "fsub",
+                     "maintenance", "metadata", "start_and_cb"]
+          total = 0
+          for name in modules:
+              mod = importlib.import_module(f"plugins.{name}")
+              found = [o for o in vars(mod).values()
+                       if callable(o) and isinstance(getattr(o, "handlers", None), list)]
+              print(f"plugins.{name}: {len(found)} handler(s)")
+              assert found, f"plugins.{name} registered no handlers"
+              total += len(found)
+          print(f"total handlers: {total}")
+          assert total >= 30, f"handler count dropped to {total}, expected >= 30"
+
+          # web_support is aiohttp routes, not Telegram handlers: assert the
+          # route table instead.
+          import plugins.web_support as web
+          routes = list(web.TechifyBots)
+          print(f"web routes: {len(routes)}")
+          assert routes, "web route table is empty"
+          EOF
+
+  audit:
+    # Informational only: a new advisory with no fixed release yet should
+    # never block a deploy, but it should be visible on every run.
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+
+      - name: pip-audit
+        run: |
+          python -m pip install --upgrade pip pip-audit
+          pip-audit -r requirements.txt --desc
