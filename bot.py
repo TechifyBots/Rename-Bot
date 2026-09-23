@@ -118,6 +118,12 @@ class TechifyBots(Client):
 tb = TechifyBots()
 
 def main():
+    try:
+        import uvloop
+        uvloop.install()
+    except ImportError:
+        pass  # stdlib loop still works
+
     async def start_services():
         stop_event = asyncio.Event()
         loop = asyncio.get_running_loop()

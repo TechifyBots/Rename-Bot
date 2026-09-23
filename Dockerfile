@@ -23,4 +23,8 @@ RUN pip install --upgrade pip && \
 
 COPY . .
 
+# Pre-compile bytecode so cold start skips recompilation (compileall writes
+# explicitly even with PYTHONDONTWRITEBYTECODE=1).
+RUN python -m compileall -q bot.py config.py helper plugins
+
 CMD ["python", "bot.py"]

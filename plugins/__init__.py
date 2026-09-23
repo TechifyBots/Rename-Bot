@@ -11,14 +11,23 @@ __maindeveloper__ = "<a href=https://t.me/Digital_Botz>Digital Botz</a>"
 
 
 from pyrogram import Client, filters
+from pymongo.errors import DuplicateKeyError
 import datetime
 from helper.database import digital_botz
 
 @Client.on_message(filters.private)
 async def _(bot, message):
-    await digital_botz.add_user(bot, message) 
+    # One round-trip per message: fetch user+ban in one query, register on miss.
+    # DuplicateKeyError = concurrent first message already inserted, fine.
     user_id = message.from_user.id
-    ban_status = await digital_botz.get_ban_status(user_id)
+    user = await digital_botz.col.find_one({'_id': user_id}, {'ban_status': 1})
+    if user is None:
+        try:
+            await digital_botz.add_user(bot, message)
+        except DuplicateKeyError:
+            pass
+        user = {}
+    ban_status = user.get("ban_status") or {}
     if ban_status.get("is_banned", False):
         if ( datetime.date.today() - datetime.date.fromisoformat(ban_status["banned_on"])
         ).days > ban_status["ban_duration"]:

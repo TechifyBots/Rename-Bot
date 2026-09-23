@@ -56,8 +56,7 @@ async def rename_start(client, message):
             await message.reply_text(
                 text=media_info_text,
                 reply_markup=ForceReply(True)
-            )       
-            await asyncio.sleep(30)
+            )
         except FloodWait as e:
             await asyncio.sleep(e.value)
             await message.reply_text(
@@ -73,8 +72,7 @@ async def rename_start(client, message):
             await message.reply_text(
                 text=media_info_text,
                 reply_markup=ForceReply(True)
-            )       
-            await asyncio.sleep(30)
+            )
         except FloodWait as e:
             await asyncio.sleep(e.value)
             await message.reply_text(

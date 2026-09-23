@@ -33,7 +33,7 @@ async def get_status():
     net = psutil.net_io_counters()
     sent = humanbytes(net.bytes_sent)
     recv = humanbytes(net.bytes_recv)
-    cpu_usage = psutil.cpu_percent(interval=0.5)
+    cpu_usage = await asyncio.to_thread(psutil.cpu_percent, 0.5)
     ram_usage = psutil.virtual_memory().percent
     disk_usage = psutil.disk_usage('/').percent
     return {
