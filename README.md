@@ -30,6 +30,8 @@ A **powerful, open-source, and feature-rich** Telegram bot designed to **rename,
 ## 📑 Table of Contents
 
 - 🌸 **[Overview](#-overview)**
+- 🏗️ **[Architecture](#-architecture)**
+- 🛠️ **[Tech Stack](#-tech-stack)**
 - ✨ **[Features](#-features)**
 - 🎥 **[Quick Start](#-quick-start)**
 - ⚙️ **[Configuration](#-configuration)**
@@ -62,6 +64,124 @@ A **powerful, open-source, and feature-rich** Telegram bot designed to **rename,
 2. ⚙️ **Choose Your Options** — Configure your filename and preferred customization settings.
 3. 🔄 **Let the Bot Process** — The bot applies your selected settings automatically.
 4. 📥 **Get the Result** — Receive your customized file back through Telegram.
+
+---
+
+## 🏗️ Architecture
+
+### Runtime overview
+
+```mermaid
+flowchart TB
+    subgraph TG["Telegram"]
+        U["👤 User"]
+        API["☁️ Telegram API<br/>(MTProto)"]
+        CH["📢 Channels<br/>BIN / LOG / FSUB"]
+    end
+    subgraph PROC["bot.py — one process"]
+        MAIN["🤖 TechifyBots client<br/>bot token · workers=200 · 50 xmit"]
+        USER["👤 app client (file_rename)<br/>STRING_SESSION · 4GB uploads"]
+        WEB["🌐 aiohttp web server<br/>:$PORT → welcome.html"]
+        MW["🛡️ middleware chain<br/>maintenance → fsub → user-mw"]
+        FEAT["⚙️ feature plugins<br/>rename · admin · plans · metadata"]
+    end
+    subgraph DATA["MongoDB — Rename_Bot"]
+        CDB[("👥 user<br/>profile + quota")]
+        PDB[("💎 premium<br/>expiry keyed by id")]
+        JDB[("🔐 join_requests<br/>+ fsub_cache")]
+        SDB[("🔧 settings<br/>maintenance flag")]
+    end
+    U <--> API
+    API <--> MAIN & USER
+    MAIN --> CH
+    USER --> CH
+    MAIN --> MW --> FEAT
+    FEAT <--> CDB & PDB
+    MW <--> JDB & SDB
+    WEB --> CDB & PDB
+```
+
+Two Telegram clients share the process: the main bot client handles all commands, and an optional user-session client (`STRING_SESSION`) uploads files >2GB. The aiohttp status page lives in the same process on `$PORT`.
+
+### Request pipeline (Pyrogram handler groups)
+
+```mermaid
+flowchart LR
+    M["📩 any update"] --> G1["🚧 maintenance<br/>group -1<br/>drop + notice"]
+    G1 -->|bot alive| G2["🔐 fsub gate<br/>group -10<br/>join check"]
+    G2 -->|member| G3["👤 user middleware<br/>register · ban check"]
+    G3 --> OK["✅ feature handler<br/>rename · admin · plans"]
+    G1 -->|under maintenance| STOP1["⛔ stopped"]
+    G2 -->|not joined| STOP2["🔒 join prompt"]
+    G3 -->|banned| STOP3["🚫 banned notice"]
+```
+
+Earlier groups run first and `StopPropagation` halts the chain — maintenance blocks everything (except bypass IDs), force-subscribe blocks non-members, banned users never reach features.
+
+### Rename flow
+
+```mermaid
+flowchart TB
+    S["📤 user sends file"] --> INFO["📋 rename_start<br/>media info + ForceReply"]
+    INFO --> NAME["✏️ refunc<br/>new name → type buttons"]
+    NAME --> CB["🔘 upload# callback<br/>document · video · audio"]
+    CB --> DL["⬇️ download to Renames/"]
+    DL --> META{"🏷️ metadata mode?"}
+    META -->|on| FF["🎞️ ffmpeg copy-codec<br/>+ titles → Metadata/"]
+    META -->|off| UP["⬆️ upload"]
+    FF --> UP
+    UP --> TH["🖼️ thumbnail<br/>custom or media · 320px"]
+    TH --> BIG{"📦 >2GB?"}
+    BIG -->|yes| U4["👤 user-session upload<br/>→ BIN + user, cleanup"]
+    BIG -->|no| U2["🤖 bot upload<br/>→ BIN copy, cleanup"]
+```
+
+Downloads land in `Renames/`, metadata rewrites in `Metadata/`, every path is cleaned via `remove_path`. Premium daily quota is reserved before download and refunded on failure.
+
+### Web status page
+
+```mermaid
+flowchart LR
+    H["🔄 GET /"] --> GS["📊 get_status()<br/>cached counts 60s"]
+    H --> SP["🚀 network_speed_label()<br/>Ookla · cached 10min"]
+    GS & SP --> T["📝 fill 17 placeholders<br/>welcome.html"]
+    T --> R["🌐 styled dashboard"]
+```
+
+### Tech visuals
+
+<p align="center">
+  <a href="https://skillicons.dev">
+    <img src="https://skillicons.dev/icons?i=py,mongodb,docker,heroku,githubactions&perline=5" alt="Core stack" />
+  </a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Kurigram-2.2.26_Pyrogram_fork-26A5E4?style=for-the-badge&logo=telegram&logoColor=white" alt="Kurigram" />
+  <img src="https://img.shields.io/badge/aiohttp-3.14.3-2C5BB4?style=for-the-badge&logo=aiohttp&logoColor=white" alt="aiohttp" />
+  <img src="https://img.shields.io/badge/ffmpeg-copy_codec_streaming-00704A?style=for-the-badge&logo=ffmpeg&logoColor=white" alt="ffmpeg" />
+  <img src="https://img.shields.io/badge/Ookla_speedtest-live_status-8B5CF6?style=for-the-badge&logo=speedtest&logoColor=white" alt="Ookla" />
+  <img src="https://img.shields.io/badge/uvloop-event_loop-FFD43B?style=for-the-badge&logo=python&logoColor=black" alt="uvloop" />
+</p>
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology | Version | Role |
+|:------|:-----------|:--------|:-----|
+| Language | Python | **3.14.7** (`python:3.14-slim` in Docker) | Async runtime, pinned in `.python-version` |
+| Telegram | Kurigram (+ TgCryptoRust) | `2.2.26` / `1.3.1` | Pyrogram fork — bot + user-session clients, `workers=200` |
+| Web | aiohttp | `3.14.3` | Status dashboard (`/`, 17-placeholder template) |
+| Database | MongoDB (`pymongo` AsyncMongoClient) | `4.18.1` | `user` (profile + quota) · `premium` (expiry keyed by `id`, indexed) · `join_requests` · `fsub_cache` · `settings` — one shared client |
+| Media | ffmpeg / ffprobe | system (Docker-baked) | Duration probe, copy-codec metadata rewrite, 320px thumbnails (`Pillow 12.3.0`) |
+| Loop | uvloop | `0.22.1` | Fast event loop, stdlib fallback |
+| Metrics | psutil + Ookla speedtest | `7.2.2` | CPU/RAM/disk + live network label (10-min cache) |
+| Config | python-dotenv | `1.2.3` | 14 env vars (`config.py` ↔ `app.json` ↔ `render.yaml`, CI-checked) |
+| CI/CD | GitHub Actions + CodeQL + Dependabot | — | `build` · `audit` · `validate` gates, weekly CodeQL + pip updates |
+| Deploy | Docker · Heroku · Render · Koyeb/Railway | — | `Dockerfile` · `app.json` · `render.yaml` in repo |
+
+> Single-process design: bot + optional 4GB user client + web server share one event loop and one Mongo client — no inter-service wiring, `SIGINT/SIGTERM` graceful shutdown.
 
 ---
 
