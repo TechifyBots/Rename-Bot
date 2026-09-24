@@ -67,7 +67,7 @@ A **powerful, open-source, and feature-rich** Telegram bot designed to **rename,
 
 ---
 
-## 🏗️ Architecture
+## 🛠️ Architecture
 
 ### Runtime overview
 
