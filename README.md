@@ -30,8 +30,8 @@ A **powerful, open-source, and feature-rich** Telegram bot designed to **rename,
 ## 📑 Table of Contents
 
 - 🌸 **[Overview](#-overview)**
-- 🏗️ **[Architecture](#-architecture)**
-- 🛠️ **[Tech Stack](#-tech-stack)**
+- 📜 **[Architecture](#-architecture)**
+- 📝 **[Tech Stack](#-tech-stack)**
 - ✨ **[Features](#-features)**
 - 🎥 **[Quick Start](#-quick-start)**
 - ⚙️ **[Configuration](#-configuration)**
@@ -67,7 +67,7 @@ A **powerful, open-source, and feature-rich** Telegram bot designed to **rename,
 
 ---
 
-## 🛠️ Architecture
+## 📜 Architecture
 
 ### Runtime overview
 
@@ -166,7 +166,7 @@ flowchart LR
 
 ---
 
-## 🛠️ Tech Stack
+## 📝 Tech Stack
 
 | Layer | Technology | Version | Role |
 |:------|:-----------|:--------|:-----|
