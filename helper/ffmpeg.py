@@ -1,9 +1,31 @@
-import os, time, asyncio, subprocess, json
+import asyncio, subprocess, json
+import logging
+
+logger = logging.getLogger(__name__)
 from helper.utils import metadata_text
+
+
+async def get_duration(file_path: str) -> int:
+    """Media duration in seconds via ffprobe, 0 on any failure. Blocking call, keep off hot paths."""
+    try:
+        out = await asyncio.to_thread(
+            subprocess.check_output,
+            ['ffprobe', '-v', 'error', '-show_entries', 'format=duration',
+             '-of', 'default=noprint_wrappers=1:nokey=1', file_path],
+            timeout=15,
+        )
+        return int(float(out.decode().strip()))
+    except Exception as e:
+        logger.exception("Error extracting duration: %s", e)
+        return 0
 
 async def change_metadata(input_file, output_file, metadata):
     author, title, video_title, audio_title, subtitle_title = await metadata_text(metadata)
-    output = subprocess.check_output(['ffprobe', '-v', 'error', '-show_streams', '-print_format', 'json', input_file])
+    output = await asyncio.to_thread(
+        subprocess.check_output,
+        ['ffprobe', '-v', 'error', '-show_streams', '-print_format', 'json', input_file],
+        timeout=15,
+    )
     data = json.loads(output)
     streams = data['streams']
     cmd = [
@@ -26,15 +48,15 @@ async def change_metadata(input_file, output_file, metadata):
         elif stream['codec_type'] == 'subtitle' and subtitle_title:
             cmd.extend([f'-metadata:s:{stream["index"]}', f'title={subtitle_title}'])
 
-    cmd.extend(['-metadata', f'comment=Added by @TechifyBots'])
+    cmd.extend(['-metadata', 'comment=Added by @TechifyBots'])
     cmd.extend(['-f', 'matroska']) # support all format 
     cmd.append(output_file)
-    print(cmd)
+    logger.debug("ffmpeg cmd: %s", cmd)
     
     # Execute the command
     try:
-        subprocess.run(cmd, check=True)
+        await asyncio.to_thread(subprocess.run, cmd, check=True, capture_output=True)
         return True
     except subprocess.CalledProcessError as e:
-        print("FFmpeg Error:", e.stderr)
+        logger.exception("FFmpeg failed: %s", e.stderr)
         return False

@@ -1,13 +1,21 @@
-import re, os, time
-from typing import List
-id_pattern = re.compile(r'^.\d+$') 
+import os, time
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+def _int_env(name, default=0):
+    try:
+        return int(os.environ.get(name, "") or default)
+    except (TypeError, ValueError):
+        return default
+
 
 class Config(object):
 
     API_ID = os.environ.get("API_ID", "")
     API_HASH = os.environ.get("API_HASH", "")
-    BOT_TOKEN = os.environ.get("BOT_TOKEN", "") 
-    BOT = None
+    BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
 
     # premium account string session required 😢 
     STRING_SESSION = os.environ.get("STRING_SESSION", "")
@@ -15,12 +23,15 @@ class Config(object):
     # database config
     DB_NAME = os.environ.get("DB_NAME", "Rename_Bot")     
     DB_URL = os.environ.get("DB_URL", "")
+
+    # logging - canonical log path for setup and the /logs command
+    LOG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "BotLog.txt")
  
     # other configs
     PIC = os.environ.get("PIC", "https://i.ibb.co/YTk9gzhY/IMG-20250906-144306-804.jpg")
-    ADMIN = int(os.environ.get("ADMIN", "1255023013"))
-    LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL", ""))
-    BIN_CHANNEL = int(os.environ.get("BIN_CHANNEL", ""))
+    ADMIN = _int_env("ADMIN", 0)
+    LOG_CHANNEL = _int_env("LOG_CHANNEL", 0)
+    BIN_CHANNEL = _int_env("BIN_CHANNEL", 0)
 
     # free upload limit 
     FREE_UPLOAD_LIMIT = 6442450944 # calculation 6*1024*1024*1024=results
@@ -119,6 +130,7 @@ class rkn(object):
 ⌚️ 𝖡𝗈𝗍 𝖴𝗉𝗍𝗂𝗆𝖾: {}
 👥 𝖳𝗈𝗍𝖺𝗅 𝖴𝗌𝖾𝗋𝗌: {}
 💸 𝖳𝗈𝗍𝖺𝗅 𝖯𝗋𝖾𝗆𝗂𝗎𝗆 𝖴𝗌𝖾𝗋𝗌: {}
+🌐 𝖭𝖾𝗍𝗐𝗈𝗋𝗄: {}
 ֍ 𝖴𝗉𝗅𝗈𝖺𝖽: {}
 ⊙ 𝖣𝗈𝗐𝗇𝗅𝗈𝖺𝖽: {}"""
 
@@ -132,22 +144,19 @@ class rkn(object):
 💾 𝖥𝗋𝖾𝖾 𝖲𝗉𝖺𝖼𝖾: "{}"
 ⬆️ 𝖴𝗉𝗅𝗈𝖺𝖽: "{}"
 ⬇️ 𝖣𝗈𝗐𝗇𝗅𝗈𝖺𝖽: "{}"
+🌐 𝖭𝖾𝗍𝗐𝗈𝗋𝗄: "{}"
 
 ‣ 𝖵𝟥.𝟢.𝟢 [𝖲𝖳𝖠𝖡𝖫𝖤]"""
 
-    METADATA = """❪ 𝖲𝖤𝖳 𝖢𝖴𝖲𝖳𝖮𝖬 𝖬𝖤𝖳𝖠𝖣𝖠𝖳𝖠 ❫
+    SEND_METADATA = """<b>📝 𝖲𝖾𝗇𝖽 𝖸𝗈𝗎𝗋 𝖢𝗎𝗌𝗍𝗈𝗆 𝖬𝖾𝗍𝖺𝖽𝖺𝗍𝖺 𝖢𝗈𝖽𝖾</b>
 
-- /metadata - 𝖴𝗌𝖾 𝖳𝗁𝗂𝗌 𝖢𝗈𝗆𝗆𝖺𝗇𝖽 𝖳𝗈 𝖲𝖾𝗍 𝖠𝗇𝖽 𝖢𝗁𝖺𝗇𝗀𝖾 𝖸𝗈𝗎𝗋 𝖥𝗂𝗅𝖾 𝖬𝖾𝗍𝖺𝖽𝖺𝗍𝖺.
-
-☞ 𝖤𝗑𝖺𝗆𝗉𝗅𝖾:
-
-`--change-title @TechifyBots
+<code>--change-title @TechifyBots
 --change-video-title @TechifyBots
 --change-audio-title @TechifyBots
 --change-subtitle-title @TechifyBots
---change-author @TechifyBots`
+--change-author @TechifyBots</code>
 
-📥 𝖥𝗈𝗋 𝖧𝖾𝗅𝗉, 𝖢𝗈𝗇𝗍𝖺𝖼𝗍: @TechifyBots"""
+𝖱𝖾𝗉𝗅𝗒 𝗍𝗈 𝗍𝗁𝗂𝗌 𝗆𝖾𝗌𝗌𝖺𝗀𝖾 𝗐𝗂𝗍𝗁 𝗒𝗈𝗎𝗋 𝖼𝗈𝖽𝖾 (𝗍𝖾𝗑𝗍 𝗈𝗇𝗅𝗒)."""
     
     CUSTOM_FILE_NAME = """<u>🖋️ 𝖢𝗎𝗌𝗍𝗈𝗆 𝖥𝗂𝗅𝖾 𝖭𝖺𝗆𝖾</u>
 

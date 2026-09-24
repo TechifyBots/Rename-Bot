@@ -1,0 +1,16 @@
+version: 2
+updates:
+  # requirements.txt: opens a PR per outdated/vulnerable package.
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+    # kurigram tracks Telegram layer updates; auto-merge nothing,
+    # a layer bump can change button/media behaviour.
+    open-pull-requests-limit: 5
+
+  # Keeps actions/checkout, setup-python, codeql-action pinned current.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

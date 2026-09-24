@@ -1,7 +1,9 @@
+from pyrogram.enums import ButtonStyle
 from pyrogram import Client, filters, StopPropagation
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
-from motor.motor_asyncio import AsyncIOMotorClient
 from config import Config
+from helper.database import digital_botz
+import time
 
 def normalize_ids(*items):
     ids=set()
@@ -18,20 +20,32 @@ BYPASS_IDS=normalize_ids(Config.ADMIN,Config.LOG_CHANNEL,Config.BIN_CHANNEL,Conf
 
 class TechifyBots:
     def __init__(self):
-        mongo_client=AsyncIOMotorClient(Config.DB_URL)
-        db=mongo_client[Config.DB_NAME]
-        self.settings_col=db["settings"]
+        # Shared client: a second AsyncMongoClient would add its own connection
+        # pool and topology monitor for three tiny queries.
+        self.settings_col=digital_botz.db["settings"]
+        self._maint_cache=None
 
-    async def get_maintenance(self)->bool:
-        data=await self.settings_col.find_one({"_id":"maintenance"})
-        return data.get("status",False) if data else False
+    # 30s cache: the blocker runs on every message, and one Mongo round-trip per
+    # message is disproportionate. /maintenance toggles now take up to 30s to apply.
+    _MAINT_TTL = 30
 
-    async def set_maintenance(self,status:bool):
+    async def get_maintenance(self) -> bool:
+        cached = self._maint_cache
+        now = time.monotonic()
+        if cached and now - cached[1] < self._MAINT_TTL:
+            return cached[0]
+        data = await self.settings_col.find_one({"_id": "maintenance"})
+        value = data.get("status", False) if data else False
+        self._maint_cache = (value, now)
+        return value
+
+    async def set_maintenance(self, status: bool):
         await self.settings_col.update_one(
-            {"_id":"maintenance"},
-            {"$set":{"status":status}},
+            {"_id": "maintenance"},
+            {"$set": {"status": status}},
             upsert=True
         )
+        self._maint_cache = (status, time.monotonic())
 
 tb=TechifyBots()
 
@@ -43,7 +57,7 @@ async def maintenance_blocker(client:Client,m:Message):
         return
     try:
         await m.delete()
-    except:
+    except Exception:
         pass
     try:
         await client.send_message(
@@ -54,10 +68,10 @@ async def maintenance_blocker(client:Client,m:Message):
                 "ᴄᴏɴᴛᴀᴄᴛ ᴏᴡɴᴇʀ ꜰᴏʀ ᴍᴏʀᴇ ɪɴꜰᴏ."
             ),
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("👨‍💻 ᴏᴡɴᴇʀ 👨‍💻",user_id=int(Config.ADMIN))]]
+                [[InlineKeyboardButton("👨‍💻 ᴏᴡɴᴇʀ 👨‍💻",user_id=int(Config.ADMIN), style=ButtonStyle.PRIMARY)]]
             )
         )
-    except:
+    except Exception:
         pass
     raise StopPropagation
 
@@ -71,10 +85,10 @@ async def maintenance_cmd(_,m:Message):
         if await tb.get_maintenance():
             return await m.reply("⚠️ Maintenance mode is already enabled.")
         await tb.set_maintenance(True)
-        return await m.reply("✅ Maintenance mode **enabled**.")
+        return await m.reply("✅ Maintenance mode <b>enabled</b>.")
     if status=="off":
         if not await tb.get_maintenance():
             return await m.reply("⚠️ Maintenance mode is already disabled.")
         await tb.set_maintenance(False)
-        return await m.reply("❌ Maintenance mode **disabled**.")
+        return await m.reply("❌ Maintenance mode <b>disabled</b>.")
     await m.reply("Invalid status. Use 'on' or 'off'.")

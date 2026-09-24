@@ -43,14 +43,33 @@
             "description": "Your Bot start cmd Pic",
             "value": "https://telegra.ph/file/b746aadfe59959eb76f59.jpg",
             "required": false
+        },
+        "BIN_CHANNEL": {
+            "description": "Channel for storing renamed files (bot must be admin, id starts with -100)",
+            "required": false
+        },
+        "STRING_SESSION": {
+            "description": "Premium account string session for 2GB+ file support (optional)",
+            "required": false
+        },
+        "AUTH_CHANNELS": {
+            "description": "Force-subscribe channel ids, space separated (optional)",
+            "required": false
+        },
+        "AUTH_REQ_CHANNELS": {
+            "description": "Force-subscribe channel ids that need a join request, space separated (optional)",
+            "required": false
+        },
+        "FSUB_EXPIRE": {
+            "description": "Minutes after which a pending join request is approved, 0 = never (optional, default 2)",
+            "required": false
         }
     },
-    "buildpacks": [
-        {
-            "url": "heroku/python"
-        },
-        {
-            "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest"
+    "stack": "container",
+    "formation": {
+        "web": {
+            "quantity": 1,
+            "size": "basic"
         }
-    ]
+    }
 }

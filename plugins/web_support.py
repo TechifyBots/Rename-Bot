@@ -1,38 +1,60 @@
 from aiohttp import web
-import json
+import asyncio
 import time
 import psutil
 import shutil
 import os
-import base64
 from config import Config
 from plugins import __version__
 from helper.utils import humanbytes
 from helper.database import digital_botz
+from helper.speedtest import network_speed_label
 
-# Ensure templates directory exists
-os.makedirs('templates', exist_ok=True)
+# Identity of the main bot client, injected from TechifyBots.start() after
+# set_identity() has cached it; placeholders until startup completes.
+bot_info = {"name": "Rename Bot", "username": ""}
+
+# Status page counts are cosmetic; cache them so a page view doesn't hit Mongo
+# twice. 60s staleness on a dashboard is invisible.
+_COUNTS_TTL = 60
+_counts_cache = (0.0, 0, "Disabled ✅")
+
+async def _cached_counts():
+    global _counts_cache
+    ts, users, premium = _counts_cache
+    if time.monotonic() - ts < _COUNTS_TTL:
+        return users, premium
+    users = await digital_botz.total_users_count()
+    premium = (
+        await digital_botz.total_premium_users_count()
+        if Config.PREMIUM_MODE else "Disabled ✅"
+    )
+    _counts_cache = (time.monotonic(), users, premium)
+    return users, premium
+
+_TEMPLATE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "templates", "welcome.html")
+with open(_TEMPLATE_PATH, encoding="utf-8") as f:
+    _WELCOME_TEMPLATE = f.read()
 
 async def get_status():
     # Calculate your bot status metrics
-    total_users = await digital_botz.total_users_count()
-    if Config.PREMIUM_MODE:
-        total_premium_users = await digital_botz.total_premium_users_count()
-    else:
-        total_premium_users = "Disabled ✅"
+    total_users, total_premium_users = await _cached_counts()
     currentTime = time.strftime("%Hh%Mm%Ss", time.gmtime(time.time() - Config.BOT_UPTIME))    
     total, used, free = shutil.disk_usage(".")
     total = humanbytes(total)
     used = humanbytes(used)
     free = humanbytes(free)
-    sent = humanbytes(psutil.net_io_counters().bytes_sent)
-    recv = humanbytes(psutil.net_io_counters().bytes_recv)
-    cpu_usage = psutil.cpu_percent()
+    net = psutil.net_io_counters()
+    sent = humanbytes(net.bytes_sent)
+    recv = humanbytes(net.bytes_recv)
+    cpu_usage = await asyncio.to_thread(psutil.cpu_percent, 0.5)
     ram_usage = psutil.virtual_memory().percent
     disk_usage = psutil.disk_usage('/').percent
     return {
         "status": "Operational",
         "version": __version__,
+        "bot_name": bot_info["name"],
+        "bot_username": f"@{bot_info['username']}" if bot_info["username"] else "—",
         "total_users": total_users,
         "total_premium_users": total_premium_users,
         "uptime": currentTime,
@@ -43,38 +65,40 @@ async def get_status():
         "used_disk": used,
         "free_disk": free,
         "sent": sent,
-        "recv": recv
+        "recv": recv,
     }
 TechifyBots = web.RouteTableDef()
 
 @TechifyBots.get("/", allow_head=True)
 async def root_route_handler(request):
-    # Get real-time status data - CORRECTED: use get_status() instead of get_bot_status() and get_live_status()
-    status_data = await get_status()
-    # Render template with actual data
-    with open('templates/welcome.html', 'r', encoding='utf-8') as f:
-        template_content = f.read()
-    # Replace placeholders with actual data - CORRECTED: use status_data dictionary
-    html_content = template_content
-    html_content = html_content.replace('{{bot_status}}', status_data['status'])
-    html_content = html_content.replace('{{bot_version}}', status_data['version'])
-    html_content = html_content.replace('{{total_users}}', str(status_data['total_users']))
-    html_content = html_content.replace('{{premium_users}}', str(status_data['total_premium_users']))
-    html_content = html_content.replace('{{bot_uptime}}', status_data['uptime'])
-    html_content = html_content.replace('{{data_sent}}', status_data['sent'])
-    html_content = html_content.replace('{{data_recv}}', status_data['recv'])
-    html_content = html_content.replace('{{system_uptime}}', status_data['uptime'])
-    html_content = html_content.replace('{{cpu_usage}}', str(status_data['cpu_usage']))
-    html_content = html_content.replace('{{ram_usage}}', str(status_data['ram_usage']))
-    html_content = html_content.replace('{{disk_usage}}', str(status_data['disk_usage']))
-    html_content = html_content.replace('{{total_disk}}', status_data['total_disk'])
-    html_content = html_content.replace('{{used_disk}}', status_data['used_disk'])
-    html_content = html_content.replace('{{free_disk}}', status_data['free_disk'])
-    html_content = html_content.replace('{{system_sent}}', status_data['sent'])
-    html_content = html_content.replace('{{system_recv}}', status_data['recv'])
-    # Add current timestamp for cache busting
-    html_content = html_content.replace('{{timestamp}}', str(int(time.time())))
+    status_data, speed_label = await asyncio.gather(get_status(), network_speed_label())
+    data = {
+        "{{bot_status}}": status_data["status"],
+        "{{bot_version}}": str(status_data["version"]),
+        "{{bot_name}}": str(status_data["bot_name"]),
+        "{{bot_username}}": str(status_data["bot_username"]),
+        "{{total_users}}": str(status_data["total_users"]),
+        "{{premium_users}}": str(status_data["total_premium_users"]),
+        "{{bot_uptime}}": status_data["uptime"],
+        "{{system_uptime}}": status_data["uptime"],
+        "{{system_sent}}": status_data["sent"],
+        "{{system_recv}}": status_data["recv"],
+        "{{cpu_usage}}": str(status_data["cpu_usage"]),
+        "{{ram_usage}}": str(status_data["ram_usage"]),
+        "{{disk_usage}}": str(status_data["disk_usage"]),
+        "{{total_disk}}": status_data["total_disk"],
+        "{{used_disk}}": status_data["used_disk"],
+        "{{free_disk}}": status_data["free_disk"],
+        "{{net_speed}}": speed_label,
+    }
+    html_content = _WELCOME_TEMPLATE
+    for placeholder, value in data.items():
+        html_content = html_content.replace(placeholder, value)
     return web.Response(text=html_content, content_type='text/html')
+
+@TechifyBots.get("/favicon.ico", allow_head=True)
+async def favicon_handler(request):
+    return web.Response(status=204)
 
 async def web_server():
     web_app = web.Application(client_max_size=30000000)

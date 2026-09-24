@@ -1,13 +1,38 @@
-import motor.motor_asyncio, datetime, pytz
+import datetime
+from pymongo import AsyncMongoClient
 from config import Config
 from helper.utils import send_log
 
+
 class Database:
     def __init__(self, uri, database_name):
-        self._client = motor.motor_asyncio.AsyncIOMotorClient(uri)
+        from pymongo.errors import ConfigurationError as _ConfigError
+
+        uri = (uri or "").strip().strip("\"'")
+        if not uri:
+            raise RuntimeError(
+                "DB_URL is empty: set the DB_URL env var to your MongoDB "
+                "connection string (e.g. heroku config:set DB_URL='mongodb+srv://...')"
+            )
+        try:
+            self._client = AsyncMongoClient(uri)
+        except _ConfigError as e:
+            raise RuntimeError(
+                f"Invalid DB_URL ({e}): expected "
+                "'mongodb://...' or 'mongodb+srv://...', no extra commas/quotes, "
+                "URL-encode @/: in the password"
+            ) from e
         self.db = self._client[database_name]
         self.col = self.db.user
         self.premium = self.db.premium
+
+    async def ensure_indexes(self):
+        # premium docs key on a plain "id" field; without this index every
+        # premium upsert/find/expire-sweep scans the collection.
+        await self.premium.create_index("id", unique=True)
+
+    async def close(self):
+        await self._client.close()
 
     def new_user(self, id):
         return dict(
@@ -41,7 +66,7 @@ class Database:
             await send_log(b, u)
 
     async def is_user_exist(self, id):
-        user = await self.col.find_one({'_id': int(id)})
+        user = await self.col.find_one({'_id': int(id)}, {'_id': 1})
         return bool(user)
 
     async def total_users_count(self):
@@ -100,15 +125,6 @@ class Database:
     async def set_used_limit(self, id, used):
         await self.col.update_one({'_id': int(id)}, {'$set': {'used_limit': used}})
       
-    async def set_usertype(self, id, type):
-        await self.col.update_one({'_id': int(id)}, {'$set': {'usertype': type}})
-
-    async def set_uploadlimit(self, id, limit):
-        await self.col.update_one({'_id': int(id)}, {'$set': {'uploadlimit': limit}})
-  
-    async def set_reset_dailylimit(self, id, date):
-        await self.col.update_one({'_id': int(id)}, {'$set': {'daily': date}})
-        
     async def reset_uploadlimit_access(self, user_id):
         seconds = 1440 * 60
         reset_date = datetime.datetime.now() + datetime.timedelta(seconds=seconds)
@@ -134,9 +150,12 @@ class Database:
                         'used_limit': zero_usage
                     }}
                 )
+                user_data['daily'] = reset_date
+                user_data['used_limit'] = zero_usage
+        return user_data
                         
-    async def get_user_data(self, id) -> dict:
-        user_data = await self.col.find_one({'_id': int(id)})
+    async def get_user_data(self, id, projection=None) -> dict:
+        user_data = await self.col.find_one({'_id': int(id)}, projection)
         return user_data or None
         
     async def get_user(self, user_id):
@@ -172,17 +191,11 @@ class Database:
             await self.col.update_one(
                 {'_id': user_id}, 
                 {'$set': {
-                    'usertype': user_type,
+                    'usertype': type,
                     'uploadlimit': limit
                 }}
             )
           
-    async def checking_remaining_time(self, user_id):
-        user_data = await self.get_user(user_id)
-        expiry_time = user_data.get("expiry_time")
-        time_left_str = expiry_time - datetime.datetime.now()
-        return time_left_str
-
     async def has_premium_access(self, user_id):
         user_data = await self.get_user(user_id)
         if user_data:
@@ -200,15 +213,29 @@ class Database:
         count = await self.premium.count_documents({"expiry_time": {"$gt": datetime.datetime.now()}})
         return count
 
-    async def get_all_premium_users(self):
-        all_premium_users = self.premium.find({"expiry_time": {"$gt": datetime.datetime.now()}})
-        return all_premium_users
-
     async def get_free_trial_status(self, user_id):
         user_data = await self.get_user(user_id)
         if user_data:
             return user_data.get("has_free_trial", False)
         return False
+
+    async def premium_state(self, user_id) -> dict:
+        """One read for callers that need trial flag + access verdict."""
+        user_data = await self.get_user(user_id)
+        active = False
+        if user_data:
+            expiry_time = user_data.get("expiry_time")
+            if expiry_time is None:
+                active = False  # free trial was used up
+            elif isinstance(expiry_time, datetime.datetime) and datetime.datetime.now() <= expiry_time:
+                active = True
+            else:
+                await self.remove_premium(user_id)
+                user_data["expiry_time"] = None
+        return {
+            "has_free_trial": bool(user_data and user_data.get("has_free_trial", False)),
+            "has_premium_access": active,
+        }
 
     async def give_free_trial(self, user_id):
         seconds = 720 * 60
@@ -242,15 +269,6 @@ class Database:
             banned_on=datetime.date.today().isoformat(),
             ban_reason=ban_reason)
         await self.col.update_one({'_id': int(user_id)}, {'$set': {'ban_status': ban_status}})
-
-    async def get_ban_status(self, id):
-        default = dict(
-            is_banned=False,
-            ban_duration=0,
-            banned_on=datetime.date.max.isoformat(),
-            ban_reason='')
-        user = await self.col.find_one({'_id': int(id)})
-        return user.get('ban_status', default)
 
     async def get_all_banned_users(self):
         banned_users = self.col.find({'ban_status.is_banned': True})

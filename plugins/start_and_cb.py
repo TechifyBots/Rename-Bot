@@ -1,35 +1,45 @@
-import random, asyncio, datetime, pytz, time, psutil, shutil
-from pyrogram import Client, filters, enums
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply, LinkPreviewOptions, CallbackQuery
+import asyncio, datetime, time, psutil
+from html import escape
+from pyrogram.enums import ButtonStyle
+from pyrogram import Client, filters
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, LinkPreviewOptions, CallbackQuery
 from helper.database import digital_botz
+from helper.speedtest import network_speed_label
 from config import Config, rkn
 from helper.utils import humanbytes
 from plugins import __version__ as _bot_version_, __developer__, __database__, __library__, __language__, __programer__
-from plugins.file_rename import upload_doc
+from plugins.web_support import get_status
 
 upgrade_button = InlineKeyboardMarkup([[        
-        InlineKeyboardButton('ʙᴜʏ ᴘʀᴇᴍɪᴜᴍ ✓', user_id=int(Config.ADMIN)),
+        InlineKeyboardButton('ʙᴜʏ ᴘʀᴇᴍɪᴜᴍ ✓', user_id=int(Config.ADMIN), style=ButtonStyle.SUCCESS),
          ],[
-        InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "start")
+        InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "start", style=ButtonStyle.PRIMARY)
 ]])
 
 upgrade_trial_button = InlineKeyboardMarkup([[        
-        InlineKeyboardButton('ʙᴜʏ ᴘʀᴇᴍɪᴜᴍ ✓', user_id=int(Config.ADMIN)),
+        InlineKeyboardButton('ʙᴜʏ ᴘʀᴇᴍɪᴜᴍ ✓', user_id=int(Config.ADMIN), style=ButtonStyle.SUCCESS),
          ],[
-        InlineKeyboardButton("ᴛʀɪᴀʟ", callback_data = "give_trial"),
-        InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "start")
+        InlineKeyboardButton("ᴛʀɪᴀʟ", callback_data = "give_trial", style=ButtonStyle.SUCCESS),
+        InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "start", style=ButtonStyle.PRIMARY)
 ]])
-        
+
+async def upgrade_view(client, user):
+    """Upgrade screen (text, keyboard) shared by /plans and the upgrade buttons."""
+    text = rkn.UPGRADE_PLAN.format(user.mention) if client.uploadlimit else rkn.UPGRADE_PREMIUM.format(user.mention)
+    premium = await digital_botz.premium_state(user.id)
+    if not premium["has_premium_access"] and not premium["has_free_trial"]:
+        return text, upgrade_trial_button
+    return text, upgrade_button
+
 @Client.on_message(filters.private & filters.command("start"))
 async def start(client, message):
     start_button = [[
-        InlineKeyboardButton('ᴀʙᴏᴜᴛ', callback_data='about'),
-        InlineKeyboardButton('ʜᴇʟᴘ', callback_data='help')       
+        InlineKeyboardButton('ᴀʙᴏᴜᴛ', callback_data='about', style=ButtonStyle.PRIMARY),
+        InlineKeyboardButton('ʜᴇʟᴘ', callback_data='help', style=ButtonStyle.PRIMARY)       
          ]]
     if client.premium:
-        start_button.append([InlineKeyboardButton('💸 ᴜᴘɢʀᴀᴅᴇ ᴛᴏ ᴘʀᴇᴍɪᴜᴍ 💸', callback_data='upgrade')])
+        start_button.append([InlineKeyboardButton('💸 ᴜᴘɢʀᴀᴅᴇ ᴛᴏ ᴘʀᴇᴍɪᴜᴍ 💸', callback_data='upgrade', style=ButtonStyle.SUCCESS)])
     user = message.from_user
-    await digital_botz.add_user(client, message) 
     if Config.PIC:
         await message.reply_photo(Config.PIC, caption=rkn.START_TXT.format(user.mention), reply_markup=InlineKeyboardMarkup(start_button))    
     else:
@@ -38,109 +48,109 @@ async def start(client, message):
 @Client.on_message(filters.private & filters.command('setprefix'))
 async def add_prefix(client, message):
     if len(message.command) == 1:
-        return await message.reply_text("**__Give The Prefix__\n\nExᴀᴍᴩʟᴇ:- `/setprefix @TechifyBots`**")
+        return await message.reply_text("<b><i>Give The Prefix</i>\n\nExᴀᴍᴩʟᴇ:- <code>/setprefix @TechifyBots</code></b>")
     prefix = message.text.split(" ", 1)[1]
-    RknDev = await message.reply_text("Please Wait ...", reply_to_message_id=message.id)
+    RknDev = await message.reply_text("Please Wait ...")
     await digital_botz.set_prefix(message.from_user.id, prefix)
-    await RknDev.edit("__**✅ ᴘʀᴇꜰɪx ꜱᴀᴠᴇᴅ**__")
+    await RknDev.edit("<b><i>✅ ᴘʀᴇꜰɪx ꜱᴀᴠᴇᴅ</i></b>")
 
 @Client.on_message(filters.private & filters.command('delprefix'))
 async def delete_prefix(client, message):
-    RknDev = await message.reply_text("Please Wait ...", reply_to_message_id=message.id)
+    RknDev = await message.reply_text("Please Wait ...")
     prefix = await digital_botz.get_prefix(message.from_user.id)
     if not prefix:
-        return await RknDev.edit("__**😔 ʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴀɴʏ ᴘʀᴇꜰɪx**__")
+        return await RknDev.edit("<b><i>😔 ʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴀɴʏ ᴘʀᴇꜰɪx</i></b>")
     await digital_botz.set_prefix(message.from_user.id, None)
-    await RknDev.edit("__**❌️ ᴘʀᴇꜰɪx ᴅᴇʟᴇᴛᴇᴅ**__")
+    await RknDev.edit("<b><i>❌️ ᴘʀᴇꜰɪx ᴅᴇʟᴇᴛᴇᴅ</i></b>")
 
 @Client.on_message(filters.private & filters.command('seeprefix'))
 async def see_prefix(client, message):
-    RknDev = await message.reply_text("Please Wait ...", reply_to_message_id=message.id)
+    RknDev = await message.reply_text("Please Wait ...")
     prefix = await digital_botz.get_prefix(message.from_user.id)
     if prefix:
-        await RknDev.edit(f"**ʏᴏᴜʀ ᴘʀᴇꜰɪx:-**\n\n`{prefix}`")
+        await RknDev.edit(f"<b>ʏᴏᴜʀ ᴘʀᴇꜰɪx:-</b>\n\n<code>{escape(str(prefix))}</code>")
     else:
-        await RknDev.edit("__**😔 ʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴀɴʏ ᴘʀᴇꜰɪx**__")
+        await RknDev.edit("<b><i>😔 ʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴀɴʏ ᴘʀᴇꜰɪx</i></b>")
 
 @Client.on_message(filters.private & filters.command('setsuffix'))
 async def add_suffix(client, message):
     if len(message.command) == 1:
-        return await message.reply_text("**__Give The Suffix__\n\nExᴀᴍᴩʟᴇ:- `/setsuffix @TechifyBots`**")
+        return await message.reply_text("<b><i>Give The Suffix</i>\n\nExᴀᴍᴩʟᴇ:- <code>/setsuffix @TechifyBots</code></b>")
     suffix = message.text.split(" ", 1)[1]
-    RknDev = await message.reply_text("Please Wait ...", reply_to_message_id=message.id)
+    RknDev = await message.reply_text("Please Wait ...")
     await digital_botz.set_suffix(message.from_user.id, suffix)
-    await RknDev.edit("__**✅ ꜱᴜꜰꜰɪx ꜱᴀᴠᴇᴅ**__")
+    await RknDev.edit("<b><i>✅ ꜱᴜꜰꜰɪx ꜱᴀᴠᴇᴅ</i></b>")
 
 @Client.on_message(filters.private & filters.command('delsuffix'))
 async def delete_suffix(client, message):
-    RknDev = await message.reply_text("Please Wait ...", reply_to_message_id=message.id)
+    RknDev = await message.reply_text("Please Wait ...")
     suffix = await digital_botz.get_suffix(message.from_user.id)
     if not suffix:
-        return await RknDev.edit("__**😔 ʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴀɴʏ ꜱᴜꜰꜰɪx**__")
+        return await RknDev.edit("<b><i>😔 ʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴀɴʏ ꜱᴜꜰꜰɪx</i></b>")
     await digital_botz.set_suffix(message.from_user.id, None)
-    await RknDev.edit("__**❌️ ꜱᴜꜰꜰɪx ᴅᴇʟᴇᴛᴇᴅ**__")
+    await RknDev.edit("<b><i>❌️ ꜱᴜꜰꜰɪx ᴅᴇʟᴇᴛᴇᴅ</i></b>")
 
 @Client.on_message(filters.private & filters.command('seesuffix'))
 async def see_suffix(client, message):
-    RknDev = await message.reply_text("Please Wait ...", reply_to_message_id=message.id)
+    RknDev = await message.reply_text("Please Wait ...")
     suffix = await digital_botz.get_suffix(message.from_user.id)
     if suffix:
-        await RknDev.edit(f"**ʏᴏᴜʀ ꜱᴜꜰꜰɪx:-**\n\n`{suffix}`")
+        await RknDev.edit(f"<b>ʏᴏᴜʀ ꜱᴜꜰꜰɪx:-</b>\n\n<code>{escape(str(suffix))}</code>")
     else:
-        await RknDev.edit("__**😔 ʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴀɴʏ ꜱᴜꜰꜰɪx**__")
+        await RknDev.edit("<b><i>😔 ʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴀɴʏ ꜱᴜꜰꜰɪx</i></b>")
 
 @Client.on_message(filters.private & filters.command('setcaption'))
 async def add_caption(client, message):
-    rkn = await message.reply_text("__**ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ**__")
+    rkn = await message.reply_text("<b><i>ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ</i></b>")
     if len(message.command) == 1:
-       return await rkn.edit("**__Gɪᴠᴇ Tʜᴇ Cᴀᴩᴛɪᴏɴ__\n\nExᴀᴍᴩʟᴇ:- `/setcaption {filename}\n\n💾 Sɪᴢᴇ: {filesize}\n\n⏰ Dᴜʀᴀᴛɪᴏɴ: {duration}\n**By: @TechifyBots`**")
+       return await rkn.edit("<b><i>Gɪᴠᴇ Tʜᴇ Cᴀᴩᴛɪᴏɴ</i>\n\nExᴀᴍᴩʟᴇ:- <code>/setcaption {filename}\n\n💾 Sɪᴢᴇ: {filesize}\n\n⏰ Dᴜʀᴀᴛɪᴏɴ: {duration}</code>\n<b>By: @TechifyBots</b>")
     caption = message.text.split(" ", 1)[1]
     await digital_botz.set_caption(message.from_user.id, caption=caption)
-    await rkn.edit("__**✅ Cᴀᴩᴛɪᴏɴ Sᴀᴠᴇᴅ**__")
+    await rkn.edit("<b><i>✅ Cᴀᴩᴛɪᴏɴ Sᴀᴠᴇᴅ</i></b>")
    
 @Client.on_message(filters.private & filters.command('delcaption'))
 async def delete_caption(client, message):
-    rkn = await message.reply_text("__**ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ**__")
+    rkn = await message.reply_text("<b><i>ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ</i></b>")
     caption = await digital_botz.get_caption(message.from_user.id)  
     if not caption:
-       return await rkn.edit("__**😔 Yᴏᴜ Dᴏɴ'ᴛ Hᴀᴠᴇ Aɴy Cᴀᴩᴛɪᴏɴ**__")
+       return await rkn.edit("<b><i>😔 Yᴏᴜ Dᴏɴ'ᴛ Hᴀᴠᴇ Aɴy Cᴀᴩᴛɪᴏɴ</i></b>")
     await digital_botz.set_caption(message.from_user.id, caption=None)
-    await rkn.edit("__**❌️ Cᴀᴩᴛɪᴏɴ Dᴇʟᴇᴛᴇᴅ**__")
+    await rkn.edit("<b><i>❌️ Cᴀᴩᴛɪᴏɴ Dᴇʟᴇᴛᴇᴅ</i></b>")
                                        
 @Client.on_message(filters.private & filters.command('seecaption'))
 async def see_caption(client, message):
-    rkn = await message.reply_text("__**ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ**__")
+    rkn = await message.reply_text("<b><i>ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ</i></b>")
     caption = await digital_botz.get_caption(message.from_user.id)  
     if caption:
-       await rkn.edit(f"**Yᴏᴜ'ʀᴇ Cᴀᴩᴛɪᴏɴ:-**\n\n`{caption}`")
+       await rkn.edit(f"<b>Yᴏᴜ'ʀᴇ Cᴀᴩᴛɪᴏɴ:-</b>\n\n<code>{escape(str(caption))}</code>")
     else:
-       await rkn.edit("__**😔 Yᴏᴜ Dᴏɴ'ᴛ Hᴀᴠᴇ Aɴy Cᴀᴩᴛɪᴏɴ**__")
+       await rkn.edit("<b><i>😔 Yᴏᴜ Dᴏɴ'ᴛ Hᴀᴠᴇ Aɴy Cᴀᴩᴛɪᴏɴ</i></b>")
 
 @Client.on_message(filters.private & filters.command('viewthumb'))
 async def viewthumb(client, message):
-    rkn = await message.reply_text("__**ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ**__")
+    rkn = await message.reply_text("<b><i>ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ</i></b>")
     thumb = await digital_botz.get_thumbnail(message.from_user.id)
     if thumb:
         await client.send_photo(chat_id=message.chat.id, photo=thumb)
         await rkn.delete()
     else:
-        await rkn.edit("😔 __**Yᴏᴜ Dᴏɴ'ᴛ Hᴀᴠᴇ Aɴy Tʜᴜᴍʙɴᴀɪʟ**__") 
+        await rkn.edit("😔 <b><i>Yᴏᴜ Dᴏɴ'ᴛ Hᴀᴠᴇ Aɴy Tʜᴜᴍʙɴᴀɪʟ</i></b>") 
 		
 @Client.on_message(filters.private & filters.command('delthumb'))
 async def removethumb(client, message):
-    rkn = await message.reply_text("__**ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ**__")
+    rkn = await message.reply_text("<b><i>ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ</i></b>")
     thumb = await digital_botz.get_thumbnail(message.from_user.id)
     if thumb:
         await digital_botz.set_thumbnail(message.from_user.id, file_id=None)
-        await rkn.edit("❌️ __**Tʜᴜᴍʙɴᴀɪʟ Dᴇʟᴇᴛᴇᴅ**__")
+        await rkn.edit("❌️ <b><i>Tʜᴜᴍʙɴᴀɪʟ Dᴇʟᴇᴛᴇᴅ</i></b>")
         return
-    await rkn.edit("😔 __**Yᴏᴜ Dᴏɴ'ᴛ Hᴀᴠᴇ Aɴy Tʜᴜᴍʙɴᴀɪʟ**__")
+    await rkn.edit("😔 <b><i>Yᴏᴜ Dᴏɴ'ᴛ Hᴀᴠᴇ Aɴy Tʜᴜᴍʙɴᴀɪʟ</i></b>")
 
 @Client.on_message(filters.private & filters.photo)
 async def addthumbs(client, message):
-    rkn = await message.reply_text("__**ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ**__")
+    rkn = await message.reply_text("<b><i>ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ</i></b>")
     await digital_botz.set_thumbnail(message.from_user.id, file_id=message.photo.file_id)                
-    await rkn.edit("✅️ __**Tʜᴜᴍʙɴᴀɪʟ Sᴀᴠᴇᴅ**__")
+    await rkn.edit("✅️ <b><i>Tʜᴜᴍʙɴᴀɪʟ Sᴀᴠᴇᴅ</i></b>")
 
 @Client.on_message(filters.private & filters.command("myplan"))
 async def myplan(client, message):
@@ -148,21 +158,22 @@ async def myplan(client, message):
         return # premium mode disabled ✓
     user_id = message.from_user.id
     user = message.from_user.mention
-    if await digital_botz.has_premium_access(user_id):
+    # one premium read for both the access verdict and the expiry display
+    premium = await digital_botz.premium_state(user_id)
+    if premium["has_premium_access"]:
         data = await digital_botz.get_user(user_id)
         expiry_str_in_ist = data.get("expiry_time")
         time_left_str = expiry_str_in_ist - datetime.datetime.now()
         text = f"ᴜꜱᴇʀ :- {user}\nᴜꜱᴇʀ ɪᴅ :- <code>{user_id}</code>\n"
         if client.uploadlimit:
-            await digital_botz.reset_uploadlimit_access(user_id)                
-            user_data = await digital_botz.get_user_data(user_id)
+            user_data = await digital_botz.reset_uploadlimit_access(user_id)
             limit = user_data.get('uploadlimit', 0)
             used = user_data.get('used_limit', 0)
             remain = int(limit) - int(used)
             type = user_data.get('usertype', "Free")
-            text += f"ᴘʟᴀɴ :- `{type}`\nᴅᴀɪʟʏ ᴜᴘʟᴏᴀᴅ ʟɪᴍɪᴛ :- `{humanbytes(limit)}`\nᴛᴏᴅᴀʏ ᴜsᴇᴅ :- `{humanbytes(used)}`\nʀᴇᴍᴀɪɴ :- `{humanbytes(remain)}`\n"
+            text += f"ᴘʟᴀɴ :- <code>{escape(str(type))}</code>\nᴅᴀɪʟʏ ᴜᴘʟᴏᴀᴅ ʟɪᴍɪᴛ :- <code>{humanbytes(limit)}</code>\nᴛᴏᴅᴀʏ ᴜsᴇᴅ :- <code>{humanbytes(used)}</code>\nʀᴇᴍᴀɪɴ :- <code>{humanbytes(remain)}</code>\n"
         text += f"ᴛɪᴍᴇ ʟᴇꜰᴛ : {time_left_str}\nᴇxᴘɪʀʏ ᴅᴀᴛᴇ : {expiry_str_in_ist}"
-        await message.reply_text(text, quote=True)
+        await message.reply_text(text)
     else:
         if client.uploadlimit:
             user_data = await digital_botz.get_user_data(user_id)
@@ -170,12 +181,12 @@ async def myplan(client, message):
             used = user_data.get('used_limit', 0)
             remain = int(limit) - int(used)
             type = user_data.get('usertype', "Free")
-            text = f"ᴜꜱᴇʀ :- {user}\nᴜꜱᴇʀ ɪᴅ :- <code>{user_id}</code>\nᴘʟᴀɴ :- `{type}`\nᴅᴀɪʟʏ ᴜᴘʟᴏᴀᴅ ʟɪᴍɪᴛ :- `{humanbytes(limit)}`\nᴛᴏᴅᴀʏ ᴜsᴇᴅ :- `{humanbytes(used)}`\nʀᴇᴍᴀɪɴ :- `{humanbytes(remain)}`\nᴇxᴘɪʀᴇᴅ ᴅᴀᴛᴇ :- ʟɪғᴇᴛɪᴍᴇ\n\nɪꜰ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴛᴀᴋᴇ ᴘʀᴇᴍɪᴜᴍ ᴛʜᴇɴ ᴄʟɪᴄᴋ ᴏɴ ʙᴇʟᴏᴡ ʙᴜᴛᴛᴏɴ 👇"
-            await message.reply_text(text, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("💸 ᴄʜᴇᴄᴋᴏᴜᴛ ᴘʀᴇᴍɪᴜᴍ ᴘʟᴀɴꜱ 💸", callback_data='upgrade')]]), quote=True)
+            text = f"ᴜꜱᴇʀ :- {user}\nᴜꜱᴇʀ ɪᴅ :- <code>{user_id}</code>\nᴘʟᴀɴ :- <code>{escape(str(type))}</code>\nᴅᴀɪʟʏ ᴜᴘʟᴏᴀᴅ ʟɪᴍɪᴛ :- <code>{humanbytes(limit)}</code>\nᴛᴏᴅᴀʏ ᴜsᴇᴅ :- <code>{humanbytes(used)}</code>\nʀᴇᴍᴀɪɴ :- <code>{humanbytes(remain)}</code>\nᴇxᴘɪʀᴇᴅ ᴅᴀᴛᴇ :- ʟɪғᴇᴛɪᴍᴇ\n\nɪꜰ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴛᴀᴋᴇ ᴘʀᴇᴍɪᴜᴍ ᴛʜᴇɴ ᴄʟɪᴄᴋ ᴏɴ ʙᴇʟᴏᴡ ʙᴜᴛᴛᴏɴ 👇"
+            await message.reply_text(text, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("💸 ᴄʜᴇᴄᴋᴏᴜᴛ ᴘʀᴇᴍɪᴜᴍ ᴘʟᴀɴꜱ 💸", callback_data='upgrade', style=ButtonStyle.SUCCESS)]]))
         else:
             m=await message.reply_sticker("CAACAgIAAxkBAAIBTGVjQbHuhOiboQsDm35brLGyLQ28AAJ-GgACglXYSXgCrotQHjibHgQ")
             await message.reply_text(f"ʜᴇʏ {user},\n\nʏᴏᴜ ᴅᴏ ɴᴏᴛ ʜᴀᴠᴇ ᴀɴʏ ᴀᴄᴛɪᴠᴇ ᴘʀᴇᴍɪᴜᴍ ᴘʟᴀɴs, ɪꜰ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴛᴀᴋᴇ ᴘʀᴇᴍɪᴜᴍ ᴛʜᴇɴ ᴄʟɪᴄᴋ ᴏɴ ʙᴇʟᴏᴡ ʙᴜᴛᴛᴏɴ 👇",
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("💸 ᴄʜᴇᴄᴋᴏᴜᴛ ᴘʀᴇᴍɪᴜᴍ ᴘʟᴀɴꜱ 💸", callback_data='upgrade')]]))			 
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("💸 ᴄʜᴇᴄᴋᴏᴜᴛ ᴘʀᴇᴍɪᴜᴍ ᴘʟᴀɴꜱ 💸", callback_data='upgrade', style=ButtonStyle.SUCCESS)]]))			 
             await asyncio.sleep(2)
             await m.delete()
 
@@ -183,27 +194,25 @@ async def myplan(client, message):
 async def plans(client, message):
     if not client.premium:
         return # premium mode disabled ✓
-    user = message.from_user
-    upgrade_msg = rkn.UPGRADE_PLAN.format(user.mention) if client.uploadlimit else rkn.UPGRADE_PREMIUM.format(user.mention)
-    free_trial_status = await digital_botz.get_free_trial_status(user.id)
-    if not await digital_botz.has_premium_access(user.id):
-        if not free_trial_status:
-            await message.reply_text(text=upgrade_msg, reply_markup=upgrade_trial_button, link_preview_options=LinkPreviewOptions(is_disabled=True))
-        else:
-            await message.reply_text(text=upgrade_msg, reply_markup=upgrade_button, link_preview_options=LinkPreviewOptions(is_disabled=True))
-    else:
-        await message.reply_text(text=upgrade_msg, reply_markup=upgrade_button, link_preview_options=LinkPreviewOptions(is_disabled=True))
+    text, markup = await upgrade_view(client, message.from_user)
+    await message.reply_text(text=text, reply_markup=markup, link_preview_options=LinkPreviewOptions(is_disabled=True))
 
 @Client.on_callback_query()
 async def cb_handler(client, query: CallbackQuery):
-    data = query.data 
+    data = query.data
+    try:
+        # Answer first: Telegram keeps the tapped button spinning until this lands,
+        # and the branches below can take seconds (photo edit, live speed test).
+        await query.answer()
+    except Exception:
+        pass  # shortcut: stale/duplicate taps raise QUERY_ID_INVALID; handler still runs
     if data == "start":
         start_button = [[
-        InlineKeyboardButton('ᴀʙᴏᴜᴛ', callback_data='about'),
-        InlineKeyboardButton('ʜᴇʟᴘ', callback_data='help')       
+        InlineKeyboardButton('ᴀʙᴏᴜᴛ', callback_data='about', style=ButtonStyle.PRIMARY),
+        InlineKeyboardButton('ʜᴇʟᴘ', callback_data='help', style=ButtonStyle.PRIMARY)       
          ]]
         if client.premium:
-            start_button.append([InlineKeyboardButton('💸 ᴜᴘɢʀᴀᴅᴇ ᴛᴏ ᴘʀᴇᴍɪᴜᴍ 💸', callback_data='upgrade')])
+            start_button.append([InlineKeyboardButton('💸 ᴜᴘɢʀᴀᴅᴇ ᴛᴏ ᴘʀᴇᴍɪᴜᴍ 💸', callback_data='upgrade', style=ButtonStyle.SUCCESS)])
         await query.message.edit_text(
             text=rkn.START_TXT.format(query.from_user.mention),
             link_preview_options=LinkPreviewOptions(is_disabled=True),
@@ -215,28 +224,28 @@ async def cb_handler(client, query: CallbackQuery):
             link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup=InlineKeyboardMarkup([[
                 #⚠️ don't change source code & source link ⚠️ #
-                InlineKeyboardButton("ᴛʜᴜᴍʙɴᴀɪʟ", callback_data = "thumbnail"),
-                InlineKeyboardButton("ᴄᴀᴘᴛɪᴏɴ", callback_data = "caption")
+                InlineKeyboardButton("ᴛʜᴜᴍʙɴᴀɪʟ", callback_data = "thumbnail", style=ButtonStyle.PRIMARY),
+                InlineKeyboardButton("ᴄᴀᴘᴛɪᴏɴ", callback_data = "caption", style=ButtonStyle.PRIMARY)
                 ],[
-                InlineKeyboardButton("ꜰɪʟᴇ ɴᴀᴍᴇ", callback_data = "custom_file_name"),
-                InlineKeyboardButton("ᴍᴇᴛᴀᴅᴀᴛᴀ", callback_data = "custom_metadata")
+                InlineKeyboardButton("ꜰɪʟᴇ ɴᴀᴍᴇ", callback_data = "custom_file_name", style=ButtonStyle.PRIMARY),
+                InlineKeyboardButton("ᴍᴇᴛᴀᴅᴀᴛᴀ", callback_data = "custom_metadata", style=ButtonStyle.PRIMARY)
                 ],[
-                InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "start")
+                InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "start", style=ButtonStyle.PRIMARY)
                 ]]))         
         
     elif data == "about":
         about_button = [[
          #⚠️ don't change source code & source link ⚠️ #
-        InlineKeyboardButton("sᴏᴜʀᴄᴇ", callback_data = "source_code"), #Whoever is deploying this repo is given a warning ⚠️ not to remove this repo link #first & last warning ⚠️
-        InlineKeyboardButton("ʙᴏᴛ sᴛᴀᴛᴜs", callback_data = "bot_status")
+        InlineKeyboardButton("sᴏᴜʀᴄᴇ", callback_data = "source_code", style=ButtonStyle.PRIMARY), #Whoever is deploying this repo is given a warning ⚠️ not to remove this repo link #first & last warning ⚠️
+        InlineKeyboardButton("ʙᴏᴛ sᴛᴀᴛᴜs", callback_data = "bot_status", style=ButtonStyle.PRIMARY)
         ],[
-        InlineKeyboardButton("ʟɪᴠᴇ sᴛᴀᴛᴜs", callback_data = "live_status")           
+        InlineKeyboardButton("ʟɪᴠᴇ sᴛᴀᴛᴜs", callback_data = "live_status", style=ButtonStyle.PRIMARY)           
         ]]
         if client.premium:
-            about_button[-1].append(InlineKeyboardButton("ᴜᴘɢʀᴀᴅᴇ", callback_data = "upgrade"))
-            about_button.append([InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "start")])
+            about_button[-1].append(InlineKeyboardButton("ᴜᴘɢʀᴀᴅᴇ", callback_data = "upgrade", style=ButtonStyle.SUCCESS))
+            about_button.append([InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "start", style=ButtonStyle.PRIMARY)])
         else:
-            about_button[-1].append(InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "start"))
+            about_button[-1].append(InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "start", style=ButtonStyle.PRIMARY))
         await query.message.edit_text(
             text=rkn.ABOUT_TXT.format(client.mention, __developer__, __programer__, __library__, __language__, __database__, _bot_version_),
             link_preview_options=LinkPreviewOptions(is_disabled=True),
@@ -245,16 +254,14 @@ async def cb_handler(client, query: CallbackQuery):
     elif data == "upgrade":
         if not client.premium:
             return await query.message.delete()
-        user = query.from_user
-        upgrade_msg = rkn.UPGRADE_PLAN.format(user.mention) if client.uploadlimit else rkn.UPGRADE_PREMIUM.format(user.mention)
-        free_trial_status = await digital_botz.get_free_trial_status(query.from_user.id)
-        if not await digital_botz.has_premium_access(query.from_user.id):
-            if not free_trial_status:
-                await query.message.edit_text(text=upgrade_msg, reply_markup=upgrade_trial_button, link_preview_options=LinkPreviewOptions(is_disabled=True))   
-            else:
-                await query.message.edit_text(text=upgrade_msg, reply_markup=upgrade_button, link_preview_options=LinkPreviewOptions(is_disabled=True))
-        else:
-            await query.message.edit_text(text=upgrade_msg, reply_markup=upgrade_button, link_preview_options=LinkPreviewOptions(is_disabled=True))
+        text, markup = await upgrade_view(client, query.from_user)
+        await query.message.edit_text(text=text, reply_markup=markup, link_preview_options=LinkPreviewOptions(is_disabled=True))
+
+    elif data == "plans":
+        if not client.premium:
+            return await query.message.delete()
+        text, markup = await upgrade_view(client, query.from_user)
+        await query.message.edit_text(text=text, reply_markup=markup, link_preview_options=LinkPreviewOptions(is_disabled=True))
            
     elif data == "give_trial":
         if not client.premium:
@@ -263,9 +270,9 @@ async def cb_handler(client, query: CallbackQuery):
         free_trial_status = await digital_botz.get_free_trial_status(query.from_user.id)
         if not free_trial_status:            
             await digital_botz.give_free_trial(query.from_user.id)
-            new_text = "**ʏᴏᴜʀ ᴘʀᴇᴍɪᴜᴍ ᴛʀɪᴀʟ ʜᴀs ʙᴇᴇɴ ᴀᴅᴅᴇᴅ ғᴏʀ 𝟷𝟸 ʜᴏᴜʀs.\n\nʏᴏᴜ ᴄᴀɴ ᴜsᴇ ꜰʀᴇᴇ ᴛʀᴀɪʟ ꜰᴏʀ 𝟷𝟸 ʜᴏᴜʀs ꜰʀᴏᴍ ɴᴏᴡ 😀\n\nआप अब से 𝟷𝟸 घण्टा के लिए निःशुल्क ट्रायल का उपयोग कर सकते हैं 😀**"
+            new_text = "<b>ʏᴏᴜʀ ᴘʀᴇᴍɪᴜᴍ ᴛʀɪᴀʟ ʜᴀs ʙᴇᴇɴ ᴀᴅᴅᴇᴅ ғᴏʀ 𝟷𝟸 ʜᴏᴜʀs.\n\nʏᴏᴜ ᴄᴀɴ ᴜsᴇ ꜰʀᴇᴇ ᴛʀᴀɪʟ ꜰᴏʀ 𝟷𝟸 ʜᴏᴜʀs ꜰʀᴏᴍ ɴᴏᴡ 😀\n\nआप अब से 𝟷𝟸 घण्टा के लिए निःशुल्क ट्रायल का उपयोग कर सकते हैं 😀</b>"
         else:
-            new_text = "**🤣 ʏᴏᴜ ᴀʟʀᴇᴀᴅʏ ᴜsᴇᴅ ғʀᴇᴇ ɴᴏᴡ ɴᴏ ᴍᴏʀᴇ ғʀᴇᴇ ᴛʀᴀɪʟ. ᴘʟᴇᴀsᴇ ʙᴜʏ sᴜʙsᴄʀɪᴘᴛɪᴏɴ ʜᴇʀᴇ ᴀʀᴇ ᴏᴜʀ 👉 /plans**"
+            new_text = "<b>🤣 ʏᴏᴜ ᴀʟʀᴇᴀᴅʏ ᴜsᴇᴅ ғʀᴇᴇ ɴᴏᴡ ɴᴏ ᴍᴏʀᴇ ғʀᴇᴇ ᴛʀᴀɪʟ. ᴘʟᴇᴀsᴇ ʙᴜʏ sᴜʙsᴄʀɪᴘᴛɪᴏɴ ʜᴇʀᴇ ᴀʀᴇ ᴏᴜʀ 👉 /plans</b>"
         await client.send_message(query.from_user.id, text=new_text)
 
     elif data == "thumbnail":
@@ -273,28 +280,21 @@ async def cb_handler(client, query: CallbackQuery):
             text=rkn.THUMBNAIL,
             link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup=InlineKeyboardMarkup([[
-             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "help")]]))
+             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "help", style=ButtonStyle.PRIMARY)]]))
 
     elif data == "caption":
         await query.message.edit_text(
             text=rkn.CAPTION,
             link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup=InlineKeyboardMarkup([[
-             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "help")]]))
+             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "help", style=ButtonStyle.PRIMARY)]]))
 
     elif data == "custom_file_name":
         await query.message.edit_text(
             text=rkn.CUSTOM_FILE_NAME,
             link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup=InlineKeyboardMarkup([[
-             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "help")]]))
-
-    elif data == "custom_metadata":
-        await query.message.edit_text(
-            text=rkn.METADATA,
-            link_preview_options=LinkPreviewOptions(is_disabled=True),
-            reply_markup=InlineKeyboardMarkup([[
-             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "help")]]))
+             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "help", style=ButtonStyle.PRIMARY)]]))
 
     elif data == "bot_status":
         total_users = await digital_botz.total_users_count()
@@ -305,49 +305,47 @@ async def cb_handler(client, query: CallbackQuery):
         uptime = time.strftime("%Hh%Mm%Ss", time.gmtime(time.time() - client.uptime))
         sent = humanbytes(psutil.net_io_counters().bytes_sent)
         recv = humanbytes(psutil.net_io_counters().bytes_recv)
+        # First call may run a real Ookla test (up to ~2 min); then cached 10 min.
+        speed_label = await network_speed_label()
         await query.message.edit_text(
-            text=rkn.BOT_STATUS.format(uptime, total_users, total_premium_users, sent, recv),
+            text=rkn.BOT_STATUS.format(uptime, total_users, total_premium_users, speed_label, sent, recv),
             link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup=InlineKeyboardMarkup([[
-             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "about")]]))
+             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "about", style=ButtonStyle.PRIMARY)]]))
 
     elif data == "live_status":
-        currentTime = time.strftime("%Hh%Mm%Ss", time.gmtime(time.time() - client.uptime))
-        total, used, free = shutil.disk_usage(".")
-        total = humanbytes(total)
-        used = humanbytes(used)
-        free = humanbytes(free)
-        sent = humanbytes(psutil.net_io_counters().bytes_sent)
-        recv = humanbytes(psutil.net_io_counters().bytes_recv)
-        cpu_usage = psutil.cpu_percent()
-        ram_usage = psutil.virtual_memory().percent
-        disk_usage = psutil.disk_usage('/').percent
+        # Same numbers as the web dashboard, so both share its caching and
+        # its thread offload for the CPU sample.
+        status = await get_status()
+        speed_label = await network_speed_label()
         await query.message.edit_text(
-            text=rkn.LIVE_STATUS.format(currentTime, cpu_usage, ram_usage, total, used, disk_usage, free, sent, recv),
+            text=rkn.LIVE_STATUS.format(status["uptime"], status["cpu_usage"], status["ram_usage"], status["total_disk"], status["used_disk"], status["disk_usage"], status["free_disk"], status["sent"], status["recv"], speed_label),
             link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup=InlineKeyboardMarkup([[
-             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "about")]]))
+             InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "about", style=ButtonStyle.PRIMARY)]]))
 
     elif data == "source_code":
         await query.message.edit_text(
             text=rkn.DEV_TXT,
             link_preview_options=LinkPreviewOptions(is_disabled=True),
             reply_markup=InlineKeyboardMarkup([[
-                InlineKeyboardButton("💞 sᴏᴜʀᴄᴇ ᴄᴏᴅᴇ 💞", url="https://github.com/TechifyBots/Rename-Bot")
+                InlineKeyboardButton("💞 sᴏᴜʀᴄᴇ ᴄᴏᴅᴇ 💞", url="https://github.com/TechifyBots/Rename-Bot", style=ButtonStyle.PRIMARY)
             ],[
-                InlineKeyboardButton("ᴄʟᴏꜱᴇ", callback_data = "close"),
-                InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "about")
+                InlineKeyboardButton("ᴄʟᴏꜱᴇ", callback_data = "close", style=ButtonStyle.DANGER),
+                InlineKeyboardButton("ʙᴀᴄᴋ", callback_data = "about", style=ButtonStyle.PRIMARY)
             ]])
         )
 
-    elif data.startswith("upload"):
-        await upload_doc(client, query)
-
     elif data == "close":
-        try:
-            await query.message.delete()
-            await query.message.reply_to_message.delete()
-            await query.message.continue_propagation()
-        except:
-            await query.message.delete()
-            await query.message.continue_propagation()
+        # Grab the parent before deleting anything: a missing parent (the user removed
+        # their /start command) must not abort the close, and deleting an already
+        # deleted message is what Telegram answers with MESSAGE_ID_INVALID.
+        parent = query.message.reply_to_message
+        for target in (query.message, parent):
+            if target is None:
+                continue
+            try:
+                await target.delete()
+            except Exception:
+                pass
+        await query.message.continue_propagation()

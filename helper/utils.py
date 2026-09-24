@@ -1,5 +1,7 @@
-import math, time, re, datetime, pytz, os
+import math, time, re, datetime, os
+from zoneinfo import ZoneInfo
 from config import Config, rkn 
+from pyrogram.enums import ButtonStyle
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 async def progress_for_pyrogram(current, total, ud_type, message, start):
@@ -29,9 +31,9 @@ async def progress_for_pyrogram(current, total, ud_type, message, start):
         try:
             await message.edit(
                 text=f"{ud_type}\n\n{tmp}",               
-                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("✖️ 𝙲𝙰𝙽𝙲𝙴𝙻 ✖️", callback_data="close")]])                                               
+                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("✖️ 𝙲𝙰𝙽𝙲𝙴𝙻 ✖️", callback_data="close", style=ButtonStyle.DANGER)]])                                               
             )
-        except:
+        except Exception:
             pass
 
 def humanbytes(size):    
@@ -67,37 +69,17 @@ def convert(seconds):
 
 async def send_log(b, u):
     if Config.LOG_CHANNEL:
-        curr = datetime.datetime.now(pytz.timezone("Asia/Kolkata"))
+        curr = datetime.datetime.now(ZoneInfo("Asia/Kolkata"))
         log_message = (
-            "**--Nᴇᴡ Uꜱᴇʀ Sᴛᴀʀᴛᴇᴅ Tʜᴇ Bᴏᴛ--**\n\n"
+            "<b>--Nᴇᴡ Uꜱᴇʀ Sᴛᴀʀᴛᴇᴅ Tʜᴇ Bᴏᴛ--</b>\n\n"
             f"Uꜱᴇʀ: {u.mention}\n"
-            f"Iᴅ: `{u.id}`\n"
+            f"Iᴅ: <code>{u.id}</code>\n"
             f"Uɴ: @{u.username}\n\n"
             f"Dᴀᴛᴇ: {curr.strftime('%d %B, %Y')}\n"
             f"Tɪᴍᴇ: {curr.strftime('%I:%M:%S %p')}\n\n"
             f"By: {b.mention}"
         )
         await b.send_message(Config.LOG_CHANNEL, log_message)
-
-async def get_seconds_first(time_string):
-    conversion_factors = {
-        's': 1,
-        'min': 60,
-        'hour': 3600,
-        'day': 86400,
-        'month': 86400 * 30,
-        'year': 86400 * 365
-    }
-
-    parts = time_string.split()
-    total_seconds = 0
-
-    for i in range(0, len(parts), 2):
-        value = int(parts[i])
-        unit = parts[i+1].rstrip('s')  # Remove 's' from unit
-        total_seconds += value * conversion_factors.get(unit, 0)
-
-    return total_seconds
 
 async def get_seconds(time_string):
     conversion_factors = {
