@@ -396,6 +396,7 @@ See the **[LICENSE](./LICENSE)** file for complete details.
 This repository is based on the original work of:
 
 - **Original Developer:** [DigitalBotz](https://github.com/DigitalBotz)
+- **Major Contributor:** [Bisu Ghalan](https://github.com/bisug)
 
 > [!NOTE]
 > This repository is maintained by **TechifyBots**, with improvements to the project presentation and user experience.
