@@ -13,9 +13,6 @@ A **powerful, open-source, and feature-rich** Telegram bot designed to **rename,
 
 [![Last Commit](https://img.shields.io/github/last-commit/TechifyBots/Rename-Bot?style=for-the-badge)](https://github.com/TechifyBots/Rename-Bot/commits)
 <br>
-[![CI](https://github.com/bisug/Rename-Bot/actions/workflows/ci.yml/badge.svg)](https://github.com/bisug/Rename-Bot/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/bisug/Rename-Bot/actions/workflows/codeql.yml/badge.svg)](https://github.com/bisug/Rename-Bot/actions/workflows/codeql.yml)
-<br>
 [![GitHub Stars](https://img.shields.io/github/stars/TechifyBots/Rename-Bot?style=for-the-badge)](https://github.com/TechifyBots)
 [![GitHub Forks](https://img.shields.io/github/forks/TechifyBots/Rename-Bot?style=for-the-badge)](https://github.com/TechifyBots/Rename-Bot/fork)
 <br>
@@ -249,8 +246,7 @@ Watch this short video to understand **what the bot is**, **why it's useful**, *
 
 ## 🤖 Commands
 
-<details>
-<summary><b>👤 User Commands</b></summary>
+#### 👤 User Commands
 
 ```
 start - Check Bot Alive.
@@ -270,8 +266,6 @@ myplan - to check your active plan.
 metadata - To set custom metadata.
 ```
 
-</details>
-
 <details>
 <summary><b>🔒 Owner Commands</b></summary>
 
@@ -290,10 +284,7 @@ delreq - Clear pending force-subscribe join requests.
 ```
 </details>
 
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/TechifyBots/TechifyBots/main/assets/divider.svg" width="600" alt="divider"/>
-</p>
+---
 
 ## 🚀 Deployment
 
